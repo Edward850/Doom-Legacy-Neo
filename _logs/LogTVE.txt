@@ -1,0 +1,35 @@
+Remember: 
+- Thierry never writes log files (just a very short resume here)
+- The date are in french format (sorry, but it's easier for me like that)
+
+14-04-1999:
+I join the DooM Legacy Team
+
+15-04-1999:
+I start coding on the OpenGL version of DooM Legacy, inspired by faB's glide code.
+
+15-04-1999 -> 15-01-2000
+The OpenGL version runs pretty well, despite this damn crappy code
+- Add some new features like coronas, dynamic lighting, static lighting, FOV
+- Fix some common bug between hardware/software version
+- Implement in hardware mode all the missing features present in sofware mode, except splat and legacy water.
+- Do a lot of join with Boris' code
+- Now, I'm actually working on md2 models, mirrors and T&L
+- TODO: improve the static/dynamic lighting code, support skin colors, complete this log file,...
+
+15-01-2000 -> 10-08-2000
+- Skin and text color are now implemented in hardware mode
+- Splats are now enabled in hardware mode (still some clipping and color problems)
+- Lots of bug have been fixed (see Bug Tracking for more)
+- Lots of optimisation have been done (See CVS logs for more)
+- TODO: include new software features in hardware mode
+
+11-08-2000
+- DooM Legacy v1.30 is released, I've update the site and some txt files for that.
+
+12-08-2000 -> 28-08-2000
+- Answering lots of mail and doing lots of admin stuffs!
+- Working on the DooM Legacy Master Server code (both client and server)
+- TODO: .do a lot of cleanup in Doom code like removing redundant opearation (i.e I_GetTime)
+        .doing tasks I've created for v1.32
+        .update the site for better management

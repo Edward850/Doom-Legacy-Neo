@@ -1,0 +1,30 @@
+v0.5.0 [2022-09-28]
+- Added option to simulate OPL or OPL2 instead of OPL3
+- Added configurable highpass filter to reduce DC offset (default cutoff is 5Hz)
+- Fixed calculation of pitch bends, especially for non-default bend ranges
+- Improved voice allocation behavior slightly (again)
+- .op2 (DMX) patch loader now sanitizes some patches with bogus 2-voice settings
+
+v0.4.0 [2021-05-31]
+- Added support for .hmi, .hmp, .rmi files
+- Fixed playback of .mus files with invalid control values
+- Player app now falls back to 16-bit audio if floating-point isn't supported
+- Player app UI handles long file names and instrument names a little better
+- OPLPlayer API now supports loading song/patch data from a buffer (using pointer/length pair)
+
+v0.3.0 [2021-05-27]
+- Added basic support for GS/XG/GM2 features
+- Added support for .xmi files
+- Added support for files containing multiple songs
+- Added support for RPN #0 (pitch bend range)
+- More tweaks to voice/channel allocation
+
+v0.2.0 [2021-05-23]
+- Added support for 4-operator instrument patches
+- Added support for .ad/.opl (Miles/AIL) and .tmb (Apogee) bank formats
+- Slight improvements to voice/channel management
+- Fixed clamping of 16-bit output samples when using multiple chips
+- Fixed possible issue w/ playback not starting correctly without being manually restarted
+  
+v0.1.0 [2021-05-20]
+- Initial release

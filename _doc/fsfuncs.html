@@ -1,0 +1,968 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+ "http://www.w3.org/TR/REC-html40/frameset.dtd">
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type-Style" content="text/css">
+<meta name="GENERATOR" content="UltraEdit-32">
+<meta name="author" content="James Haley">
+<meta name="copyright" content="Copyright 2000 James Haley">
+
+<title>FraggleScript Function Reference</title>
+
+</head>
+<body text="#70f070" bgcolor="#000000" link="#70f070" vlink="#70f070" alink="#70f070">
+
+<p>Note: We'd like to thanks Quasar for allowing us to modify the docs of the 
+<a href="http://www.doomworld.com/eternity/etcengine.html">Eternity Engine</a>
+ to reflect Legacy FraggleScript implementation.<p>
+ 
+<a name="top"><h3>FraggleScript Function Reference -- Updated 15 August 2001</h3></a>
+<p>
+
+Notation for those unfamiliar with C:<br><br>
+
+[return-type] [function-name]([parameter list])<br><br>
+
+[return-type] := The type of data returned by this function. This may by int for
+integers, fixed for fixed-point numbers, string for strings, mobj for a mapthing
+reference, array for an array reference, 'a for an arbitrary type, label for the
+literal name of a label, or void for nothing. If a function returns void, it 
+cannot be meaningfully used in an assignment statement or as a parameter to 
+another function because it does not evaluate to any meaningful value. Also 
+notice that void is not actually a keyword in FraggleScript, and you cannot
+declare variables of type void.<br><br>
+
+[function-name] := The name of the function. Use this to call it in your program.<br>
+Example:<br>
+<pre>
+   script 0
+   {
+      print("Hello World!\n");
+   }
+</pre>
+
+[parameter-list] := If this is empty, then the function does not accept any
+parameters. When items appear in the list as [type] [name] constructs, then
+[type] indicates the type of variable you can pass in this position, and [name]
+is simply being used to refer to the value being passed in. If an item appears
+inside brackets -- {} -- then it is an optional parameter. "..." indicates that
+the function takes a variable number of parameters up to 128, minus the number
+of any parameters that occur before the ellipsis.<br><br>
+
+<a name="basic_ctrl"><h4>Basic Control Flow</h4></a>
+<p>
+<ul>
+  <li> <a name="break">void break()</a><br><br>
+       
+       Used to exit the loop statements while() and for(). break() will exit
+       only out of the inner-most loop in which it lies.<br><br>
+  
+  <li> <a name="continue">void continue()</a><br><br>
+  
+       Used to advance the loop statements while() and for() to the next
+       iteration.<br><br>
+  
+  <li> <a name="return">void return()</a><br><br>
+  
+       Causes the current script to stop executing and destroys its local
+       context (ie. local variables will become invalid). return() does not
+       accept a return value as it does in C. If this script was called by
+       another, control will return to the calling script.<br><br>
+       
+  <li> <a name="goto">void goto(label lblname)</a><br><br>
+  
+       Causes execution to jump to the label with name lblname.<br>
+       Note that labels are not strings, and that constructs such as 
+       goto("lblname") or goto(stringvar) where stringvar is of type string
+       are not valid statements.<br><br>
+       
+  <li> <a name="include">void include(string lumpname)</a><br><br>
+  
+       Brings in variables and statements from the lump named lumpname as if
+       they were defined in the current module. Note that included lumps
+       cannot contain scripts or block statements involving braces.<br><br>
+       
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="core"><h4>Core Functions</h4></a>
+<p>
+<ul>
+  <li> <a name="print">void print(...)</a><br><br>
+       
+       Prints a line of text to the console. Accepts up to 128 parameters of
+       any printable type (int, fixed, string, or mobj) and prints them
+       consecutively. See the player messaging tutorial for more information on
+       formatting and supported escape characters.<br><br>
+
+  <li> <a name="rnd">int rnd()</a><br><br>
+
+       Returns a random integer between 0 and 255 inclusive.<br><br>
+
+  <li> <a name="prnd">int rnd()</a><br><br>
+
+       Returns a random integer between 0 and 255 inclusive (using the doom random table).<br><br>
+
+  <li> <a name="beep">void beep()</a><br><br>
+
+       Plays an implementation-defined sound for the console player. 
+       (same as the one you hear with 'say' command).<br><br>
+       
+  <li> <a name="clock">int clock()</a><br><br>
+  
+       Returns the relative game time since startup with a conversion factor
+       of 100 clocks to 1 second.<br><br>
+       
+  <li> <a name="wait">void wait(int time)</a><br><br>
+  
+       Causes the current script to delay further execution for time number of
+       clocks (1 clock = 1/100 of a second).<br><br>
+       
+  <li> <a name="tagwait">void tagwait(int tag)</a><br><br>
+  
+       Causes the current script to delay further execution until all activity
+       associated with the tag number passed to it has stopped. Beware of calling
+       this function on perpetually moving or specially lighted sectors as the 
+       script may never be able to finish execution.<br><br>
+       
+  <li> <a name="scriptwait">void scriptwait(int scriptnum)</a><br><br>
+  
+       Causes the current script to delay further execution until all instances
+       of the script with number scriptnum have finished execution. If no instances
+       of the script are waiting at time of call, the script will not wait.
+       <br><br>
+
+  <li> <a name="scriptwaitpre">void scriptwaitpre(int scriptnum)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Causes the current script to delay further execution until at least one
+       instance of the script with number scriptnum has started execution. Note
+       that the target script itself must consequently call a wait function in
+       order to give the waiting script time to notice it, otherwise the
+       waiting script will never awaken.<br><br>
+
+  <li> <a name="startscript">void startscript(int scriptnum)</a><br><br>
+
+       Starts a new instance of the script with scriptnum. Note that multiple
+       instances of a script can be running at any time. This function is
+       particularily useful in the outer context to start scripts when the map
+       is loaded the first time.<br><br>
+
+  <li> <a name="scriptrunning">int scriptrunning(int scriptnum)</a><br><br>
+
+       Returns a non-zero result if any instances of the script with scriptnum
+       are currently waiting, and zero otherwise.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="level_game"><h4>Level Transfer and Game State</h4></a>
+<p>
+<ul>
+  <li> <a name="startskill">void startskill(int level)</a><br><br>
+
+       Starts a new game on skill level. level can be a value between 1 and 5
+       inclusive, 1 being "I'm Too Young To Die" and 5 being "Nightmare." This
+       function should only be used in limited contexts as it would be rude to
+       restart the player's game unexpectedly.<br><br>
+
+  <li> <a name="exitlevel">void exitlevel()</a><br><br>
+
+       Exits the current map as if the player had pressed a switch or crossed
+       a line to cause this to happen. Game play will proceed normally to the
+       next level or to an intermission sequence.<br><br>
+
+  <li> <a name="exitsecret">void exitsecret()</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Exits the current map as if the player had activated a secret exit. If
+       the "nextsecret" MapInfo field for the current map is set, the player
+       will proceed to that map, otherwise the default exit behavior will occur
+       (which in Ultimate DOOM could cause you to replay a level).<br><br>
+
+  <li> <a name="gameskill">int gameskill()</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Returns a value from 1 to 5 representing the skill level of the current
+       game, with 1 being "I'm Too Young To Die" and 5 being "Nightmare!"<br><br>
+
+  <li> <a name="gamemode">int gamemode()</a><br><br>
+
+       Returns an integer value representing the current mode of gameplay as
+       follows:<br><br>
+       Single-player = 0<br>
+       Multiplayer Cooperative = 1<br>
+       Multiplayer Deathmatch = 2<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="plr_inter"><h4>Player Interaction</h4></a>
+<p>
+<ul>
+  <li> <a name="tip">void tip(...)</a><br><br>
+
+       Prints a centered message to all players. Accepts up to 128 printable
+       parameters.<br><br>
+
+  <li> <a name="timedtip">void timedtip(int clocks, ...)</a><br><br>
+
+       Prints a centered message to all players that lasts clocks/100 number
+       of seconds.  Accepts up to 127 printable parameters.<br><br>
+
+  <li> <a name="playertip">void playertip(int playernum, ...)</a><br><br>
+
+       Prints a centered message to a particular player. playernum must be in
+       the range 0 to 3.<br><br>
+
+  <li> <a name="playertimedtip">void playertimedtip(int playernum, int clocks, ...)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Prints a centered message to a particular player that lasts clocks/100
+       number of seconds. playernum must be in the range 0 to 3.<br><br>
+
+  <li> <a name="message">void message(...)</a><br><br>
+
+       Prints a normal message to all players.<br><br>
+
+  <li> <a name="playermsg">void playermsg(int playernum, ...)</a><br><br>
+
+       Prints a normal message to a particular player. playernum must be in the
+       range 0 to 3.<br><br>
+
+  <li> <a name="playeringame">int playeringame(int playernum)</a><br><br>
+
+       Returns non-zero if player playernum is in the game. If not, returns
+       zero. playernum must be in the range 0 to 3.<br><br>
+
+  <li> <a name="playername">string playername({int playernum})</a><br><br>
+
+       If passed nothing, this function tries to retrieve the player name of the
+       object that started the current script. If this object was not a player,
+       an error will occur.<br>
+       If passed a player number in the range 0 to 3, it will retrieve that
+       particular player's name if they are in the game.<br><br>
+
+  <li> <a name="playerobj">mobj playerobj({int playernum})</a><br><br>
+
+       If passed nothing, this function tries to retrieve a reference to the
+       mapthing belonging to the player that triggered the current script. If the
+       current script was not started by a player, an error will occur.<br>
+       If passed a player number in the range 0 to 3, it will retrieve a reference
+       to that particular player's mapthing if they are in the game.<br><br>
+
+  <li> <a name="player">int player({mobj mo})</a><br><br>
+
+       Passed nothing, this function returns the player number of the trigger object.
+
+       Passed either a mapthing number or an mobj reference, it will do likewise for
+       the specified object.<br><br>
+
+  <li> <a name="playerskin">string playerskin({int playernum})</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       This function returns the name of the skin the player is currently using.
+       If no parameter is given, it will attempt to retrieve the skin of the
+       trigger object. If the trigger object was not a player, an error will
+       occur.<br><br>
+
+  <li> <a name="isplayerobj">int isplayerobj({mobj mo})</a><br><br>
+       
+       Returns 1 if the trigger object or specified object, if any, is a player 
+       avatar, and 0 otherwise.<br><br>
+       
+  <li> <a name="playerkeys">int playerkeys(int plnum, int keynum, {int givetake})</a><br><br>
+  
+       If passed a player number (0-3) and a key number (0-5), this function will
+       return 1 if the player possesses that key or 0 if he does not.<br>
+       If additionally passed the givetake parameter, it will give the key to the 
+       player if givetake is non-zero, or will take the key away from the player 
+       if givetake is zero. In this case, the function always returns zero 
+       regardless.<br><br>
+       
+  <li> <a name="playerammo">int playerammo(int plnum, int ammonum, {int amount})</a><br><br>
+       
+       If passed a player number (0-3) and an ammo type number (0-), this function
+       will return the amount of that type of ammo the player has.<br>
+       If additionally passed the amount parameter, it will set the player's
+       ammo of that type to this amount, clipping it into the range of zero to
+       the maximum amount the player can carry for that type.<br><br>
+       
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="map_inter"><h4>Mapthing Interaction</h4></a>
+<p>
+<ul>
+  <li> <a name="spawn">mobj spawn(int type, int x, int y, {int angle}, {int z})</a><br><br>
+  
+       Spawns a new mapthing with various parameters. Constants for type are
+       defined in the header THINGS.H in doom3.wad, and can be included into
+       any script for convenience.<br>
+       Note that if the z coordinate is provided, the angle coordinate must also
+       be provided (this is the way that all optional parameters work, and will
+       not be addressed any further in this reference).<br>
+       z is absolute here rather than relative to the floor height. If z is not
+       provided, the thing will spawn on either the floor or ceiling as it would
+       normally.<br><br>
+       
+  <li> <a name="kill">void kill({mobj mo})</a><br><br>
+       
+       Passed nothing, this function kills the thing that triggered the current
+       script.<br>
+       Passed a mapthing number or mobj reference, this function will kill the 
+       mapthing to which it refers.<br><br>
+       
+  <li> <a name="removeobj">void removeobj(mobj mo)</a><br><br>
+       
+       Passed a mapthing number or mobj reference, this function will remove the
+       mapthing to which it refers.<br><br>
+       
+  <li> <a name="objx">fixed objx({mobj mo})</a><br><br>
+       
+       Passed nothing, this function retrieves the high-precision x coordinate of
+       the mapthing that triggered the current script.<br>
+       Passed a mapthing number or mobj reference, this function returns the x 
+       coordinate of the object to which it refers.<br><br>
+       
+  <li> <a name="objy">fixed objy({mobj mo})</a><br><br>
+       
+       Passed nothing, this function retrieves the high-precision y coordinate of
+       the mapthing that triggered the current script.<br>
+       Passed a mapthing number or mobj reference, this function returns the y 
+       coordinate of the object to which it refers.<br><br>
+
+  <li> <a name="objz">fixed objz({mobj mo})</a><br><br>
+       
+       Passed nothing, this function retrieves the high-precision z coordinate of
+       the mapthing that triggered the current script.<br>
+       Passed a mapthing number or mobj reference, this function returns the z 
+       coordinate of the object to which it refers.<br><br>
+       
+  <li> <a name="teleport">void teleport(int sectortag),</a><br>
+       void teleport(mobj mo, int sectortag)<br><br>
+       
+       Passed one parameter, this function attempts to teleport the trigger
+       object to a teleport destination in the sector with tag number sectortag.<br>
+       Passed a mapthing number or an mobj reference, this function attempts to teleport
+       the specified mapthing. This function automatically spawns fog objects
+       and plays sounds in the appropriate locations.<br><br>
+       
+  <li> <a name="silentteleport">void silentteleport(int sectortag),</a><br>
+       void silentteleport(mobj mo, int sectortag)<br><br>
+       
+       This function works identically to teleport() except that no fog is
+       spawned and no sounds are played.<br><br>
+       
+  <li> <a name="damageobj">void damageobj(int damage),</a><br>
+       void damageobj(mobj mo, int damage)<br><br>
+       
+       Passed one parameter, this function attempts to do damage in the specified
+       amount to the trigger object.<br>
+       Passed a mapthing number or mobj reference, this function attempts to do 
+       damage to the specified object.<br><br>
+       
+  <li> <a name="objsector">int objsector({mobj mo})</a><br><br>
+       
+       Passed nothing, this function returns the tag number of the sector which
+       the trigger object is currently in.<br>
+       Passed a mapthing number or mobj reference, this function attempts to do likewise
+       for the specified object.<br><br>
+       
+  <li> <a name="objflag">int objflag()</a><br><br>
+  
+       This function has been unofficially deprecated due to research into a
+       better method of access to flag fields. It is still internally supported,
+       but further use in new scripts is not recommended.<br><br>
+       
+  <li> <a name="objflag2">int objflag2()</a><br><br>
+  
+       This function has been unofficially deprecated due to research into a
+       better method of access to flag fields. It is still internally supported,
+       but further use in new scripts is not recommended.<br><br>
+  
+       
+  <li> <a name="pushthing">void pushthing(mobj mo, fixed angle, fixed force)</a><br><br>
+       
+       Given a mapthing number or mobj reference, this function pushes the
+       specified thing along a line from its location in the direction of angle
+       for a distance and speed affected by the force applied and its mass.
+       External forces such as friction, wind, or explosions are vector-additive
+       and will still affect the object while it is moving.<br><br>
+       
+  <li> <a name="objangle">fixed objangle({mobj mo})</a><br><br>
+       
+       Passed nothing, this function returns the high-precision angle of the
+       trigger object.<br>
+       Passed a mapthing number or mobj reference, this function does likewise for 
+       the specified mapthing.<br><br>
+       
+  <li> <a name="objhealth">int objhealth({mobj mo})</a><br><br>
+       
+       Passed nothing, this function returns the current health value of the
+       trigger object.<br>
+       Passed an integer or mobj reference, this function does likewise for the
+       specified mapthing.<br><br>
+       
+  <li> <a name="spawnshot">mobj spawnshot(int type, mobj source, mobj target, int face)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       This function can be used to cause one object to fire a projectile at
+       another object. type constants are provided in THINGS.H as with spawn().
+       The source and target parameters may be either integer mapthing numbers
+       or mobj references, and can be set to -1 to cause these parameters to
+       default with the following effects:<br><br>
+
+       &nbsp;&nbsp;&nbsp;source set, target = -1: specified object fires at its current target<br>
+       &nbsp;&nbsp;&nbsp;source = -1, target set: trigger object fires at specified object<br>
+       &nbsp;&nbsp;&nbsp;source set, target set: specified object 1 fires at specified object 2<br>
+       &nbsp;&nbsp;&nbsp;source = -1, target = -1: trigger object fires at its current target<br><br>
+
+       The face parameter, if non-zero, will cause the source object to face the
+       target object before firing, possibly incurring inaccuracy if the
+       target object is partially or totally invisible. If face is zero, the
+       projectile will be fired toward the target from whatever side of the source
+       that currently faces it, which may be appropriate for certain effects.<br><br>
+
+       This function is primarily designed for use with the StartScript code
+       pointer via DeHackEd.<br><br>
+
+       DO *NOT* attempt to spawn objects which do not have the MISSILE and
+       NOBLOCKMAP flags with this function. This can cause run-time memory
+       errors. Flag information for objects is available in the DeHackEd
+       documentation.<br><br>
+
+  <li> <a name="checklife">int checklife({mobj mo})</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       This is a utility function that returns non-zero if the trigger object or
+       specified object, if any, is alive, and zero if its health is less than or
+       equal to zero or it does not exist on the map. This function is not
+       necessary but has been left intact to support maps that used it
+       before addition of &gt;= and &lt;= operators to FraggleScript.<br><br>
+
+  <li> <a name="reactiontime">int reactiontime(mobj mo, {int val})</a><br><br>
+
+       Passed one value, a mapthing number or mobj reference, this function will
+       return the specified object's reaction time, or the amount of time it must
+       sit without being able to move. Given the val parameter, it will first
+       set the object's reaction time to the specified value, and then return
+       this new value.<br><br>
+
+  <li> <a name="objtarget">mobj objtarget(mobj mo, {mobj target})</a><br><br>
+
+       Passed one value, a mapthing number or mobj reference, this function will
+       return a reference to that object's current target, which for enemies is
+       the last thing to hurt them and get their attention. If the second parameter
+       is passed, which may also be either a mapthing number or mobj reference,
+       the target will be set to this object.<br><br>
+
+  <li> <a name="objmomx">fixed objmomx(mobj mo, {fixed momx})</a><br><br>
+
+       This function, as others similar to it, either returns or sets the x
+       momentum of the specified object.<br><br>
+
+  <li> <a name="objmomy">fixed objmomy(mobj mo, {fixed momy})</a><br><br>
+
+       This function, as others similar to it, either returns or sets the y
+       momentum of the specified object.<br><br>
+
+  <li> <a name="objmomz">fixed objmomz(mobj mo, {fixed momz})</a><br><br>
+
+       This function, as others similar to it, either returns or sets the z
+       momentum of the specified object.<br><br>
+
+  <li> <a name="objawaken">void objawaken({mobj mo})</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       This function awakens an object which was spawned on the map at startup
+       with the DORMANT mapthing flag. If passed no argument, it will function on
+       the trigger object. This function has no effect on normal objects.<br><br>
+
+  <li> <a name="spawnexplosion">void spawnexplosion(int damage, mobj spot, {mobj source})</a><br><br>
+
+       This function causes the map object spot to emit an explosion with radius
+       of 128 units, causing 'damage' amount of damage at the epicenter of the
+       explosion. If the source parameter is supplied, the source object will be
+       identified as the cause of the explosion for purposes of frags or enemy
+       targetting, otherwise the current script's trigger object will be used.
+       This function will not emit any sound nor will it change the state of the
+       spot object (unless it itself can be killed by the explosion, but this is
+       a side-effect).  These actions must be handled separately by the user.
+       <br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="sector_inter"><h4>Sector Interaction</h4></a>
+<p>
+<ul>       
+  <li> <a name="floorheight">int floorheight(int tagnum, {int dest})</a><br><br>
+  
+       Passed one parameter, this function returns the current floor height of the
+       first sector with tag number tagnum. Given two parameters, it first 
+       instantly sets the floor height of all sectors with this tag and then
+       returns the new height.<br><br>
+       
+  <li> <a name="floortexture">string floortexture(int tagnum, {string flatname})</a><br>
+       <a name="floortext">&nbsp;&nbsp;alias: floortext</a><br><br>
+       
+       Passed one parameter, this function returns the current flat displayed on
+       the floor of the first sector with tag number tagnum. Given two parameters,
+       it will set the flats of all tagged floors to flatname, and then return
+       the new flat name. If flatname does not exist in some currently loaded
+       wad, an R_FlatNumForName error will occur and the game will exit.<br><br>
+       
+  <li> <a name="movefloor">void movefloor(int tagnum, int destheight, {int speed})</a><br><br>
+       
+       Passed two parameters, this function gradually moves all sectors' floors tagged
+       tagnum to destheight at the default floor movement speed. If given the
+       speed parameter, the speed of the floors will be as specified multiplied
+       by the basic floor movement factor.<br><br>
+       
+  <li> <a name="ceilingheight">int ceilingheight(int tagnum, {int dest})</a><br>
+       <a name="ceilheight">&nbsp;&nbsp;alias: ceilheight</a><br><br>
+       
+       Passed one parameter, this function returns the current ceiling height of the
+       first sector with tag number tagnum. Given two parameters, it first 
+       instantly sets the ceiling height of all sectors with this tag and then
+       returns the new height.<br><br>
+       
+  <li> <a name="moveceiling">void moveceiling(int tagnum, int destheight, {int speed})</a><br>
+       <a name="moveceil">&nbsp;&nbsp;alias: moveceil</a><br><br>
+  
+       Passed two parameters, this function gradually moves all sectors' ceilings 
+       tagged tagnum to destheight at the default ceiling movement speed. If given 
+       the speed parameter, the speed of the ceilings will be as specified multiplied
+       by the basic ceiling movement factor.<br><br>
+  
+  <li> <a name="ceilingtexture">string ceilingtexture(int tagnum, {string flatname})</a><br>
+       <a name="ceiltext">&nbsp;&nbsp;alias: ceiltext</a><br><br>
+       
+       Passed one parameter, this function returns the current flat displayed on
+       the ceiling of the first sector with tag number tagnum. Given two parameters,
+       it will set the flats of all tagged ceilings to flatname, and then return
+       the new flat name. If flatname does not exist in some currently loaded
+       wad, an R_FlatNumForName error will occur and the game will exit.<br><br>
+       
+  <li> <a name="lightlevel">int lightlevel(int tagnum, {int level})</a><br><br>
+  
+       Passed one parameter, this function returns the current light level of the
+       first sector with tag number tagnum. Given two parameters, it first
+       instantly sets the light level of all sectors with this tag and then
+       returns the new level.<br><br>
+
+  <li> <a name="fadelight">void fadelight(int tagnum, int destlevel, {int speed})</a><br><br>
+
+       Passed two parameters, this function gradually changes the light level of
+       all sectors tagged tagnum to destlevel at the default light fade speed.
+       If given the speed parameter, the speed of the fade will be as specified
+       multiplied by the basic light fade factor.<br><br>
+
+  <li> <a name="colormap">string colormap(int tagnum, {string cmap})</a><br><br>
+
+       Passed one parameter, this function returns the current colormap of the
+       first sector with tag number tagnum. Given two parameters, it first
+       sets the colormap of all sectors with this tag and then returns the
+       name of the new colormap. If the colormap specified does not exist
+       between C_START and C_END in some currently loaded wad, an error will
+       occur and the game will exit.<br><br>
+
+  <li> <a name="opendoor">void opendoor(int tagnum, {int waittime}, {int speed})</a><br><br>
+
+       This function opens all sectors tagged tagnum like doors. If no waittime
+       or speed are specified, the door will open at normal speed and will not
+       close on its own. If waittime is specified, the door will wait that number
+       of clocks (100 clocks per second). If waittime is present but is 0, the
+       door will not close on its own. speed may be set to alter the opening and
+       closing speed of the door.<br><br>
+
+  <li> <a name="closedoor">void closedoor(int tagnum, {int speed})</a><br><br>
+
+       Similar to opendoor(), this function closes all sectors tagged tagnum
+       like doors.<br><br>
+
+  <li> <a name="setfriction">void setfriction(int tagnum, int friction)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       This function sets the friction values of all sectors tagged tagnum
+       to a value represented by the friction parameter. This friction parameter
+       takes the same value used on a BOOM friction transfer linedef, with 100
+       being normal friction, values less than 100 being greater friction (mud), and
+       values greater than 100 being less friction (ice). It also sets the
+       friction flags of the sectors in question.<br><br>
+
+  <li> <a name="getfriction">int getfriction(int tagnum)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       This function will return the friction value as per above for the first
+       sector with tag number tagnum.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="line_inter"><h4>Linedef Interaction</h4></a>
+<p>
+<ul>
+  <li> <a name="linetrigger">void linetrigger(int special, {int tag})</a><br><br>
+
+       This function can activate linedef effects that can occur via crossing
+       or using linedefs. Special is the special value as per map editing, and
+       optional parameter tag specifies a set of sectors to affect if needed.<br><br>
+
+  <li> <a name="setlineblocking">void setlineblocking(int tagnum, int block)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY, use setlineflag instead<br><br>
+
+       This function toggles the blocking flag for all lines tagged tagnum.<br>
+       Set block to 1 to cause the line to block all objects, and set it to 0
+       to cause the line to not block objects. Note that 1-sided lines will
+       always block clipped objects even if the blocking flag is cleared.<br><br>
+
+  <li> <a name="setlinemnblock">void setlinemnblock(int tagnum, int block)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY, use setlineflag instead<br><br>
+
+       This function toggles the monster blocking flag for all lines tagged tagnum.<br>
+       Set block to 1 to cause the line to block monsters, and set it to 0 to
+       cause the line to not block monsters. Note that 1-sided lines will always
+       block clipped monsters regardless of this flag.<br><br>
+
+  <li> <a name="setlinetexture">void setlinetexture(int tagnum, int side, int position, string name)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       This function sets a specific lower, middle, or upper texture on the
+       specified side of all lines with tag tagnum.<br><br>
+
+       The following constants are defined in ETC.H for convenience:<br><br>
+       Side selection:<br>
+       &nbsp;&nbsp;&nbsp;side 1: SIDE_FRONT<br>
+       &nbsp;&nbsp;&nbsp;side 2: SIDE_BACK<br><br>
+
+       Position selection:<br>
+       &nbsp;&nbsp;&nbsp;lower texture: TEXTURE_BOTTOM<br>
+       &nbsp;&nbsp;&nbsp;middle texture: TEXTURE_MIDDLE<br>
+       &nbsp;&nbsp;&nbsp;upper texture: TEXTURE_TOP<br><br>
+
+       "name" must be a valid texture (NOT patch) name, otherwise an
+       R_TextureNumForName error will occur and the game will exit.<br><br>
+
+       Note that unlike Hexen ACS's setlinetexture function, if the second or back
+       side of a line does not exist, Legacy will not crash. It will check to
+       make sure said side exists before trying to edit it.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="camera_ctrl"><h4>Camera Control</h4></a>
+<p>
+<ul>
+  <li> <a name="setcamera">void setcamera(mobj mo, {fixed angle}, {int height}, {int pitch})</a><br><br>
+
+       This function instantiates a camera viewpoint at the object specified by
+       either a mapthing number or an mobj reference with the given optional
+       parameters. Pitch may be a value between -50 and 50, with 0 being straight
+       ahead.<br><br>
+
+  <li> <a name="clearcamera">void clearcamera()</a><br><br>
+
+       This function turns off any currently active cameras and returns the
+       viewpoint to the console player.<br><br>
+
+  <li> <a name="movecamera">int movecamera(mobj target, fixed targetheight, fixed movespeed, fixed targetangle, fixed anglespeed)</a><br><br>
+
+       This function is used to move a camera object toward the target object and
+       to targetheight z coordinate at 'movespeed' speed, while independently turning
+       it to face targetangle from its current angle, turning at 'anglespeed' speed.
+       <br><br>
+
+       This function returns the integer value 1 if the camera moved, and 0 if
+       it did not. This function is best used in a loop that tests its
+       return value, calling it repeatedly until it returns 0, and then waiting
+       for the next gametic. This could be accomplished as in the following
+       example:<br><br>
+
+       <pre>
+       script 0
+       {
+          while(movecamera(cameranodes.elementAt(0), 40.0, 5.0, 0.0, 0.0))
+          {
+             wait(1);
+          }
+       }
+       </pre>
+
+       This example would move the camera toward the first camera node on the
+       map at 5 units per tic, with zero change in angle. Notice that the camera's
+       linear and angular movements are independent, and that either may be zero
+       if only one type of movement is desired.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="math_geo"><h4>Math and Geometry</h4></a>
+<p>
+<ul>
+  <li> <a name="pointtoangle">fixed pointtoangle(int x1, int y1, int x2, int y2)</a><br><br>
+
+       This function returns the high-precision angle between the two points
+       (x1, y1) and (x2, y2) relative to the coordinate axes.<br><br>
+
+  <li> <a name="pointtodist">fixed pointtodist(int x1, int y1, int x2, int y2)</a><br><br>
+
+       This function returns the high-precision distance between the two
+       points (x1, y1) and (x2, y2).<br><br>
+
+  <li> <a name="max">fixed max(fixed x, fixed y)</a><br><br>
+
+       Returns the maximum of two fixed-precision numbers.<br><br>
+
+  <li> <a name="min">fixed min(fixed x, fixed y)</a><br><br>
+
+       Returns the minimum of two fixed-precision numbers.<br><br>
+
+  <li> <a name="abs">fixed abs(fixed x)</a><br><br>
+
+       Returns the absolute value of a fixed-precision number.<br><br>
+
+  <li> <a name="sin">fixed sin(fixed x)</a><br><br>
+
+       Returns the sinus, in radiant, of a fixed-precision angle.<br><br>
+
+  <li> <a name="asin">fixed asin(fixed x)</a><br><br>
+
+       Returns the arc sinus, in radiant, of a fixed-precision angle.<br><br>
+
+  <li> <a name="cos">fixed cos(fixed x)</a><br><br>
+
+       Returns the cosinus, in radiant, of a fixed-precision angle.<br><br>
+
+  <li> <a name="acos">fixed acos(fixed x)</a><br><br>
+
+       Returns the arc cosinus, in radiant, of a fixed-precision angle.<br><br>
+
+  <li> <a name="tan">fixed tan(fixed x)</a><br><br>
+
+       Returns the tangeant, in radiant, of a fixed-precision angle.<br><br>
+
+  <li> <a name="atan">fixed atan(fixed x)</a><br><br>
+
+       Returns the arc tangeant, in radiant, of a fixed-precision angle.<br><br>
+
+  <li> <a name="exp">fixed exp(fixed x)</a><br><br>
+
+       Returns the exponential of a fixed-precision number.<br><br>
+
+  <li> <a name="log">fixed log(fixed x)</a><br><br>
+
+       Returns the logarithm of a fixed-precision number.<br><br>
+
+  <li> <a name="sqrt">fixed sqrt(fixed x)</a><br><br>
+
+       Returns the square root of a fixed-precision number.<br><br>
+
+  <li> <a name="floor">fixed floor(fixed x)</a><br><br>
+
+       Returns the floor of a fixed-precision number.<br><br>
+
+  <li> <a name="pow">fixed pow(fixed x, fixed y)</a><br><br>
+
+       Returns the power of a fixed-precision number by another fixed-precision number.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="sound_mus"><h4>Sound and Music</h4></a>
+<p>
+<ul>
+  <li> <a name="startsound">void startsound(mobj mo, string soundname)</a><br><br>
+
+       This function plays a sound from lump "soundname" at the location of the
+       mapthing specified. soundname can be any sound whether normally in the game
+       or not (new sounds will be hashed in dynamically), but the sound must exist
+       and must start with "DS".<br><br>
+
+  <li> <a name="startsectorsound">void startsectorsound(int tagnum, string soundname)</a><br><br>
+
+       This function plays a sound from lump "soundname" at the sound origin of
+       the first sector with tag number tagnum. soundname can be any sound
+       whether normally in the game or not (new sounds will be hashed in
+       dynamically), but the sound must exist and must start with "DS".<br><br>
+
+  <li> <a name="ambientsound">void ambientsound(string soundname)</a><br><br>
+
+       This function plays a sound from lump "soundname" at full-volume on the
+       global sound channel. This is suitable for global ambience that needs no
+       general source. soundname can be any sound whether normally in the game
+       or not (new sounds will be hashed in dynamically), but the sound must exist
+       and must start with "DS".<br><br>
+
+  <li> <a name="changemusic">void changemusic(string musname)</a><br><br>
+
+       This function changes the currently playing music to the music lump
+       "musname." As with sounds, this may be a new lump, but it must exist and
+       must start with "D_". Passing the string "-" to this function will cause
+       the music to stop without any new song starting.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="fspics"><h4>Heads-Up Graphics</h4></a>
+<p>
+<ul>
+  <li> <a name="createpic">int createpic(string lumpname, int x, int y, int draw, int trans, fixed priority)</a><br><br>
+
+       Creates a new heads-up pic using the lump 'lumpname', which must be a
+       standard DOOM-format screen graphic, at unscaled screen
+       coordinates (x, y), which may range from 0 to 319 and from 0 to 199
+       respectively.  If draw is non-zero, the pic will be drawn to the screen,
+       and if trans is non-zero, the pic will be drawn translucent. priority
+       determines how the pic will draw in relation to any other existing
+       heads-up pics spawned by FraggleScript -- it will draw over any pics with
+       a lower priority number, and under any pics with a higher priority
+       number. Note that FraggleScript heads-up pics always have lower priority
+       than any native heads-up graphics, such as the player HUD.<br><br>
+
+       Heads-up pics are valid for the duration of the level in which they
+       were created, and will be saved in savegames. This function returns an
+       integer value which can be used as a handle to track and later manipulate
+       this particular heads-up pic. You should always capture the handle unless
+       you never intend to change or hide the pic after creating it. There is
+       not currently any method for creating different heads-up pics on a
+       particular player's screen.<br><br>
+
+  <li> <a name="modifypic">void modifypic(int handle, string lumpname, {int x}, {int y})</a><br><br>
+
+       Modifies attributes of the FS heads-up pic with this handle. lumpname must
+       be set, but it can be set to its current value if it is not desired to
+       change it. x or y can be optionally changed as well, and x may be set
+       to -1 if no change in x coordinate is desired.<br><br>
+
+  <li> <a name="setpicvisible">void setpicvisible(int handle, int visible)</a><br><br>
+
+       Modifies the visibility of the FS heads-up pic with this handle. Set
+       visible to a non-zero value to have the pic drawn, and set it to zero
+       to hide it.<br><br>
+
+  <li> <a name="setpictrans">void setpictrans(int handle, int trans)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Modifies the translucency of the FS heads-up pic with this handle. Set
+       trans to a non-zero value to make the pic translucent, and set it to zero
+       to make it solid.<br><br>
+
+  <li> <a name="getpichandle">int getpichandle(string lumpname, int x, int y)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Attempts to get a handle for a pic matching all three provided attributes.
+       This function is not one-to-one. If multiple identical pics are created,
+       it will always retrieve a handle to the one that either has lower priority,
+       or was created last if the priorities are equal. This function is provided
+       for instances where a handle was not saved for some reason (it is recommended
+       that the handle returned by createpic always be saved in a levelscript
+       variable). Returns -1 if no such pic exists.<br><br>
+
+  <li> <a name="getpicattr">int getpicattr(int handle, string selector)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Retrieves an attribute from the FS heads-up pic with this handle. Valid
+       values for selector are "lumpnum", "x", "y", "draw", and "trans". The
+       appropriate attribute will be returned, or -1 will be returned if either
+       there is no such pic, or an invalid selector string is passed.<br><br>
+
+  <li> <a name="getpiclp">fixed getpiclp()</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Returns the lowest priority number currently in use by a FS heads-up
+       pic.<br><br>
+
+  <li> <a name="getpichp">fixed getpichp()</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Returns the highest priority number currently in use by a FS heads-up
+       pic.<br><br>
+
+  <li> <a name="getpicpriority">fixed getpicpriority(int handle)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Returns the priority number of the FS heads-up pic with this handle.
+       Returns -FRACUNIT if no such pic exists.<br><br>
+
+  <li> <a name="setpicpriority">void setpicpriority(int handle, fixed priority)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Sets the priority number of the FS heads-up pic with this handle.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="arrays"><h4>Array Functions</h4></a>
+<p>
+<ul>
+  <li> <a name="newArray">array newArray(...)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Instantiates a new array containing any elements passed, in passing order,
+       preserving the current type of any variable, or the default type of
+       any literal (no coercions will occur).<br><br>
+
+       Arrays may contain int, fixed, and mobj values in any combination, but
+       cannot contain strings or other arrays. Additionally, arrays cannot be
+       created in the hubscript, and they cannot be coerced into any other type
+       of value.
+       <br><br>
+
+       Up to 128 elements can be passed into a new array using this function,
+       but FS arrays are not limited to 128 elements. A function for adding
+       elements to the end of an array will be added soon.<br><br>
+
+  <li> <a name="copyInto">void copyInto(array source, array target)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Copies all values from the array 'source' to the array 'target'. Both
+       source and target must be pre-instantiated arrays of equal length.<br><br>
+
+       Remember that the syntax source.copyInto(target) is valid.<br><br>
+
+  <li> <a name="elementAt">'a elementAt(array source, int index)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Returns the value stored at 'index' in the array 'source'. Return-type
+       is dependent on the type of the value at that index. An error will
+       occur if index is out of range.<br><br>
+
+       Remember that the syntax source.elementAt(index) is valid.<br><br>
+
+  <li> <a name="setElementAt">void setElementAt(array target, int index, 'a element)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Copies the value of 'element' into the array 'target' at 'index'; no
+       coercions will occur. An error will occur if index is out of range.<br><br>
+
+       Remember that the syntax target.setElementAt(index, element) is valid.<br><br>
+
+  <li> <a name="length">int length(array target)</a><br><br>
+  NOT YET IMPLEMENTED INSIDE DOOM LEGACY<br><br>
+
+       Returns the current length of array 'target'. Like in C, an array's length
+       is always one greater than the greatest valid index into that array.
+       This function is appropriate for use in the conditional of a for loop as
+       well as for general bounds-checking.
+       <br><br>
+
+       Remember that the syntax target.length() is valid.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+<a name="misc"><h4>Miscellaneous</h4></a>
+<p>
+<ul>
+  <li> <a name="runcommand">void runcommand(...)</a><br><br>
+
+       Executes a console command or list of console commands in the form
+       of strings.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+
+<a name="misc"><h4>OpenGL</h4></a>
+<p>
+<ul>
+  <li> <a name="setcoronas">void setcoronas()</a><br><br>
+
+       TODO: document this function.<br><br>
+
+  <li> <a href="#top">Back to top</a>
+</ul>
+
+</body>
+</html>

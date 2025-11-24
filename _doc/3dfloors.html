@@ -1,0 +1,162 @@
+<html>
+<body text="#70f070" bgcolor="#000000" link="#70f070" vlink="#70f070" alink="#70f070">
+
+<center>
+<font face="Courier New,Courier"><font size=-1>
+The concept of true 3d in Doom Legacy.<br>
+By Steven McGranahan</center>
+
+<br><br><br>
+Table of Contents:
+<br>&nbsp;&nbsp;&nbsp; Chapter 1: The Beginning
+<br>&nbsp;&nbsp;&nbsp; Chapter 2: The Lowdown
+<br>&nbsp;&nbsp;&nbsp; Chapter 3: Your first level with 3D floors
+<br>&nbsp;&nbsp;&nbsp; Chapter 4: Linedef code summery
+<br>&nbsp;&nbsp;&nbsp; Chapter 5: What causes slowdown?
+<br><br>
+
+Chapter 1: The Beginning<br><br>
+&nbsp;&nbsp;&nbsp; Close to a year ago, the DosDoom team shocked the Doom community with an
+animated gif of a doom level with a real, true 3d bridge that the player
+could go under and over. Now, DosDoom has become EDGE and true 3D has become
+one of it's main features. The method EDGE uses for it's true 3D is a very
+simple and powerful one. It is capable of doing much more than just sector
+over sector, with EDGE's 3D, the level designer can create complex 3D structures
+and architecture.<br><br>
+&nbsp;&nbsp;&nbsp; About 8 months ago, I began a series of experiments that were designed
+to simulate true 3D in my favorite Doom source port, Doom Legacy. These
+coding experiments eventually lead me to create invisible solid regions
+in a sector that objects could stand on top of and below. Then the DosDoom
+team released their source code and I downloaded it to try to copy the
+rendering code for 3D floors to complete the invisible ones I had made.
+Probably 4 attempts at this failed just miserably, and I gave up on rendering
+3D floors (I had also made several attempts to turn Legacy's translucent
+water into 3D floors, but without success).<br><br>
+&nbsp;&nbsp;&nbsp; Legacy would not be able to render 3D floors until DosDoom became EDGE
+and the source was released. When the EDGE team released the code, I saw
+some of the pictures of things they had done with 3D floors and I knew
+that I had to try again. So I began to copy the code once again, and this
+time, was successful. Now, EDGE used GLBSP for rendering levels (even in
+software) which meant that the code it used to render them with the normal
+Doom BSP was outdated and very limited (only one 3D floor per sector, they
+did not effect lighting, and sprites were not sorted with 3D floors correctly)
+and thus it was up to me to bring this code up to date. This is what I
+have been doing that last 6 months.<br><br>
+&nbsp;&nbsp;&nbsp; So far I have managed to increased the 3D floor plane limit and the 3D
+side limit to 20, I have made it possible for 3D floors to cast shadows
+on the surrounding walls, and floors, and I have made a much better sprite
+sorting system (although it is still flawed). In fact, about 80% of the
+3D floor code is now my code from scratch.
+<br><br><br><br>
+Chapter 2: The lowdown<br><br>
+&nbsp;&nbsp;&nbsp; So you want to know how things work, eh? Well, first I would like to state
+that 3D floors in Legacy are not perfect. They are plagued by bugs in the
+original Doom rendering system, and many visual bugs you may notice are
+not fixable unless I overhaul the rendering system (which is probably not
+going to happen). These bugs, however, are now very few and far between,
+and if you are careful, you can avoid most bugs.<br><br>
+&nbsp;&nbsp;&nbsp; There are known speed issues. A 3D floor (as of 01/10/2001) will slowdown
+Legacy about as much as adding 3 sectors. That is to say, every 3D floor
+that is tagged to a sector so tagging a 3D floor to, say, 3 sectors, will
+slow down the game about as much as if you added 9 sectors to the map.
+I will explain in greater detail later on, what exactly causes the game
+slowdown and how to minimize it.
+<br><br><br><br>
+Chapter 3: Your first level with 3D floors<br><br>
+&nbsp;&nbsp;&nbsp; Ok, you want to put a 3D floor into your level? Ok. First, I want you to
+understand that I am not here to teach anyone how to use their editor of
+choice. You need to understand how to tag a line to a sector and how to
+set a linedef type.<br><br>
+&nbsp;&nbsp;&nbsp; First, build a small, 5 sector level to match the image below (NOTE: These
+shots were taken using a now defunct level editor called DIE (R.I.P.) which
+is not available any more, which is ok because it never really got anywhere
+but WA is crashing for some really weird reason so I'm using DIE to take
+screen shots) heh.
+<center>
+<img SRC="3dlvl1.png" NOSAVE height=301 width=329><br>
+Note: I added the line lengths myself.<br><br></center>
+
+&nbsp;&nbsp;&nbsp; Sectors A and B should have a floor height of 0, a ceiling height of 128,
+and a light level of 255. Sectors C, D, and E, should have a ceiling height
+of 128, a floor height of -64, a light level of 255 and make the floor
+texture something painful (like lava or nukage). Now, texture everything
+in and add a player to the left-hand sector and run the map. If you chose
+the same textures as me then it should look something like this:
+
+<center>
+<br><br><img SRC="3dlvl2.png" NOSAVE height=200 width=320></center><br><br>
+
+&nbsp;&nbsp;&nbsp; OK, so now we need a bridge across the lava. Now we could just raise the
+floor of sector C to accommodate our marine. However, this method of creating
+a bridge really sucks because it doesn't allow for passage UNDER the bridge,
+so we are going to create a 3D bridge to get us across.<br>
+
+<center>
+<br><img SRC="3dlvl3.png" NOSAVE height=255 width=257></center><br><br>
+
+&nbsp;&nbsp;&nbsp; First, we need to make a control sector. This is a small, off map sector
+that will contain the textures and attributes we'll need to make a 3D structure.
+The size and shape of this sector does not matter. NOTE: I usually make
+my control sectors a triangle and "point" them at whatever they effect.
+It makes them easier to keep track of.<br><br>
+
+&nbsp;&nbsp;&nbsp; Now set sector F's floor height to -8 and it's ceiling height to 0, and
+set both floor and ceiling textures to FLOOR4_8, and set F's light level
+to 176. Then, select one of the linedefs, set the line special to 281 (281
+is the linedef code for a solid, opaque, 3D floor) and tag it to sector
+C.<br><br>
+
+&nbsp;&nbsp;&nbsp; Now sector F will be a "model" for a 3D floor in sector C. Sector F's floor
+will be the model for the "bottom" of the 3D floor, and it's height and
+texture will be used accordingly. The same applies for the ceiling of sector
+F, it's ceiling texture and height will be used. The texture for the sides
+of the 3D floor will be the middle texture of the linedef with the 281
+special, and finally, the light level of sector F will be the light of
+the shadow it casts.<br><br>
+
+what's left? Nothing! Run j00r map!
+<center>
+<br><br><img SRC="3dlvl4.png" NOSAVE height=200 width=320></center>
+<br><br><br><br>
+Chapter 4: Linedef code summery<br><br>
+281 - Creates a solid 3D floor in all tagged sectors.<br>
+289 - Creates a solid 3D floor in all tagged sectors, does not cast a shadow.<br>
+300 - Creates a solid translucent 3D floor in all tagged sectors.<br>
+301 - Creates translucent 3D water in all tagged sectors.<br>
+302 - Creates 3D fog (uses control sector's colormap) in all tagged sectors.<br>
+303 - Creates a 3D light (at control sector's ceiling height) in all tagged sectors.<br>
+304 - Creates a 3D light (same as 303 except the 3D light is reset at control sector's floor height)<br>
+
+Expect detailed explanations of each linedef type soon...
+<br><br>
+Linedefs 300 and 301 support an alpha value in hardware mode:<br>
+uppertexture: [#000..#255] (#000 = transparent, #255 = opaque. If not defined, the default value is #127)
+
+&nbsp &nbsp
+<br><br><br><br>
+Chapter 5: What causes slowdowns<br><br>
+
+&nbsp &nbsp Slowdowns are caused mainly by overdraw. Overdraw means that a
+pixel on the screen is drawn more than once. In the Doom renderer, overdraw 
+is avoided almost completely by using 2D clipping. However, this method would
+not be suitable for 3D floors so a new method had to be incorporated: sorting.<br><br>
+
+&nbsp &nbsp Sorting takes all the sprites and 3D floors and arranges them so 
+that they will draw in the correct order. This method is not very time consuming
+and works well for ordering the scene. Most of the time, this method works 
+flawlessly. A few bugs remain here and there, but it's pretty solid.<br><br>
+
+&nbsp &nbsp Slowdowns related to 3D floors is generally caused by all the extra
+scene components that Doom has to draw (i.e. 3D sides and all the extra 
+floor/ceiling planes), and because of this, slowdown is generally related 
+to two factors in your map: number of stacked 3D floors in a sector, and the number
+of subsectors in a sector.<br><br>
+
+&nbsp &nbsp Controlling the number of subsectors a sector has is pretty much
+impossible, because different node builders will chose different partition lines
+to start building nodes with, which will lead to different subsector configurations.
+However, you can control the number of linedefs in a 3D floor. If you create
+a grate with a 3D floor, you will, in effect, create new subsectors. Keeping 3D objects
+simple will help reduce rendering times.<br><br>
+</body>
+</html>

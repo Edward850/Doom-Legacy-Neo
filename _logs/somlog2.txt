@@ -1,0 +1,192 @@
+-- 6/27/2000:
+  * r_segs.c:
+    Created new system for managing 3D floor planes. Hopefully, this will eventually lead to 
+    multiple 3D floor planes within one sector.
+
+
+-- 6/25/2000:
+  * r_things.c:
+    Did a little fine tuning with the drawnodes system. Got multiple 3D thicksides rendering.
+
+
+-- 6/24/2000:
+  * r_things.c:
+    Added a new system for rendering 3D floors, thicksides, masked textures and sprites in the
+    correct order. This should elimintate the need to use GLBsp for 3D floors. The new system
+    is called "drawnodes"
+
+
+-- 6/13/2000:
+  * p_som.c:
+    Took out p_som.c for now. I'm going to reimplement the Console commands once FraggleScript
+    is in.
+    
+
+-- 6/9/2000:
+  * p_spec.c:
+    Cleaned out allot of useless comments.
+  * p_spec.c, p_spec.h:
+    Split P_CrossSpecialLine into two different functions: P_CrossSpecialLine and 
+    P_ActivateCrossedLine.
+  * p_som.c:
+    New function COM_Massacre_f (command "massacre") which completly kills all enemies in a
+    given sector or in the entire level.
+
+-- 6/8/2000:
+  * NEW FILE! p_som.c:
+    Created p_som.c. This file consists of new console commands I've added for scripting 
+    purposes. Here are the functions in this file:
+      COM_Playsound_f (console command "playsound") Plays a sound. Any sound. 
+      COM_Spawnthing_f (command "spawnthing") Spawns a mobj of type. Needs a little work still.
+  * s_sound.c, s_sound.h:
+    Added a new function that returns 1 if a sound is playing from the given origion.
+
+-- 6/7/2000:
+  * p_spec.c, p_switch.c:
+    Added a new function to p_spec.c that executes cfg files by special line. I created 4 new
+    types that all activate cfg files based on their tag: 300 S1, 301 SR, 302 W1, 303 WR. The
+    cfg files are called 00000001.cfg for tag 1, 00000123.cfg for tag 123, ect.. this adds 
+    scripting capability to Legacy!
+
+-- 5/3/2000:
+  * p_setup.c, r_data.c:
+    Moved flat caching to p_setup.c like Boris suggested so it can use levelflats without any
+    global variables or externs.
+
+
+-- 4/26/2000:
+  * p_spec.c, doomdata.h:
+    Added a new linedef flag (0x400) which allows any mobj (except projectiles)
+    to activate W* linedefs.
+  * r_data.c, p_setup.c:
+    Created two little functions that can give other files access to levelflats and 
+    numlevelflats without externs (although, I think it might just be faster to cache the flats
+    in p_setup.c...
+
+
+-- 4/20/2000:
+  * r_bsp.c:
+    Fixed a bug that caused Win32 Legacy to crash when you went under 270 type water.
+  * r_things.c:
+    Fixed a bug that caused translucent sprites to render strange when viewed in colormapped
+     sectors from different angles..
+
+
+-- 4/18/2000:
+  * r_data.c:
+    Fixed a precaching bug that caused crashes on other platforms.
+  * r_bsp.c, r_defs.h, r_draw8.c, r_main.c, r_plane.c, r_segs.c, r_state.h, r_things.h:
+    Removed old extra_colormap code and replaced it with faster code that takes full advantage
+    of boom's colormaps using the boom code. The only modified drawing routine now is
+     R_DrawTranslucentColumn_8 because it needs to reference dc_colormap to be proporly rendered
+    with colormaps (sorry boris, this is done in the boom code as well...)
+
+
+-- 4/15/2000:
+  * r_data.c:
+    Fixed a little bug that would cause Legacy to quit of a wad used FF_START and F_END (i.e
+    Darkening E2).
+  * p_saveg.c, p_saveg.h:
+    Fixed a few save game problems with Generic stairs and mobj friction.
+  * r_bsp.c, p_map.c, p_maputl.c, r_defs.h, p_spec.c:
+    Revamped the fakefloor system so that it no longer needs to update every fake floor every
+    tick and it clips fake floors as solid "chunks" insted of just flat planes.
+
+-- 4/13/2000:
+  * w_wad.h, w_wad.c, r_data.c, r_data.h:
+    Fixed a bug in the flat management system by creating a new system that scans wad files for
+    F_START/F_END or FF_START/FF_END entries and creates a list of the starting position for 
+    flats in each wad file. If no markers for flats are found, it will use the entire wad file
+    for flat searches. This fixes a bug in the old system and makes it much cleaner. I also
+    ported the colormap searches to this system and cleared up about 100 lines (or so) of code
+    in w_wad.c. It works 100% and I can find no bugs (so I removed the #ifdefs and made the 
+    code final).
+  * r_plane.h, r_plane.c, r_bsp.c, r_segs.c:
+    Removed all my old code for rendering Fake floors with planes. I'm going to start copying
+    the edge code for doing this soon...
+
+
+
+-- 4/11/2000:
+  * g_game.c:
+    Fixed an initialization bug (related to Boom's sector nodes) that caused the game to crash.
+  * p_map.c:
+    Fixed a bug that caused non-solid things to be "kicked" by the player.
+
+
+
+-- 4/10/2000:
+  * p_local.h, p_map.c, p_mobj.c:
+    Added extra parameter to P_TryMove to allow some things to fall off ledges when they are
+    being pushed (i.e. by conveyer belts).
+  * p_saveg.c:
+    Fixed a few savegame related problems: floor and ceiling flat offsets were not being saved.
+  * r_bsp.c:
+    If the chasecam is acitive, R_FakeFlat uses it for under/above water calculations.
+
+
+
+-- 4/8/2000:
+  * info.c:
+    Fixed a crashing bug when the game tried to cache a sprite it did not have a name for.
+    Added sprite name "TNT1" to the spritenames list.
+  * r_things.c:
+    Added boom code that does not go past the end of the draw seg array when scaning for 
+    obscuring segs.
+  * w_wad.c:
+    Did a little cleanup work on W_CacheLumpNum made it run a little faster. Also added better
+    lumpnum checking and more descriptive error messages.
+
+
+
+-- 4/7/2000:
+  * m_menu.c:
+    Fixed a problem with large title graphics being offset and wraping around the screen..
+  * p_maputl.c, p_mobj.c, p_setup.c:
+    Fixed a problem with touching sector lists...
+  * p_mobj.c:
+    Added state cycle detection.
+  * p_mobj.c:
+    Fixed a possible demo sync problem.
+  * p_mobj.c:
+    Fixed a few misc. crashing bugs...
+
+
+-- 4/6/2000:
+  * p_local.h, p_maputl.c:
+    Finally got touching sector nodelists working!
+  * p_maputl.c:
+    Removed intercept limit.
+  * w_wad.c:
+    Made W_ColormapNumForName search backwards for colormaps.
+
+
+
+-- 4/4/2000:
+  * d_main.c, dehacked.c, dehacked.h:
+    Added the ability to read DEHACKED lumps in a wad file.
+  * p_setup.c, p_spec.c, r_bsp.c:
+    Added a new linedef type 272 which applies the middletexture colormap to any tagged sector.
+
+
+
+-- 4/3/2000
+  * p_mobj.c:
+    Fixed a problem with a bullet hitting a wall when the only valid side is the second side
+    and the backsector's ceilingpic is skyflatnum.
+  * p_mobj.c:
+    Fixed the bug where rockets and bullet puffs would hit a sky ceiling.
+  * r_bsp.c, r_defs.h, r_plane.h, r_segs.c, r_state.h, r_things.c:
+    Added global colormaps! Colormaps are now rendered in the sector no matter where the player
+    is located.
+  * r_bsp.c, r_segs.c:
+    Fixed a floor/ceiling bleeding bug when one floor has a colormap and the other doesn't
+
+
+
+-- 4/1/2000
+  * started new log file with better format.
+  * doomdata.h, p_spec.c:
+    Added map line flag that allows any MOBJ to activate W* linedef types.
+  * p_saveg.c:
+    Fixed a savegame bug when a map has colormaps.

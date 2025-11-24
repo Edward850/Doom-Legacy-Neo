@@ -1,0 +1,4 @@
+gldoom name "Doom Legacy for Mesa"
+gldoom description "Doom Legacy for Mesa"
+gldoom group Games/Action
+gldoom exec "/usr/games/gldoom &"

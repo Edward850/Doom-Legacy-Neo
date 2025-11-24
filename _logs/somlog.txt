@@ -1,0 +1,118 @@
+-- 3/30/2000
+  * Removed compiler warning in d_cliserv.c that passed long values to an int in the format 
+    string.
+  * ADDED SUPPORT FOR BOOM'S COLORMAPS! (Had to turn off assembly though :(  )
+
+-- 3/29/2000
+  * Added Boom's PASUSE flag for linedefs.
+  * Added boom check to r_segs.c that checks for null ceiling/floor planes.
+
+-- 3/28/2000
+  * Added experimental rocketjumping code(that actually works) and added a console variable to
+    allow server admins to turn rocket jumping off.
+  * Added support for Boom friction in p_mobj.c, P_XYFriction. 
+  * Limited swimming to 270 water type. 242 no longer allows swimming.
+  * Increased the solidsegs limit to MAXVIDWIDTH/2+1 like in Boom.
+
+-- 3/27/2000
+  * Fixed a gameplay issue that has plagued legacy but no other port that allowed players to
+    pick up items they were above/below but were not touching....
+  * Added x/y clipping to FakeFloors (p_maputl.c)
+  * Added function R_Point2Dist2 that works like R_Point2Dist but takes four arguments (ala.
+    R_Point2Angle2).
+
+-- 3/26/2000
+  * I put in Boom's draw seg limit because I think it might be faster..
+
+-- 3/25/2000
+  * Added Boom's closed door automap bug fix.
+
+-- 3/24/2000
+  * Made code to render fake floors as extra planes. Unforunetly, none of it seems to work
+    right so I put it into #ifdef R_FAKEFLOORS tags.
+
+-- 3/23/2000
+  * Worked out bugs in the multiple floors code and removed the "two floors per sector" limit.
+    Now multiple floors in the same sector should be functional (untested yet).
+  * Reimplemented Visplane hashing from Boom. Speed increase!
+
+-- 3/22/2000
+  * Realized I had done work on 3/21 but forgot to put it into the log... :(
+  * Started work on a new editing feature: Extra floors that you can walk on! This replaces the
+    Legacy thing height detection for doing levels over levels. Looks really cool! Works like
+    Boom's deep water except the flats are solid. :)
+
+-- 3/20/2000
+  * Reloaded r_plane.c from the CVS repository and re-made all the changes from boom accept the
+    visplane hashing which seemed to crash doom on maps with lots of visplanes (like gothic99)
+  * Also removed(commented out) all of the old Legacy water code).
+  * Added a simple (un-optimized) but perfect Visplane limit removal and gothic99 still crashes
+    (Could it be a DrawSeg problem?) FOUND IT! It's a problem with the maxopenings limit.
+
+-- 3/18/2000
+  * Bunch of unlogged changes that I later removed.
+
+-- 3/17/2000
+  * Added code to g_game.c to disable boom support when playing demos previous to version 1.29
+  * Removed hardcoded visplane limit with boom's code, added floor/ceiling offsets. Also 
+    replaced old visplane handling system with faster Boom system.
+  * Added water/fake ceiling code from boom.
+  * Added code to proporly clip sprites in water/fake ceilings.
+  * Did a few little changes in some files... Can't remember which ones though :)
+  * Made Boom's water swimmable using Legacy's swimming code!
+
+-- 3/16/2000
+  * Cleaned up code and fixed some warnings.
+  * Removed Fab's old water code from r_plane.c, r_bsp.c and r_segs.c
+  * GOT MY FIRST SUCCESSFUL COMPILE! Found out that I need to add ANIMATED lump to doom3.wad...
+    heh... First build freezes when level starts.
+  * Got a good build running and fixed all aparent bugs/problems.
+
+-- 3/15/2000
+  * Did some misc. work on p_spec.c and some of it's related files...
+  * Made p_saveg.c Boom compatible. This includes archiving and unarchiving of new thinker 
+    types, and changing "specialdata" to "ceilingdata" or "floordata".
+  * Added new teleport functions to p_telept.c
+  * Started work on p_map.c and got to P_CheckPosition.
+  
+
+-- 3/9/2000
+  * Worked some MORE on p_spec.c and p_spec.h filling in some missing function protytypes,
+    re-writing a little boom code to fit into Legacy, ect.
+  * Added extra key-door messages from boom into the dstrings.c & dsrtings.h files, and added
+    them to d_french.h but they are in english...
+
+-- 3/8/2000
+  * Worked more on p_spec.c adding more boom stuff. And worked a little to fix the code that
+    gives instant damage to the player whenever he falls or jumps in toxic sectors. Also added
+    (copied) all friction/water/scroller/pusher&puller functions.
+  * Added extra data definitions to p_spec.h
+  * Added two things and sprites/states to info.c and info.h
+  * Added stuff to p_mobj_t in p_mobj.h
+
+
+-- 3/7/2000
+  * Err, just realized that I've been commenting with the date 3/6/2000 all day long....
+  * Worked on p_floor.c adding boom support. I added all the Boom extras for floors and the extra
+    functions that handle them.
+  * Worked on p_lights.c adding boom support. Not much extras here, just changing a few member
+    names and a few function calls.
+  * Worked on p_plats.c added boom support. No more limits on plats! YAY! Had problems with this 
+    making levels a long time ago.
+  * Continued work on p_spec.c adding many Boom specific utility functions. Implemented all boom
+    changes up to P_PlayerInSpecialSector because I'm really tired.
+
+-- 3/6/2000
+  * Added more th p_spec.h
+  * worked on p_ceilng.c adding boom support.
+  * worked on p_doors.c adding boom support.
+
+
+-- 3/4/2000
+
+  * Started work in p_spec.c adding the extra boom linedefs. So far, I have all the walk once
+    and repeatables finished. Also added new variable "boomsupport" in hopes of making non-boom
+    demos and save games usable. (The demos should still work but I don't know about savegames)
+  * Started work in p_spec.h as well... just adding extra types and modifying the existing ones
+    to work in boom.
+

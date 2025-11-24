@@ -1,0 +1,122 @@
+*** if not otherwise noted, this log refers to the Linux version ***
+
+-- April 08 2000
+  * added mouse move, fullscreen under X in Linux, fixed some bugs
+
+-- April 12 2000
+  * Added full menu driven mouse support
+  * Updated OpenGL renderlib with GetRenderer() to identify Voodoo boards
+  * Added support for identification of Voodoo boards in the X-subsystem
+  * Video Modes menu now displays warning if no lores modes are available
+  * Linux now compiles with 'make LINUX=1'
+  * French keyboard layout with command 'french'
+  * the FAQ has been updated
+
+-- April 22 2000
+  * amplified the sound volume of the sound server by 4
+  * implemented immediate switching for fullscreen upon change of cv_fullscreen
+  * modified the makefile to specify the version on the commandline
+
+-- April 25 2000
+  * added support for automatic search of the wadfile directory
+
+-- April 28 2000
+  * fixed the problem that the musserver does not load all instruments
+  * musserver now accepts volume 0..31 (used to be 0..15, which was strange)
+  * amplified soundserver even more to be in line with the musserver
+  * fixed CD music not playing on some drives, it uses now CDROMPLAYMSF instead of CDROMPLAYTRKIND
+
+-- April 30 2000
+  * removed 2 files from the soundserver which were unnecessary
+  * modified musserver so that correct iwad is used
+  * removed unnecessary printouts in musserver and soundserver
+
+-- May 07 2000
+  * removed unnecessary #ifdefs
+  * fixed the makefile again
+  * decreased verbosity level for musserver
+  * added an option for windowed Voodoo display - just define WINVOODOO
+
+-- May 12 2000
+  * winvoodoo is now a commandline switch
+  * if MESA_GLX_FX is set by the user, it is not overwritten by legacy any more
+  * No vidmode extensions are used for remote displays
+  * new cvar jigglecdvolume to handle abnormal drives
+  * fixed a bug with the dynamic loading of the OpenGL lib
+
+-- August 21 2000 long time no update ... been lazy
+  * Implementation of I_GetKey() in Linux
+  * preliminary SDL support
+  * crash on polys>256verts fixed
+  * Voodoo3/Banshee fix
+
+-- September 03 2000
+  * Integrated qmus2mid_sdl.c in qmus2mid.c and cleaned up the SDL music mess
+  * Makefile now compiles SDL version
+
+-- September 07 2000
+  * Fixed a severe hang bug in I_GetTime()
+
+-- September 10 2000
+  * made Linux and SDL work again
+
+-- February 12 2001
+  * fixed compilation of nasm assembler code
+  * fixed filesize procedure in d_netfil.c
+  * cleaned up Palette stuff
+
+-- March 09 2001
+  * SDL version updated
+  * crash in p_map.c due to uninitialized pointer fixed
+
+-- March 11 2001
+  * new symbols for rendererlib added in SDL
+  * console printout fixed for Linux&SDL
+  * Crash fixed in Linux SW renderer initialization
+
+-- March 19 
+  * missing textures in HW mode are replaced by default texture
+  * fixed crash bug with P_SpawnMissile(.) returning NULL
+  * deep water trick and other nasty thing work now in HW mode (tested with tnt/map02 eternal/map02)
+  * added cvar gr_correcttricks
+
+-- March 25
+  * SDL sound bug with swapped stereo channels fixed
+  * separate hw_trick.c now for HW_correctSWTrick(.)
+
+-- April 09
+  * fixed crash bug in v_video.c
+  * made hw_trick a bit more conservative and general
+
+-- April 14
+  * added compilation sndserver&musserver to makefile
+  * fixed issue with SDL when no sounddevice available
+  * some more bugs in hw_trick eliminated
+
+-- April 19
+  * fixed crash bug due to uninitialized switchlist in special case
+  * fixed bug "10 shells instead of 4"
+  * Fixed wrong display of resolution in menu
+  * Fixed fullscreen menu problem with switching to windowed
+
+-- May 12
+  * Fixed floor not moving up with player on E3M1
+  * Fixed crash due to oversized string in screen message ... bad bug!
+  * Corrected some typos
+
+-- May 19
+  * sndserver and musserver are now started even if $CWD is not in $PATH
+  * console background is correctly scaled in SDL version
+
+-- June 03
+  * changed menu behaviour on ESC key
+  * fixed(?) consistency failure on loaded boxes
+  * added an experimental CPU saver
+
+--Dec 31
+  * fixed bug with too many wadfilenames overflow 'fileneeded' in serverinfo
+  * fixed bug with one missing skin entry
+  * fixed loop-up-at-start-bug for SDL
+  * added a glconfig.cfg to prevent gl cvars from being overwritten
+  * added system memory for SDL under LINUX
+

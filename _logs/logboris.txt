@@ -1,0 +1,2528 @@
+
+21 et 22 -2-98
+
+- I forget to put all the djgpp from the in the new join therefor i have reput
+  ctrl-break handling
+- Added function SendExtraData(int type) and all stuff with it
+  tested ok type supported for the moment : name&color, weapon pref,
+  gamesetup
+- little modif in broadcast send
+- now we can see : Boris Left the Game
+- Restructuration of d_net is more clean now
+
+2-3-98
+
+- lmps 1.12 : only changes will be write
+
+3-3-98
+
+- add extras data in lmps
+
+4-3-98
+
+- no more pad sounds (linux hack)
+- finished : extra data in lmps
+- no more pause in lmps
+- message shown to all players (even ourself message)
+  therefore in demos we can see message from consoleplayer
+- paramater -timer and fastparm are now sent by the server
+- write timer in demos
+
+5-3-98
+
+- limite dethmatch start pushed to 64 (before 10)
+- added joystick support see in i_system for joystick type
+- reorganization of keys : the mouse and joystick butons are now virtuals keys
+
+?-3-98
+- version 112a released
+
+8-3-98
+
+- no more crossed reference limitatoin in dehacked patch (d2xgold work)
+- fixed bug of saving only on the slote 1
+- pushed savegame buffer to 512kb (128k before)
+- changed a little camera but still a preview
+
+15-3-98
+- debug of dehacked load + added checks and print errors
+
+16-3-98
+- addad text support for dehacked
+
+17-3-98
+
+- and text dehacking it work but not for all text
+- remove skull number limit (pain elemental don't spawn a skull if there is
+  20 skull already in level (level 9))
+- changed weapon pref. switch only if pickup a weapon with more priority
+- can talk to oneself (for demos)
+- fixed bug of eat key (automap, chat, final cast, ...) :
+
+19-3-98
+- version 112b released officielement with the new site
+
+22-3-98
+
+- fixed sky for doom ultimate
+
+30-3-98
+- no more need vesa for start
+- no more load sound in memory when no sound driver (intersting with 8Meg)
+
+1-4-98
+- multiple dehacked load. syntax : -dehacked <borol.deh> <brol2.deh> ...
+- doom3.wad can be loaded using the doomwaddir environement varaible
+
+from 2-4-98 to 20-4-98
+
+- client/server work but it skip frames one the client
+
+22-4-98
+
+- added intermission : buchols, individuel, dead + fixed frag bug
+- wait 10 sec in the intermision screen !!
+
+25-4-98
+- fixed bug of spwaning player out of map
+- fixed ctfdoom playersart
+
+26-4-98
+- fixed demos play with the server
+- added support for demos 1.12 for extras data
+
+27-4-98
+- end lmps
+- internal modif of server now node!=>player but player=>node
+  (no split sreen)
+- comebak of -left and -right for single player ! (too easy)
+
+
+7-5-98
+- up to 32 player (not tested)
+- fixed color of player in the automap
+
+8-5-98
+- break packet if too large
+- backuptic up to 64
+- showmassage bonus, ammo, heald pack only if cv_showmessage==1
+
+9-5-98
+- whoohoo i found why it don't work under os/2 : we have forget to lock
+  some varaible, DON'T forget to unlock it when we swap out sample
+  It will work better under NT
+- fixed bug of extra packets ...
+
+10-5-98
+- consistancy come bak (removed when devloping client/server)
+
+17-5-98
+
+- restructuration of m_cheat moved all check_cheat from st_stuff to
+  m_cheat, all cheats are now in m_cheat (even am_cheat)
+- iddt work now
+- added netvar : itemrespawn and itemrespawntime
+- fixed bug of extra data in lmps and on network
+- added respawnmonster and respawnmonstertime
+
+19-5-98
+
+- version 1.20 released
+
+20-5-98
+
+- fixed bug of demos 1.20
+
+21-5-98
+
+- fixer bug of demos 1.12
+- fixer bug of left et right keyboard turn when it lag
+
+23-5-98
+- fixed deathmatchstart < players
+
+24-5-98
+
+- fabrice fixed vesa detection code
+- no more save game "net game" on single player
+
+25-5-98
+
+- release of 1.21
+
+27-5-98
+
+- oops, bad join : left & right bug in 1.21 ! et spawnplayer problem
+- version 1.22
+- added command say and sayto
+- remover code for chatchar and the structure
+
+5-6-98
+- release of 1.22
+
+7-6-98
+- fixed bug of backspace
+- fixed replay of demo <=1.20 (chatchar)
+
+from 29-5-98 to 21-6-98
+
+- Boris studies there exam and don't work in Legacy
+
+27-6-98
+- clean the unfinished stuffs put #ifdef with all this junk code
+
+2-7-98
+- split d_net in two file d_clisrv and d_net : d_net is the low-level part
+  it implement releability of packets, d_clisrv is the implementation of
+  the client/server
+
+?-7-98
+- the code was send to Carl Personn, Bob Satori, and ninja doom
+
+??-7-98
+- added splitscreen : render split screen and nothing else
+- fixed bug of -warp with doom1 or ultimate
+- improved net code : put maxlag to 1 (before 2) this parametre apparently
+  put lag in game who don't have it
+- improved net code : added a wait in the server if it faild one tic it
+  wait it (but no more than one)
+- compile now with allegro 3.0 wip 30may (but i think there is a bug with
+  authentic sb16/32/64)
+- optimize the slopediv function use now a 64 bit div more precise
+  maybe it can change the plays of lmps ???
+
+24-7-98
+- change split sreen, now is a cvar, put it in the menu for start a
+  spitscreen game
+
+25-7-98
+- added litle support for the secondary player in the netcode but need more
+  improvement : must know what is there player number (there is no protocol
+  to assign player number)
+
+- fixed switch problem in ultimate doom : i don't know why in the other port
+  it work because this bug is the fault of gamemode = retail not handled !
+  (now, i have seen in dosdoom this bug have been fixed from with the
+  same methode) this bug is from linuxdoom
+
+26-7-98
+- map command now work in network
+- gravity cvar added
+- now put a momz when damage (still to work)
+
+3-8-98
+- with fab implement cv_skin and support skin in network
+
+4-8-98
+- find a bug in bcd he don't use the track 0 but he allocate 1 track and he
+  use the track[1] insteed track[0], i have allocate 1 more track and the
+  track 0 still unused (too bad for memory :( )
+
+8-8-98
+- with fab added scripting in the s_skin resource (buged)
+
+9-8-98
+- debug skipting of skin, support face in status bar for skin
+- added function for add a sound at runtime
+- added support of sound for skin using preview addition
+- fixed problem with starting "doom3 -warp 1 -deathmatch"
+  this problem is due to the generalized spawn function
+
+10-8-98
+- generalize the rancking drawing (now is the same function for in game and
+  intermission)
+- begin team play support work but the team name are missing
+
+11 to 13-8-98
+- continued team play created wi_teamstatdraw for shows of the tema stats
+  created HU_CreateTeamFragTbl this function is called for compute the team
+  frags
+- added teamdamage get damage only when this cvar is 1
+- use teamdamage under cooperative to don't take damage
+  to understand the condition used you must use this condition :
+
+  the mobj a shoot on mobj b : the mobj b DON'T take damage IF :
+        damage < 1000            // a telefrag take 10k damage
+    AND a != b                   // you can hit yourself
+    AND cv_teamdamage == false   // teamdamage is desabled
+    AND (
+     (    cv_teamplay == true    // in teamplay
+      AND deathmatch  == true    // only in deathmatch
+      AND team(a) == team(b)     // you save the guys only for the same team
+     )
+     OR
+     (    deathmatch == false    // cooperative
+      AND type(a) == player      // a and b is players
+      AND type(b) == player
+     )
+
+  now using "De Morgan" formule you translate it in
+
+  the mobj b take damage IF :
+
+        damage > 1000            // a telefrag take 10k damage
+    OR  a == b                   // you can hit yourself
+    OR  cv_teamdamage == true    // teamdamage is desabled
+    OR  (
+     (    cv_teamplay == false   // in teamplay
+      OR  deathmatch  == false   // only in deathmatch
+      OR  team(a) != team(b)     // you save the guys only for the same team
+     )
+     AND
+     (    deathmatch == true     // cooperative
+      OR  type(a) != player      // a and b is players
+      OR  type(b) != player
+     )
+
+21-8-98
+
+- the come back of the netupdate this function poll the timer and if the time
+  has incresed since the last call it create a tic.
+  This fix probably the lack of controls in svga
+
+22-8-98
+
+- no more individual rancking in teamplay
+- no more blood when the guy no take damage
+- no more red screen when the player don't take damage
+- fixed all related team stuffs. Now change the team_names tables at runtime
+  when teamplay change
+- fixed a little bug in dehacked load it is just since we have changed
+  sound_sfx table.
+- change some malloc in z_malloc, added memfree command
+  but memfree use available_physical_pages from dpmi and this change at
+  runtime because page is allocate only when used and when we malloc our
+  z_zone he don't steel the pages, therefore i have added a memset for use
+  the pages. And now free phisical memory change only at change level
+  i think it is caused by the midi convertion.
+
+23-8-98
+
+- youhou, angleturn client prediction work, with lmps...
+- load a deh when it is put in the -file list
+
+xx-8-98
+
+- release of 1.25
+
+6-9-98
+
+- fixed problem when restarting a new game after starting a nightmaer game
+  monster no more respawn in normal skills.
+- push all command line paramater begin by '+' on the console buffer
+
+12-9-98
+
+- fixed bug in the display of frag in intermition in teamskin
+- fixed bug no more crach when error "fail to allocate 29Mb"
+
+13-9-98
+
+- implemented fraglimit
+
+11-11-98
+
+Damned ! I have lost my 1.26 beta 4 modification i have redo what i have lost
+from the beta 3 archive, ok now it is a log of what i remember have changed
+I hope don't forget anything.
+
+- added exitlevel command (server ability)
+- added bind command
+- improve network with supposed nettic
+- added possible value for cvar
+- fixed map7 bug when the 2 last babyspider die at same time (original 1.9 bug)
+
+stop here for beta 4
+here is new for beta 5
+
+- changed menu handling mutch more usable and very easy to change
+  it handle cvar automaticely and mutch more !!!
+- put fix for some Fab bugs (2 sided texture)
+- improve more network client send only nack and server don't send to much
+  data i think it reduice dramaticaly the bandwidth needed
+- fixed fraglimit
+
+13-11-98
+
+- fixed -left and right with the new protocol
+
+14 15-11-98
+
+- 2 Days to find the fucking Fab Bug ! texture cache can't be freeed without
+  a total flush of the cache
+
+20-11-98
+
+- make the join with Fab version. Very hard task ! i have put the makecol15
+  from windows version because using makecol15 from allegro add 150kb to the exe
+- put maxvalue 4 to gamma.
+- added vid_ticrate cvar
+
+22-11-98
+
+- fixed final pic shows in doom1 and bunny scroll
+- 5 miniute to fix the damn bug from fab with there flatcache problem
+  but i suppose this in not fixed at all is just a quik fix because i am bored
+  to see damn f**ed flat !
+- outch 1 line added and you can take a screenshot pressing the key that you
+  want. What a wonderfull world. Ok nice added screenshot command is
+  recommanded to bind it.
+
+23-11-98
+
+- fixed deathmatch cvar don't work in network (spwan player problem)
+  the solution is : use the map command to start the game !
+  it this occation i have clean lot of stuff in d_main and d_clisrv init code
+
+24-11-98
+
+- added load command and make it work in network
+- added skill parameter in the map command
+
+26-11-98
+- added save command and cleaned the way that it work in network no more
+  use ticcmd to send save game (original doom 1.9)
+
+29-11-98
+
+- put cv_Unsigned for lot of variable and fixed little problem with fraglimit
+- fixed "got unknow netcmd 109" when change player config while game not
+  started it was because the lmp execution execute the last textcmd and the
+  demoversion is not the same
+- fixed console display with the new system of "map" pushing using warp
+  and netgame
+
+1-12-98
+
+- raaa i am tired to clean the code... It make me sick, i have found some bug
+  using tha map command in demos, network and console. The biggest is the
+  engine parameter is not set like in a single player game. secondary there
+  was demoplayback=false in g_initnew (the map command execution). and thirdly
+  netgame was put true when playback demos !
+  My first fix is to put a g_stopdemo in the map command and in load level
+  this fix to most part of problem (eatch time before calling g_initnew).
+- clean the way that doom lunch the game, now g_newgame sets all parameter to
+  normal and then push deathmatch and map on the command buffer.
+
+2-12-98
+
+- fixed little problem with console_toggle_off when playing old demos
+- fixed viewz of the first frame
+- try to fix te clientprediction code, i have rewrite it and found one cause
+  of non function and i see it will not be so easy :(
+
+3-12-98
+- clientpreditcion work but still need more work
+
+4-12-98
+- added timedemo console command, and change timedemo no more leave program
+  just print the result at the console
+
+5-12-98
+- some note here to don't forget to put in what's new because fab no more
+  update there log.
+    - transparent texture.
+    - mutltipatch can be put in 2 sided line
+    - load texture at runtime
+- change the pause handling no more use the ticcmd to send it. Now the ticcmd
+  is much cleaner i have 1 bits more for player command.
+- Do r_loadtexture only one time (no more at eatch loadlevel). It is called
+  when adding wad at runtime if it detect texture changes. If no texture
+  change it only flush the texture cache. Also there was a little bug
+  because R_GenerateTexture don't check if the texture is not allready loaded
+  i have put a test in R_Precache level. Also i have reput the precache flat.
+- fixed little bug in P_AddWadFile when searching the firstmap
+
+6-12-98
+- added sayteam command
+
+8-12-98
+- i have removed the viewz==1 at the first frame. I still don't know for what
+  this hack is...
+- got the client prediction running i stop here for the moment still to fix :
+  - we hear all the sound twice because spirit and player spawn the sound
+  - the hack bit of fab to permit the player walk in air is modified by the
+    spirit, this cause some "consistancy failure". Stupidely removing this
+    spirit ability will miss predict player movement !
+  - remove localtic in the ticcmd_t
+  - aparentely there is a "consistancy failure" sometime when the client use
+    a weapon (plasma) i don't know what it is but i need more information on
+    this
+  other bug not related to spirit:
+  - the usage of firstmap level cause reload of the firstlevel in a wad using
+    map or addwad command
+  - passing deathmatch 2 to deathmatch 1 don't respaw the weapons
+  - due to change of map command in lmp deathmatch cvar is put to 0 to lattely
+
+9-12-98
+
+- respawn weapons when passing to deathmatch 2 to deathmatch 1
+- fixed sound play of spirit
+- fab remind my to fix the frame synchronisation TODO
+
+18-12-98
+- finely fixed the synchronisation problem in network, i was caused by a
+  spupid wait a new tic before do a GetPacket() !
+
+19-12-98
+- now use explisitely the "max" for bounded cvar
+  with this we can insert a other special stuff between, very usefull since
+  the menu use the value 1 for the index for the maxcursor.
+  All this stuff to unlimit mousesens cvar ! b”rk
+- put 1000 for fraglimit max
+- put specific name to eatch deathmatch type and allow only 0,1,2,3
+  i think 3 is already used to respawn item and don't remove weapons
+- give keycard when changing deathmatch from 0 to anything
+
+xx-12-98
+- release it as 1.27 beta 1
+
+28-12-98 : Boris Bored at the Party 98
+- fixed menu sigsegv with sound playing in the menu
+
+xx-12-98
+- release it as 1.27 beta 2
+
+18-1-99 : End of exams
+
+- working on heretic and hexen source
+
+24-1-99
+
+- put the code from fab's one, for the blood splat and bullet hole.
+
+26-1-99
+
+- fixed load game when there is demo playing back.
+
+27-1-99
+- fixed deathmatch value for old lmps
+
+2-2-99
+
+- first step for "join in game", for the moment when a new node is detected
+  the server incresse the session number, and go to the D_ArbitrateNetStart.
+  Client receive a server packet with a newsetion, this cause a call to
+  D_ArbitrateNetStart, with this little modification it permit to synchronize
+  all computer to have the same playeringame vector. But this cause many
+  problem :
+    - when returning to the game, player have changed there consoleplayer
+      number, exept the server.
+    - the new player don't have a "incarnation" in this game, all computer
+      must spawn a new players at the same place.
+    - the new player don't have the game in memory, it will kicked out with
+      consystancy problems.
+  This note is not realy to be read, it is for my a way to undertand what i do
+  I propose to me this solution :
+    don't do a real new synchronisation, just redo it for the new player
+    the first problem will be fixed with this, the second will be fixed
+    easly by doing a spawn at the end of the function. The third problem
+    will not be fixed, since we have't a file copy feature. I will do a
+    little hack someting like a variable newplkayerwaiting=true, and checked
+    at intermision, to prevent the new player to do p_setuplevel...
+
+12-2-99
+
+- i remind one stuff of the lost beta4 implemented :
+  the loadconfig, saveconfig, and changeconfig
+- i have document all the change, but fab is a little lazy and don't whant to
+  correct my bad english, to bad :(...
+
+26-2-99
+
+- debug a little bit the "join in game" code : before call d_arbitratenetstart
+  increment doomcom->numnode it is nomal we have a new node. Also put acceptnew
+  node always true. It work a little, but hang on the server side with a
+  consistancy falure. Normal i don't have spwaned new player for the node ...
+- ok fixed a little more stuffs, now it work since the server don't move, if he
+  do "map xxxxx" at the console it work and both can play in the new level
+  exept a little problem when the joined player die and respawn, it do a
+  consistancy failure... should work for that...
+- fixed some stuff for fab the splitscreen player did't have there proper
+  localangle and localaiming, and fab don't understand this stuff :P
+- added support for textcmd for the splitscreen player it use TEXTCMD2 the same of
+  TEXTCMD but the server add 1 to the playernumber (it use the particulariti that
+  the second player is the first player +1)
+
+27-2-99
+
+- finaly fixed config of player2 (register name2, color2, skin2 cvar)
+- made a new status type for the menu : IT_DISABLE it will show the patch
+  in gray and unusable, i use it for the multiplayermenu to desable
+  the setup of the player 2
+- fixed some more stuff put " between string in exec call because ':' and '\' are
+  separator
+- and finaly improuved splitscreen support
+
+1-3-99
+- improuve splitscreen support
+
+3-3-99
+- convert aiming to be a angle_t, work fine and it is much cleaner
+- splitscreen aiming is now automatic no need for a special case
+
+5-3-99
+- change the way that ack packet work, better duplication detection
+- fix the damned config of the splitscreen
+- begin the savegame compression (save only the differance)
+
+6-3-99
+- finish savegame modification, but need more work maybe just zip it....
+- save only usefull field of mobj, i have learn that save game save also
+  static mobj, that not a good idea but i haven't change that
+- save game save also taget and tracer pointer with a little trick...
+- reenabled the loadskin in addfile command work well....
+- now you can use -connect witout parameter it will use broadcast packet
+  and autodetect the server in the neighbourhood
+
+8-3-99
+
+- begin file transfer protocol (ftp :))
+
+9-3-99
+
+- fixed some stuff about splitscreen : cl_maketic is no more a table of
+  player but a table of node, new table : playerpernode
+- added cv_notinnet flag, to don't permit change of this variable in netgame
+
+10-3-99
+- fixed player name don't save when leaving menu
+- now the leave procedure is reliable with a timout of 5 sec
+- fixed some free call in djgpp/i_sound.c (don't free not allowed memory)
+- added support for joystick from allegro 3.11 see djgpp/i_system.c
+
+11-3-99
+- fixed some problem in the protocol caused by too much textcommand in a packet
+  can happen when double splitscreen or just because there is buch of extracommands
+  is't realy a fix just detect it better and reduisse the probablility that happens
+
+14-3-99
+- fixed -file getting parameters begining by '+'
+- finaly fix the textcmds overhead problem put textcmds in futur tic if this happen
+  and when is no more place (32*255 byte received in on tic=8Kb*35/sec=280Kb/s ) quit
+  with i_error
+- do a join with fab, this include win32 midi player and the new little
+  window at begining, and some other stuff
+- we have discover a differance between optimization and non-optimized code with VC5
+  but anyway it is fixed and is not the fault of VC5
+
+15-3-99
+- fixed the spawn of coop player when more than 4, who play in coop with
+  4 players ? Anyway this bug appear quickely if someone forget to put -deathmatch
+
+18-3-99
+- fixed the fix of 15-3-99
+- found a strange think : sometime when stated from a fullscreen dos, legacy don't
+  detect any video mode. Why ? anyway : put it in the doc as "know bug"
+
+19-3-99
+- finaly fixed the textcmd stuff, now is deleted only when acknoledged
+
+20-3-99
+- fixed a little bug in new savegame code
+- splitscreen player have now there sound played
+
+21-3-99
+-  begin next and preview weapons
+
+22-3-99
+- fixed and finish next and preview weapons
+
+23-3-99
+- fixed some splitscreen issues
+- show key in the statusbar overlay don't forget to add "k" in the overlayxxx
+
+25-3-99
+- implement recursive search for wad files
+
+26-3-99
+- added fastmonsters cvar
+- added file name sent and loaded at runtime if not found in network
+
+27-3-99
+- fixed "+" pushing issues
+- now demo can be recorded by only one computer
+
+30-3-99
+- i lost my wall journey to try to inderstand why demo get out of sync
+and especially it get out of sync differantely using vcc and gcc with
+the same source file !!!
+- finaly using printf __file__,__line__ in #define all have disapear
+  damned i don't understand anything all MUST be explicable....
+  I will assume that Vcc don't rebuild all when i say rebuild all :(
+  but i am not sure.... a case for F.Mulder and D.Skully  :)
+- i have remove my #define with the __file__ and the other stuff and the
+  lmp out of sync reappear, now i'am sure vcc is bugger to hell, must get
+  VC 6.0 or get the 5.0 service pack... :(
+- well finily i have change p_random and m_random to returning a byte
+  then vcc no more generate buged code, fine but how many bug like this
+  one vcc have generated, i will probably use more pgcc to test first :)
+
+3-4-99
+- installed vc6.0, but haven't compiled because afxxxx.h not found, must ask
+  to fab
+- make the dependency for the dos version using gcc -MMD
+- finaly found why lmp 1.9 get out of sync, stupid if(!fastparm) transformed in
+  if(fastparm) (switching to cvar :()
+
+4-4-99
+- have compiled the join with Bell kin on my brother slackware 3.5
+  (egcs 1.0.3), it work but i have sigsegv in map01 :(
+
+5-4-99
+- finaly installed mfc and now it compild under vc6.0, but i am not at end of
+  deboging now with vc6 the demo get out of synch directely !! damned
+  i will try to don't flame MS VC maybe is our fault (ambiguity in c language)
+  Anyway for now compiling with debug release it work fine.
+- first test with cross platform network test : IT WORK ! until the server
+  (linux) hang with a sigsegv :(
+- with gdb i have seen that the fault come from vquadloop (this is a label
+  in tmap.s) must check this....
+- well 4 hours latter after a real finding what wrong with vc6 i found it
+  here it is : when i do p_pspr.c,p_gunshot() line 607 :
+    angle += (P_Random()-P_Random())<<18; /* original 1.9 doom code */
+  the compiler do : /* i see the desassemble code */
+    rnd1=P_Random();
+    rnd2=P_Random();
+    angle += (rnd1<<15-rnd1+rnd2)<<18;
+    /* in short : the compiler have use the first call for the negative value */
+    /* in debug mode it use the seconde one for negative value */
+
+  Well i have fixed this putting :
+        angle += (P_Random()<<18);
+        angle -= (P_Random()<<18);
+  it work fine, but i don't remember if i am wrong or if the compiler have
+  wrong but i will check....
+- to fix the problem of the demoplayback out of synch if when record we go
+  in the menu :
+  the problem is cause by paused variable : this one is set by extradataticker
+  ce tic est ecrit dans la demo puis executer puis la demo est pauser
+  puit on va pas ticker le jeux tant que paused=true de nouveux pour le metter
+  a false on passe par writedemoticcmd qui ne l'ecrit pas (paused=false)
+  mais il va etre executer et la demo est a present ecrit a nouveau
+
+6-4-99
+- found why it crash under linux : the doom2.wad have been corupted by the
+  transfer (i suppose a bug of tcp/ip stack of MS-windoz)
+- forget about yesterday demo problem (french stuff (BP very tired))
+  it is a doom 1.9 original bug caused by menuactive variable that don't
+  enable p_ticket to tic the game but it continue to record tics
+  the solution is not to don't write tic because we have extra tics pushed
+  at eatch cvar change in the menu, we must record in pause mode, maybe
+  when replaying the demo we can run fast the pause ones. (will cause some
+  little user interfase problem (chat text comming too fast) but is far from
+  the actual problem.
+- added pause command
+- push the pause command when menu is enabled
+- demo continue to record while paused=true but when playing back demo
+  when pause it will run tics until pause go false
+
+7-4-99
+- little note about vc problem : it is not the vc fault, the problem there
+  because the evaluation order in not define in the ansi-c therefore
+  gcc and vcc have just do what he want...
+- fixed +respawnmonster 1, map command set this to 0 if !nightmare
+- fixed canot save spaced savegame
+- fixed seconde wipe after a demo played
+- readded code to fix the multiplayer menu quit don't change the name
+- now it is splitscreen change function that set secondarydisplayplayer
+  using playeringame[1], this allow to set secondarydisplayplayer after
+  a splitscreen savegame
+- fixed no more binding during chat
+- fixed load splitscreen saved game
+- fixed some load saved game don't unpause
+- added COM_CheckParm
+- use it to change a little the map command :
+    map <mapname[.wad]> [-skill <1..5>] [-monsters <0\1>]
+- added timelimit cvar and remove leveltimerinmin
+- remove respawnparm since there is respawnmonsters cvar
+- with all this change there is no more game parameters in servercfg packet
+
+8-4-99
+- fixed some stuff from yesterday (BP tired at 3am :))
+- begin water physics
+
+9-4-99
+- continue water physics
+- do some stuff for the chasecam
+
+10-4-99
+- use con_keymap for the chat
+- fix the default key for next and prev weapons
+- more chasecam stuffs
+  added cam_height,cam_dist, cam_speed to configure camera
+  added new mobj flag : MF_NOCLIPTHING to allow camera wolk on thinks
+  TODO : create a path when player change sector this path will
+         be used to find a path to use for camera to join up the player
+         when camera is blocked
+- added playdemospeed to change the speed of the playback of the demo
+  (very funy)
+- fixed problem of splitscreen that the multiplayer variable is false
+  this fix also demoplayback of splitscreen demos
+- now "-notime" can be used on the server side to exclude timecheck for
+  all client
+
+11-4-99
+- fix pause with load games
+- added check of heap malloc in the linux vresion
+- added check of data field in I_FreeSfx (the sound is not sure to be
+  loaded)
+  Anyway Fab have remobe the lock of sound in dos version this will cause
+  a sigsegv under OS/2 i will probably lock the wall heap in OS/2.... :(
+
+12-4-99
+- added a clipaiming to the r_setupframe to use allow playback of a 3dfx
+  demo under sofware rendering
+- added ylookup1 and ylookup2 to precalulate ylookup in splitscreen
+- fixed crosshair display in 3dfx
+
+13-4-99
+- fixed cls usage in hwr_main (remove -1)
+- fixed the full autoaim, maybe there is some more autoaim problem
+- fixed floor and ceilling puff position (line side problem)
+* little note about client prediction :
+  add x and y offset (spirit.x-position.x) too all missile spawned from player
+  and use dead reconning algorithme for all other mobj (pos=pos(t)+(t-oldt)*mom)
+
+15-4-99
+- release 1.28
+
+17-4-99
+- fixed can take the chainsaw in doom1 or udoom
+- fixed can't save when use -warp or +map
+
+19-4-99
+- read all mail from the 1.28 release and do a full bug list to fix.
+- fixed spaced lmp don't play
+
+20-4-99
+- make join with Thierry V. modification for OpenGL driver
+- added some basic stuff for "join in game" (numplayers in server
+  packet)
+- now map check file and lump _beffore_ send and execute
+
++- 7-5-99
+- put all the code for join in game, work in singleplayer
+  must check on multiplayer
+- added some code in doomatic... unfinished :(
+
+11-5-99
+- fix many bugs in the texture cache 3dfx the bug is in the
+PU_3DFX stuff, should ask to fab for more
+- fixed timedemo reset timer at levelbegin !!
+
+15-5-99
+- continue join in game code
+
+19-5-99
+- fix a lot of join in game problem, it is neer to be finish...
+- fix cdvolume cvar bounds
+- now when a level is complite the next is started with map command
+- added -noresetplayer to map command but can't be used when player join
+  the game because the new player don't know the old config !
+  after savegame is implemented no more problem....
+- the join in game is now working ...
+
+20-5-99
+- fix the last bug founds....
+- now the engine wrape around level in deathmatch no more final screen etc...
+
+21-5-99
+- added allowturbo and allowexitlevel cvar
+  when allowexitelevel is "no" the only way to exit the level is timer or
+  fratglimit or exitlevel command, switch, line and monster death don't exit
+  the level
+
+22-5-99
+- added proper servershutdown message and clientquit message
+- and fix many bugs
+
+18-6-99
+- reading mail from Rich Dawn (libsocket programer) i foudnthat the local
+  ip is not used and then do be asked to the gethostbyname !!! it is mush
+  more simple now
+- fixed little problem with new protocol connecting with direct ip number
+
+23-6-99
+- found and fixed 3 big network bugs :
+  - the size was not used for resend a acknoledged packet
+  - since i added BASEPACKETSIZE to HSendpacket the sv_sendtics don't
+    reinitialize datalength
+  - there was textcmd cleared with cleartic when client is very slow caused
+    by extratics parameters
+- fixed also join in game with splitsreen
+
+24-6-99
+- added check in recsearch , chdir can fail if we have't the right
+- added checkfile in map command when loading wad
+- support lfn for wad file trouth network
+
+26-6-99
+- use "xor"(^) insteed of "or"||" for mouselook and autorun
+
+19-7-99
+- i am working on the code since last word on this log unfortunately
+  i am only fixing the new code, maybe i have done some little feature
+  i have also release the 1.29 beta (1 to 4) last days
+- have put a more interesting error when client don't have the file
+- fixed the minor bug of 1.29 beta 4, can't start a game while
+  demo is runing, it was caused by the addplayer code since the demo
+  added a player to the game, and nodewaiting[0]==1 then the player
+  added was 2 and since he isn't in the game he can't do map command
+  (only player 0 can execute command without being in the game)
+
+20-7-99
+- if have got my mouse handler to work in dos version !
+  i have added mouse 2 support for the splitscreen game
+  TODO : + use_mouse2, mouse_sens2, mouselook2, mouse2 config (COM ?)...
+
+21-7-99
+- added all cvar for the mouse2.
+
+24-7-99
+- After days of trying to get two mouse with enumdevices in directinput
+  Mircosoft informe me that there is a bug in the direct input !
+  Since i am not blocked by Microsoft i have do it by myself, configure the
+  mouse port and at last it work !
+- added mouse2port
+
+26-7-99
+- added beautiful menu for the seconde mouse in the splitscreen menu
+
+27 & 28-7-99
+- implement that a will call clientprediction 2 it is on'other methode
+  to do client prediction it send x, y in absolute value, on the
+  receiver side it do a p_trymove to cross the special lines and take
+  object, but it is inefisiante, because the diferance can have a big
+  z differance and the trymove will refuse to move there, also special
+  line are not crossed if the diferance is too big. And finaly object
+  in the path is not taken (well maybe in futur with linear
+  interpolation). With this point i have found a little original bug
+  of doom : you can take a object even if trymove return false :)
+  (plasma in map 1) . Well all this "bugs" hare found using and random
+  lost of packt of 9/10 ! that why it is so bugy but it CAN happens
+
+29 & 30-7-99
+- well at this time i have fixed soem problem with clientprediction :
+  - z checking is just desabled when we do p_trymove with player when
+    folowing the spirit (using MF_NOZCHECKING)
+  - when server copy the ticcmd when he lose tics from client it put a
+    bit to 0 (set 1 on buildticcmd by clientpredition2 code) this allow
+    to follow the player like in a true "dead rockoning", well this fix
+    a little the "get thing" and "cross line" problem, but player
+    movement are strange the best should be send momx and momy but this
+    will take more bandwith, anyway i don't know what to do ?
+  now there is some stuff to fix too : the spirit can't get teleport,
+  the spirit don't get momx and momy like the players when there is
+  a rocket explosion !
+
+6-8-99
+- fixed that we can reconect after deconnect (d_freenodenum)
+- fixed exitlevel command when there is playerwaiting map change
+
+14-8-99
+- try to fix the problem : when a client respawn there is a consistancy fail
+  in clientprediction (fail to fix the problem)
+
+17-8-99
+- fixed little issue in seconde mouse support in dos version
+
+18-8-99
+- fixed freez when using idclev
+- fixed playback of demo 1.29 !
+
+19-8-99
+- added wad version check for main wad file and doom3.wad
+
+20-8-99
+- continue ftp
+
+21-8-99
+- added toggle command also added cv_showmodif ans cv_showmodifonetime flags
+
+23-8-99
+- added a "bad code" to fix splats clipping, also investigate on problem with
+  splats, found two problem, should ask to fab for more :
+  - in some littel texture and particarely in texture having same x for v1
+    and v2 splat are bad disigned, "one line splat" problem
+  - when player is neer from a splat and there view is is the same direction
+    of the texture the splat do a line !
+  - when messing with splat code i have try to remove x checking line
+    165-171 of r_segs.c i am very suprice that this line don't do what i thouth
+
+24-8-99
+- sleep is a good thing !
+- fixed splat doing line on walls ! caused by a oveflow using viewangletox
+- try to fix the problem of "one line splat", doing some printf see that the
+  lenght of the colum is 1 ?! why ???
+
+25-8-99
+- using lost packet simulation found and fixed little problem in network
+  code, i hope is the lasts
+
+26-8-99
+- continue ftp, have transfered a piece of file, the end of file detection was
+  wrong caused by wrong duplication detection
+
+30-8-99
+- added ipx support under win32 never thougt is was soo easy, the most
+dificult part will be to addapt doomatic to the new system, also the launcher
+should show the option easely
+
+31-8-99
+- inprove duplication detection
+- implement addaptive timout using jackobson/Karn algorithme
+- finilize ftp, it is working now but i should optimize a little more
+  packet size usage also i should take in consideration the bandwidth
+- now the tcp/ip code use 1450 maxpacketsize, also i have used the 1400
+  byte of doomatic (TODO : check doomatic version beffor)
+- TODO : + send one file by node, + bandwidth, + directory wadcache
+
+1-9-99
+- use net_bandwidth for file transfer optimisation
+
+2&3-9-99
+- searching for a damnid bug in the latest network code.
+  It is now working perfectely : there is now way to hang with
+  duplication or packet miss.
+- this improuvement is for the ftp, this work now at perfection.
+- TODO: ftp requester (-nodownloadfile), + fix playerdeadview, aiming
+  in 3dfx in 90°
+
+4-9-99
+- tune network parameters to get the best transfer speed in a lan
+  now is working at +-400Kb/s, maybe i can have better ...
+- put some feature wanted in the launcher !
+
+5-9-99
+- put the file downloaded in "download" dir
+
+6-9-99
+- tune parameters to permet transfer at 2K/s
+- added fonction Net_Abort and CloseNetFile to properly quit program.
+- permet the server to send one file for eatch client.
+- fixed a very rare bug, when client miss all tic from a game, the server
+  no more send tics and that cause client to don't ask missed tics !
+
+8-9-99
+- more and more tune up to have 1Megs in a lan and 2k in a modem !
+  but only in the connection loop
+- added I_NetCanSend, this check if we can send beffor send
+  This can detect if packet will be lost diretely
+
+9-9-99 (nice day no ?, no virus no hang :))
+- fix the joystick problem in the launcher and little aesthetic
+- proper shutdown when client or server is sending/receiving file
+- use system username for default value of name cvar
+- fixed rocket bad aiming in 1.29, stupid mistake
+- fixed view ranking in demo, ...
+TODO : change automatic color (not everybody green)
+
+15-9-99
+- find why there is conistancy failure, but not easy to fix, i messed up
+  the network code :(
+
+18-9-99
+- fixed speed of wipe in svga, also found that the color shift is already
+  implemented in original source code, never mind ! But is a little bugged.
+- fixed color shift using translsency tables
+- added screenlink cvar to change wipe type color, melt or none
+- fixed my "messed" network code, the client prediction work now _without_
+  consistancy failure
+- found big bug in opengl, there can be a loadlevel _before_ a setmode
+  that will cause a sigsegv TODO : + Init hardware _before_ load any map
+
+19-9-99
+- fixed the opengl problem
+- fixed teleport with clientprediction
+- TODO: problem with moving plateform with client prediction (z-problem)
+
+20-9-99 (Boris in 3DLand)
+- changed little stuff in hardware rendering sin->finsine etc...
+- search why legacy hang in glide ... no found :(
+- must sleep now.....
+
+21-9-99
+- download latest glide sdk, but nothing new.
+- install old glide3x.dll, and is now working !
+- TODO: try to load the dll from exe directory
+
+22-9-99
+- use grSstOrigin( GR_ORIGIN_LOWER_LEFT ) to desable y=-y in draw triangle
+- found and fixed why some polygone are not drawn in glide mode
+  is because old clipping code dont use the new coodonate system
+- found and fixed little bug in splats (no passage to next in splat list of
+  the line) (anyway this fix nothing since splats is fifo then it we never
+  free a "newer" splat)
+- found and fixed a bug in splats : since p_setup do not include "r_splats.h"
+  the wallspalt was not define then there was no R_ClearLevelSplats
+- rewrite w_cachepatchnum, it is now mush more readable and simple
+- optimize a little the HWR_RenderPlane
+
+24-9-99
+- fixed sky aspect ration in 3dfx
+- fixed sky problem in 3dfx/opengl
+- fixed somes problem with 3dfx memory handling, but there is
+  more problem... this one was caused by stupid 2MB boundary 3dfx spec
+
+25-9-99
+- now flat use the "cache3dfx" of the lump in wadfiles structure,
+  therefore : no more flatcache, this fix also the F10 problem !
+- make ClearMipMapCache public in the dll then use it before remove texture
+  cache, it seems like all cache problem are now fixed.
+- fixed final cast in 3dfx/opengl
+- added pic_t support in 3dfx/opengl (work only for status bar 16x16)
+- change translucency for monsters in 3dfx/opengl
+
+26-9-99
+- try to find how fov can be change (not found)
+- change the way that w_cachePatchnum work, now it return only the
+  patch_t  and the HWR_GetPatch load it to from disk and put it in
+  3dfx cache
+- TODO: + correct viewsize in opengl/3dfx
+        + automap in 3dfx
+        + debug drawfill
+        - crappy mlook ?
+        - () FIFO seconde chance for 3dfx cache
+
+27-9-99
+- fixed clipwall
+- try to put clipwall=1 without any missing line...
+
+28-9-99
+- work more on clipwalls code ,use it for bbox, it is little better
+- remove fovchange etc... for a beta release
+
+29-9-99
+- put default value for bloodtime to 20, also put this variable autosave
+- fixed splitscreen when cancel splitscreen, and singleplayer game
+- added cv_splats for disable/enable splats
+- fixed blood on floors not fall when platform down (removed noblockmap flag)
+- added translucency cvar
+- make new video menu to put this news cvars
+
+30-9-99
+- fixed draw flat in intermissiont text, and cleanup draw flat fill calls
+  and code
+
+2-10-99
+- added code to search divline trougth segs, but this do not fix the white
+  dots problem
+
+4 to 6-10-99
+- try to fix the blanc dot problem in 3dfx, is due to T-intersection problem
+- fixed minor stuffs reported by mails (spelling, deadmessage)
+- added controlperkey cvar (no more straff problem from lamers)
+
+7-10-99
+- added code to find segs corresponding on polygone side.
+
+9-10-99
+- speed up segs ajusting
+- speed up T-intersection detetion using bsp (terific !)
+- found why the hardware code sux : the bbox of the bsp
+  the solid segs optimisation used in software render can't be used
+  in hardware since here we must draw subsector even if there is no
+  segs
+  but enlarging subsector like do in notdefined BP_FIX_BBOX the choise
+  is larger and problem happens rarely....
+  Also thinks are grouped by sector not subsector is why the thinks don't
+  have this problem
+
+10-10-99
+- tune parameters of the news hwr_bsp fonction to have minimum white dot
+- Unfotunately there is a impossible (or too mush work) problem :
+  sometime the we can't ajust segment position simply because there are
+  no split of the segment at this position, maybe we must split original
+  seg here...
+
+11-10-99
+- do join with Thierry code
+- change one more time the origine of y axes in glide beauce glide apparently
+  do not support entierly this stuff( line, and clipwindow is not good)
+- fixed "blinking" sprite, caused by a patch not initialized
+  we must load the patch !
+- port last changes to dos version
+ TODO: fix sky, fix crappymul, fix splats !!!,
+       use visplaine like for hardware !, fix splitscreen status bar in hwr
+       fog ?
+12-10-99
+- found why splat can hang ! caused by bad texturecolumn calculation
+
+16-10-99
+- fixed minor problem of the responce file that don't take special caracter
+  this caused the miss detection of joystick when joystick avec french name
+  (boîte de commande à 4 boutons)
+
+18-10-99
+- recsearch no more return FS_FOUNDWRONGDATE, it only return notfound when
+  wrong date (this fix little problem where there is more than one copy of
+  the file)
+- SendFile now first look in wadfiles[i] to search files to send
+  this fix same problem as above but with the server
+- fixed problem of dwango8, etc... caused by usage of extrasubsector poly but
+  apparentely there is such polygone ! why ?
+- fixed splats on some wall not appear, caused by texture offset
+- TODO: + fix problem of automap in hwr (sb not draw)
+        + debug drawline in 3dfx
+
+21-10-99
+- fixed little problem in frustrum cliping, there was no draw of a poly if
+  after z cliping there was not more than 3 (<4) points
+- the gr_clipwall have been "abandonned" since i don't want to debug this code
+  anymore i have commanted this registation and let this variable be false
+
+30-10-99
+- finaly implement mouse wheel support ( I have received a mouse wheel offert
+  by a Legacy fan, just for the mouse wheel support), with logitech, em_exec
+  send the wheel event  after 20-30 seconde of run (probably a directX
+  detection) but it is realy anoing just remove it before launch legacy
+  (ctrl-alt-del and end-task)
+- installed gcc 2.951 for djgpp, and libsocket latest build (19/09/99)
+work fine (not tested network)
+- TODO : fix lmp don't record deathmatch 3 in network !
+
+31-10-99
+- fixed little problem with dos version in network (caused by init variable
+  not at 0)
+
+3-11-99
+- fixed stupid bug in glide, hang in init phase, caused by call to getString
+  too early we _MUST_ call grGlideInit first ! Well the doc is not very clear
+  about getString anyway the practis is now clear !
+
+5-11-99
+- apply fix of SHA, this fix hang with doom 1.666 wad caused by a buffer
+  overflow in p_enemy sorry but i have'n apply there fix he used list to fix
+  this, i just added a check and doubled the size of the array
+
+12 to 14-11-99
+- join source of Bell kin, nothing serious
+- join source of fab, no more setstate now use setblend
+- TODO: + glide ! sprite don't work, automap hang the banshee :(
+          enable fog, enable dlight, better sky render !
+          fix texture in 4 bit per color in opengl
+
+15-11-99
+- fixed draw of line in glide must be pf_modulated ?!
+- use a polygone renderer (optize for "3dfx hardware") for drawpoly !
+- desable use of alpha buffer /* call to grColorMask( color , alpha ) */
+- contnue to read the doc of 3dfx :(
+- fixed spite in glide
+- TODO : + set a flag for wrap or clamp texture mode !
+           well it must be a texture flag, soo until it is not implemented
+           we can't do it properly FAB ???
+         + fix status bar color in automap
+
+16-11-99
+- added flags to textures
+- used flags of texture to fix the clapping problem !
+- fixed little problem with corona in glide
+- TODO : + clip corona to z plane and frustrum in glide !!!! (it can hang,
+            ex : BFG)
+         + fix black dots eround spite and pic
+
+19-11-99
+- fixed fadescreenmenuback don't work in glide (the color was so dark than it
+  was confused with the chromakey, Fab have divide byte by 256 instead of 255
+  to convert in float !)
+- fixed also automap and menu.
+- TODO: + put alpha like in 1.28 for edge of spite
+        - big problem of sky in opengl (map01) !
+
+20-11-99
+- reading fab's log on changes found why demo2 get outof sych
+  (p_checkmeleerange) still bugy
+
+21-11-99
+- clean the hwr_main, so use the FOutVerts for Frustum and z clipping, this
+  clean all projection stuffs
+- moved clipping code in r_glide.dll so now use PF_clip to clip to near z plane
+  and to frustum, do nothing in opengl since opengl do it allready
+
+6-12-99
+- oops, don't have mush updated the log....(sorry) but i haven't do mush
+- fixed smoth edge of spite (we should put alpha to 0 on the visible edge
+  so the color melted is not the color of the chroma key (black) !)(or repeate
+  the near color in the edge with same color and alpha to 0)
+
+7-12-99
+- fixed multi deh load (M_CheckParm() in loaddehacked)
+
+10-12-99
+- fixed rocket splat don't work on upper/lower texture
+- added the code missing to put bloodsplat at upper/lower texture
+- spawnbloodsplat when rocket/plasma/bfg hit and when rocket expose
+- extend the controlperkey to the second player
+- added support of splat in 3dfx/opengl unfortunately there is bush of
+  problem :
+  + coordonate of splat is wrong (i susupect the non-hwr code)
+  - splat clipping in 3D code
+  + splat clipping in two-sidded line ! (not visible in software)
+  - we should add a test for splat since splats is recorded in the linedef and
+    it drawed by segs
+  - bias don't work
+  + missing PF_Sub
+
+11-12-99
+- fixed wrong cliping in 2sided line
+- added winnt detection
+- fixed mouse and keyboard acquire stuff so now we can do alt-tab (in software)
+
+12-12-99
+- work with Thierry :
+  - changed how glide work since i understand how opengl work, now pf_modulate
+    enable/disable constant alpha usage
+  - now the constant color is no more in float is rgba_t (i still don't
+    understand how vc6 put rgba as abgr in memory (maybe it detect that we use
+    opengl (big endian))
+
+17-12-99
+- discover that fab have done a -freq to tune frequency mixing of sound
+
+26-12-99
+- fixed alt-tab under winnt
+
+27-12-99
+- the sound should work under winNT 4 (sp5) was tested but with a sound card
+  not dx compatible so i don't know if it work
+
+29-12-99
+- have a flash : change the way of wait work : wait(time,commande) affter time
+  the commande will be pushed on command buffer, since this feature is like
+  advenced scripting this will be not implemented, but if any read this like
+  and would implement it add also if, user cvar and goto ! so it'll be complet !
+
+30-12-99
+- no more test the cv_splat to spawn the splat only for draw so network game is
+  no more out of synch, this change also the way of on/off work so you can put
+  splat without see theme
+- changed in the doc all reference to doom3 and replace them by legacy
+  should i change doom3.exe to legacy for dos users ?
+- change the way setvaluemod work so, now it work perfectely with multivalue
+  cvar, the function was renamed as cv_addvalue
+- change to way that toggle work, now it call cv_addvalue with the parameter
+  without parameter it call cv_addvalue with 1, this commend can be called add
+  or inc :)
+- begin the doc writing, so we can release soon.... finaly ! :)
+
+6-1-00 (oops my log have serous Y2K problem :))
+- someone infomre my that the sound now work under Win NT but not the midi
+- pause midi when using alt-tab
+- TODO: - sound should be paused also, but happens only with netgame, so not a
+          serious issue
+        - fix midi under win NT
+7-1-2000
+- fixed Y2k problem of my log ! :)
+- allow splitscreen variable change playeringame and multplayer, hope this
+  will not introduce a bug ...
+- continue doc writing
+- little change in sound... maybe repeated sound fixed....
+
+11-1-2000
+- join Thierry code
+- join Kin code (not yet tested)
+- TODO: - do alphaloading of sprite (get a patch_t and out a alphamap) for
+          splats
+        - clean this damn light code ! (Hurdler ?)
+        + clean this damn t&l code ! (Hurdler ?) (fix lightning problem)
+        - use xtoviexangle/viewangletox like in bsp for sprites
+
+12-1-2000
+- errorlog file contain now the command-line-parameter
+- in dos the message of exception have changed
+- todo : - write the exception in a file under dos
+
+17-1-2000
+- join with Thierry code
+   Notes for Thierry :
+    - faire du code selfdocumenter !!! mettre des non judicieux au variable
+      (example : ne pas utilise size mais radius ! et si c'est au carre
+      utiliser sqr !
+    - lors d'intruduction de nouvelle constant ne pas la metre betement dans
+      le code mais faire un #define qui donnerais d'ou elle vient
+    - aussi ne pas mettre le resultat du calcul de constante mais mettre le
+      calcul et lesser le compilateur faire le calcul c'est plus clair pour
+      tout le monde !
+    - les mirroir c'est tres jolie mais Doom legacy c'est un jeux pas une demo
+      donc il n'on pas leur place dans le code !
+    - le lithing ne marche plus !!! avec TANDL il est afficher sur un polygone
+      sur 2, et sans T&L il n'y a just plus rien du tout (belle methode pour
+      fixer les bug :)!
+- fixed notdef TANDL problem
+- fixed radius and sqr radius mess up in lighting code
+- removed the bbox optimisation in lghting code since the bbox must be also
+  rotated, it is now urgentely to implement lighting with bsp !
+
+18-1-2000
+- fixed menu using of scr_depth (causing crach)
+- first implementation of full join-inj-game using savegame (not yet finish)
+- i am a little desapinted about my contributions, i see that i now have done
+  a lot of code, but i know that this code is fragile and to change anything
+  it must be done with many attention : solution rewrite all the code !
+  (so i will probably leave all the stuff like it is)
+- TODO : + fix the automap in opengl ! (Hurdler ?)
+
+20-1-2000
+- finish gr_filtermode cvar we can now choose between :
+    POINTSAMPLED
+    BILINEAR
+    TRILINEAR
+    MIXED1
+    MIXED2
+- USEASM now can be desable (for non x86 platform)
+- Have done a monster big hack : draw the sky only when precedent frame
+  need him, the missing sky is not seen since : 1) only one frame don't have a
+  sky (not humain can see the miss), 2) most time the polysky is tryed to draw
+  when not visable (bsp drawing is far to be perfect)
+- TODO : + implement gr_filtermode in opengl
+         - support trilinear in glide
+
+22-1-2000
+- coded the three function missing for the full join in game, well funy only 1
+  hour to code, so now the debug :) (well for my defance i have point :
+   - there is a real new feature
+   - the state of the game is in global variable so i have a very hard task to
+     find such variable)
+- now the launcher put -server parameter even if computer waited == 1
+- added simple lauch option in the launcher
+
+23-1-2000
+- begin join-in-game debug (found stupid and more complicate bugs), at this
+  time it work but get directely out of synch, normal since there is so mush
+  global variable
+- change the way of deathmatch intermission work, no more key pressing waited,
+  just a timer (20sec)
+- TODO : i justy remind that i would like to put default skin in doom3.wad !!
+         (lutin (of course), max (copyright ?), snowman, ... ATTENTION: make
+         sure the skin is complete (sounds etc))
+- here is a resume of how spawnpoint is use so i can modify it more easely :
+  - spawnpoint is a correspondace with mobj (each mobjs (map mobj) have a
+    spawn point)
+  - it is initilize to 0 when mobj is not spawned by map (rocket, plasma, bfg,
+    blood, lost soul,
+    bullet hit point, ....)
+  - my optimisation will be : no more copy the spawnpoint in mobj but just link
+    to it with a pointer this apporche will get a littlebit more memory (the
+    pointer to the structure) well not realy since there is lot of mobj not
+    spawned it the map ! so maybe we will gain memory don't know, but the
+    methode have serious adventage now the mobj hare identified by the index
+    in the mapthing table so save game are smaller. (all this struf for
+    join-in-game pfff :) (I have also in minf for itemrespawn queue)
+  - with my habitual luck i have found a bug in doom you can't save game in
+    deathmatch cause itemrespawn are messed up, fixed it !
+- made the change promise so now the itemrespawnqueu is saved ! and working !
+- changed MT_MISC25 to MT_BFG9000
+          MT_MISC28 to MT_PLASMAGUN
+          MT_MISC27 to MT_ROCKETLAUNCH
+          MT_MISC26 to MT_SHAINSAW
+- go to sleep, debug is long....
+
+24-1-2000
+- implemented priority for reliable packet so sender window will not be full
+  of filefragment
+- FJIG : well seems like i found the last bug (not a global variable like i
+  say...) so now it work whitout consistancy failure !!!!
+  now the optimisation phase :
+    - reduice savegame size, save only changed stuff, maybe use a huffman
+      coding....
+    - reduice wait on the server side, client should ask the savegame more
+      later (in the game loop) fix the bandwith not used in fileticker, maybe
+      incrase the backuptics....
+    - at this time i assume that there is hiden global variable that
+      influence the game so the debug is't finish
+- like i say : there is consistancy failure in coop, nomonster :(
+- in the quest of consistancy failure finding i do:
+  - search for all global varibale
+  - search for all extern in .c
+  - clean all no-more-used global variable
+  - remove inhelpscreen since inhelpscreen is in menu and so menu redraw
+    allways the status bar !
+- TODO: + fix automap under opengl, and under 3dfx
+        - light for barrel explosions
+        - fix splitscreen in 3dfx (bad height)
+        - cleanup status bar drawn !!! (call it one time, etc...)
+        + translate color (player, caracter) under 3dfx/opengl
+        - remove extern that i leave, since there are so mush big hack i can't
+          "officilize" it in h file so fixit damned!
+        + replace (P_Random()-P_Random()) by 2 instruction ! see note of 5-4-99
+        + someone remind my by email to fix the external load of wad when
+          finished level it restart the same level
+        - fadescreenmenuback don't work preperly in glide
+
+25-1-2000
+- fixed :  automap in 3dfx, P_Random()-P_Random(), external map load (allways
+  same map)
+- found why drawfadescreen don't work properly : it use a texture ! so maybe
+  there is a bug in r_glide
+  TODO fix it !
+
+26-1-2000
+- have tested with the G400 provided by matrox :
+- change resolution on the fly don't work !
+- the drawfadescreenmenuback don't work properly (use a texture like in glide)
+ogllog.txt :
+-------------------------------------------------------------------------------
+HWRAPI Init(): DooM Legacy OpenGL renderer v0.96 (pre-release 2)
+HWRAPI GetModeList()
+Mode: 320x200
+Mode: 320x240
+Mode: 400x300
+Mode: 512x384
+Mode: 640x400
+Mode: 640x480
+Mode: 800x600
+Mode: 1024x768
+SetMode(): 640x480 32 bits (fullscreen)
+SetupPixelFormat() - 32 ColorBits - 0 StencilBits - 16 DepthBits
+Vendor     : Matrox Graphics Inc.
+Renderer   : Matrox G400
+Version    : 1.1.3 5.25.019
+Extensions : GL_ARB_multitexture GL_EXT_abgr GL_EXT_bgra GL_EXT_compiled_vertex_array GL_EXT_packed_pixels GL_EXT_texture_edge_clamp GL_EXT_vertex_array GL_SGIS_multitexture GL_WIN_swap_hint WGL_EXT_swap_control
+SetModelView(): 640x480
+SetStates()
+HWRAPI Shutdown()
+Nb frames: 8650 ;  Nb sec: 232.99  ->  37.1 fps
+UnSetRes()
+HWRAPI Shutdown(DONE)
+-------------------------------------------------------------------------------
+(640x480x32) :
+>timedemo demo1
+timed 4801 gametics in 399 realtics
+11.400000 secondes, 105.701754 avg fps
+-------------------------------------------------------------------------------
+(800x600x32) :
+>timedemo demo1
+timed 3042 gametics in 526 realtics
+15.028572 secondes, 80.180608 avg fps
+-------------------------------------------------------------------------------
+- fixe very little bug in timedemo report, show now the true leveltime fps is
+  not affected by the change
+- TODO : + in opengl the 5551 mode for 16 bit isn't supported by G400 driver
+           we should detect it and use
+         + fadescreenmenuback don't work preperly in opengl (texture was
+           displayed insteed )
+
+27-1-2000
+- insalled and recompiled legacy with djgpp 2.03 and gcc 2.952 !
+- fixed little problem with menu and controls
+- fixed litte bugs when switching from game then playing a demo then playing
+  a game, etc...
+- clean up lot of game stuffs
+- reset player between levels in deathmatch for more equality
+- fixed bunny scroll in opengl/3dfx
+- begin to optimize the save game, beginning with player_t : have converted
+  cards vector to bit field, i would want to convert some int to short but
+  status bar don't want, also i would want to use bit field of c for boolean
+  but i think it is not porable (heatch compiler will put the bit where it
+  want, so i will do better saving eatch field one by one
+
+
+28-1-2000
+- cleenup a lot a little thinks
+- optimized savegame : don't send map
+- fixed some issues of join-in-game, seems like it work perfectely now
+  no consistancy failure even if monsters !!!
+- optimize savegame size for mobj, now the map01 take 1K to be saved
+  but there is news bugs :( fix it tomorow
+- TODO : - remind my that we can put some dm maps in doom3.wad so there can be
+           standart map that everybody have (make sure pass to dm2 when
+           finidhed dm 1)
+
+
+
+29-1-2000
+- fixed some more issues of the jig
+
+1-2-2000
+- found problem with jig (stupid compiler compile (diff & MD_Z == 0) allways
+  false !!! without puting a warning !!!
+- save now fireflicker thinker
+- optimize the player saved stuff, take only 750 byte for the map01 !
+- TODO : + try to fix the archiv respawn monsters problem
+         - optimize more mobjs
+         + put the join code _after_ mode change (in the game loop)
+
+3-2-2000
+- moved achivespecial in to archivethinker so order of mobjs is preserved
+- fixed little issue when new player replace a old gone player
+- try to fix the jig in map 16 with monsters, not found
+- TODO : + fix sigsegv after a consistancy failure (server init)
+
+7-2-2000
+- fixed the archvile gost monster bug (inspired by boom code)
+- re-arrange console text buffer to keep text bettween change of resolution
+
+
+23-2-2000
+- fixed little problem with deferedplaydemo don't take full path nor path with
+  space
+- found the damned time problem of the auto wad copy is is caused by GMT !!!
+  TODO: + fix this
+- found why error :"p_touchspecial thing occure" is caused by p_checkposition
+  when trying to respawn player (g_checkspot), but the problem is : i don't
+  understand how it worked before ? my fix is remove the flag MF_PICKUP from
+  corps
+- with more investigation, i found that p_touchspecialthing don't take the
+  object when health<=0 so the problem was my own I_Error ! the I_error was
+  put for other kind of error !!! now i removed my similyfix...
+
+24-2-2000
+- investigate on gmtproblem of time/date conversion, windows copy the
+  timestamp without conversion but do conversion when print it in a string
+  so comparaison work (_MUST_ first call tzset()) _BUT_ winzip convert
+  timestamp to local timestamp so there is a problem !
+  Solution : allow two timestamp to be valide the not converted and the
+  converted so it is now fixed !
+
+3-3-2000
+- fixed little issue with dos version : tzset don't set global timezone
+  variable like in win32, so we must find a equivalent (TODO)
+
+
+16-3-2000
+- fixed little issue with restart in a demo
+- for Hurdler: the G400 latest driver fix the problem of 16bit texture and
+  notexture mode so no more problem with G400 (except with Q3 :( )
+
+
+24-3-2000
+- removed the mobj of player that was gone
+- added check in the launcher so now when exe is not found it say something
+
+25-3-2000
+- work on open-entry, now map commande spawn the server, the purpose is to
+  create the server later so there is no more opengl problem and there is no
+  wait when new player join, also client use "connect" commande
+  TODO: + finish the stuff, localplayer is no more cleared
+
+26-3-2000
+- i am a litle bored by this code, keep old compatibilities and make new
+  feature is realy boring ! There is no real logic and simplification
+
+- TODO : - implement timeout so server can drop lost client
+         - move send of modified netvar in savegame !
+
+28-3-2000
+- do a kickass optimization in Hurdler lighting code, use bsp bbox to reject
+  quickly light and polygone intersection
+
+1-4-2000
+- fixed joystick support under win32 (added hat support + alt-tab)
+- fixed wad not found issue in win32 (legacy wait a key but no message
+  displayed)
+
+
+7-4-2000
+- fixed load game problem with new system
+
+8-4-2000
+- fixed glide don't work with my banshee driver 1.4, the mipmap cache was
+  inited too early
+- now console is drawed while connecting to server
+
+11-4-2000
+- join with cvs source (bunch of new code with SoM boom support)
+- reenable the transulcency lindef 201-205 (removed by SoM)
+  (hope no conflict ?)
+
+
+12-4-2000
+- cleanup linuxhome code (too mush #ifdef boys !)
+- cleanup rocketjump, when desable enable the old code
+- set mousemove true by default (so old users don't have bad surprise)
+- extend connect command now can connect a named server
+- Some presition about CV_NETVAR (nothing changed, just a note):
+   All cvar are directely change when calling cv_Set or CV_SetValue
+   except netvar, netvar use sendXcmd in cv_set and return
+   sendXcmd fill localcmds then this buffer is sent at next tic
+   when received is executed by ExtraDataTicker (synchronely)
+   then set by Got_Netvar (then probably one or two tic later)
+   So you can't put CV_SAVE and CV_NEVAR because the network initcode
+   clear localcmd. (Maybe i will change this later)
+- rejoin with cvs
+- fixed SoM distraction about sector saving
+- fixed Boom support with FULL join in game (savegame problem)
+- TODO: + splat must refert to texture position so when opening a door
+          the splat move with
+        - also spalt must by stored by segs not by line so more simple cliping
+          and drawing
+
+13-4-2000
+- made some cleanup
+- can pause in deathmatch intermision
+- Well i just remind me there is lot of thinks to do when releasing,
+  check list:
+  - remove paranoia def
+  - put nothing in VERSIONSTRING
+  - desable logs and debug messages
+  - increment version so there is not a already released file with same
+    version number (even if beta)
+  - put correct version in doom3.wad
+  - rebuild all one eatch platform in release mode and test without any
+    special option
+
+20-4-2000
+- fixed : no more bloodsplat with barrels
+- fixed fullbright sprites and invuln/light gogle 3dfx bug
+- TODO: - (very low priority) implement nofog for fullbright sprite in
+          hardware code
+        - better handling of fixedcolormap in hardware code
+
+
+21-4-2000
+- partial fix of splat overdraw in hardware
+- fixed reborn when god cheat mode (player thinker was called with
+  playerstate=PST_REBORN)
+- cleanup the messy code of init under win32, also now we return of
+  d_doommain() so we clear the unused stack temp vars
+
+
+
+23-4-2000
+- change the way splitscreen work, now it send command to the server then
+  server add the player, also to remove him it use kick command
+- TODO: + test it in netgame !
+
+25-4-2000
+- fixed some issues of yesterday addes
+- all this modification now allow splitscreen cvar to by changed while in
+  netgame !
+- fixed, now the asm code use colormap for translucent sprite (so now the
+  translucent code do 3 memory access by pixel !)
+- change littlebit so now we use the colormap of translucent code
+- now splats move with doors/plats (maybe there is problem with peged texture)
+
+
+27-4-2000
+- change the wall colormap Hurdler code is no mush more simple.
+- lost my day to try to fix bugs introduise
+
+28-4-2000
+- finaly found what problem where, modifiing the code i intruduise bug, so
+  since there was from Hurdler too i can't isolated it, so since hurdler
+  fixed there bug i could debug mines :)
+
+29-4-2000
+- fixed idclev cheat problem, a global variable was not reinitialized with
+  SV_ResetServer, this fix alost problem of starting a new game where there
+  is allready one runing
+
+XX-5-2000
+- Draw invisible polygones for sky planes, so it update the z-buffer, there
+  isn't floating polygones (map12)
+
+14-5-2000
+- continue Kege idea, use the trans field of the frame to set alpha and
+  blending mode
+
+10-6-2000
+- fixed extra_colormap problem with asm code, the colormap must be aligned
+  by 8 bit for special optimisation
+- modify z_malloc so we can allocate aligned block without loosing space
+  in padding, z_mallocalign will do all the work for you and better the
+  adjoining block will be usable. so colormap and transtable no more
+  lose space in padding
+
+30-7-2000
+- disable all log messages to do the final release, now you must define
+  ( uncomment ) LOGMESSAGES in doomdef.h
+- implement i_getfreemem under windows
+- fixed more than one wipe after texte intermisson (F_Ticker() (F_final.c)
+  lauch map command more than one time)
+
+31-7-2000
+- documented the memory model in doom and hardware texture model (basiquely)
+- fixed big issue in network when using old protocol (ipxsetup, doomatic... )
+- update docs
+
+3-8-2000
+- found a bug in nwt, you can't update sound wav, nwt will no update the
+  lenght field properly, this cause the "tac" at the end of marine jump sound
+  so it is now fixed (to update a sound 1. remove the lump from the wad
+                                        2. quit nwt and do "nwt -c <thewad>"
+                                        3. insert and upload the sound )
+- modify camera so it take aiming angle in considaration
+  also removed crosshair when camera is active
+- improve lighting in hardware :
+  - make explosion of bfg, plasma ans rocket different from normal
+  - little hack for rocket exposion since it is the same "spite type"
+    make destinction with state (maybe we should put light per state not by
+    sprite, but static lighting will be harder)
+  - fade out alpha at the last frame of the light
+
+9-8-2000
+- fixed crash when exiting in dos version in network using winsock 1.1 (win95)
+  it is caused by close() of libsocket (probably a bug in the lib) anyway
+  close is done and the socket is not leave open.
+- fixed crash with vid_ticrate in opengl/3dfx
+- desable totaly divline searching (not only under linux)
+- implement waitvbl in glide
+  TODO: imlplement it in opengl !
+- added light when barrel explose
+- investigate on e1m2 music bug under win32 (to mush win32 message from music
+  player)
+
+10-8-2000
+- repace the if (peekmessage ()) by while( peelmeessage ()) so now it take
+  all messages, and can't be hanged because there is to mush messages in win
+  messages queue
+- removed messages from music callback, music continue to work so i don't know
+  for what this message is but it work without it, unfortunetely this dosent
+  fix all midi proivlem sometime it play with the wrong instrument and sometime
+  a notes never end :(
+- implement autodetection of card in opengl and disable know issus
+  for the moment only G400 and i810 have "read zbuffer" disabled
+- implement vid_ticrate in hardware, so i can see when fps drop,
+   in G400 map 29 lag a little
+- added light to lost soul
+- removed SoM code for flat loading so now gothic2.wad can be loaded !
+
+11-8-2000
+- 1.30 released !
+
+18-8-2000
+- removed all CLIENTPREDICTION the first methode, i think this methode was a
+  good idea but is far to be a good algorithme also the CLIENTPREDICTION2
+  methode can be bether and can be easely optimize
+- change semantic of I_InitNetwork now this function try to find external
+  driver, so it is only implemented under dos
+- debug CLIENTPREDICTION2
+  - fixed bobing
+  - partial fixed moving platform
+  - TODO:
+    + full fix moving platform
+    - send current weapon
+    + fix z problem ?! (sometime player jump)
+    + fix mobj go to (0,0) !
+    - implement automatic extradup
+
+19-8-2000
+- allow use of joystick y axis for looking up/down just use mouselook cvar
+  rename cvar ?
+- fixed little issue when client quit, sometime server go in to deadlock
+  (when server wait client acknowledge of the game client wait ack of network)
+- with help of gcc warning i found little bug of a & b == c compile make
+  first the == then the & so this seam like that fix mobj go to 0 and z-problem
+
+20-8-2000
+- found bug in 1.30! In hw_light.c, we render light of the preview frame but
+  when map change we render light of preview level !
+  i fixed this, i just call HWR_ResetLights between levels in p_setup.c
+- search whole day moving platform bug, and finaly found !
+  problem was caused by spirit cannot cross player mobj while in normal game
+  since function p_checkmobj position set tmfloorz to the wrong value when
+  the thing it something
+
+21-8-2000
+- no more coronas for mancubus balls
+- added light for revenent fireball
+- emulating packetlost i found a big bug that cause client to crach when
+  joining a game ! player avartar isn't spawned and it try to render !
+  so to fix this a added condition to render (i hate this hack :( )
+- clean up D_Display stuff and status bar stuffs
+- fixed crach caused by sprite/texture of 0 width (allow patch CHOOKV23.WAD)
+
+22-8-2000
+- fixed ramdom sigsegv with clientprediction2
+
+23-8-2000
+- fixed invisiblitity of player when joining a game
+- fixed some savegame issues (SoM and my own)
+
+25-8-2000
+- make opensocket function so we can stat a server in the game ! this also fix
+  problem when client is created before server and try  to join
+- TODO : + make menu for new server, connect and leave arena :)
+         - fix registerserver when not on internet problem is that it cannot
+           connect but user must wait open failure.. it is not acceptable so
+           use select or asychrone methodes
+
+26-8-2000
+- implement vid_wait under dos and put it in the video menu
+- implement opensocket under dos
+
+27-8-2000
+- clean up network code and implmeneted better close connection
+- added new command exitgame this one work in single or multiplayer it is now
+  used by end game menu option
+
+30-8-2000
+- now dehacked lumps are loaded when wad is loaded this allow runtime loadwad
+  to read dehacked lumps
+- change the way dehacked are handled, emulate a wad with one lump name
+  "dehacked", so the .deh is added to the wad liste and can be send by the
+  network, this also allow deh to be loaded at the console (not recommended)
+- removed tempfile usage for load dehacked lumps since now all dehacked files
+  are loaded the same way : via lumps
+- rename "opengl option" to "3D card option" and make it available for glide
+  users
+- fixed issues with gr_filtermode cvar in glide, the mode must be initialized
+  before do anything so now this cvar can be saved and i added it to the menu
+- fixed demo recording and playback of multiplayer demo (old protocol)
+- fixed splitscreen variable with demoplayback
+- TODO : - fix bloodtime cvar
+         + fix new game after a deathmatch game is steel in deathmatch !
+         - fix multiplayer demo with savegame (new protocol)
+
+2-9-2000
+- replace i_error by m_startmessage when there is problem connecting to a
+  server
+
+13-9-2000
+- rename net_freenodenum to net_closeconnection hope this will help
+- fixed problem with net_closeconnection and ack, now connection is closed
+  later to be sure that ack are back, there is also a timeout
+- TODO : - inform game code that connection is close by timeout
+
+20-9-2000
+- adjust buchholz for suicide. The final computation don't use suicide frags
+- added candle light (look great in map25 !)
+- finaly changed the fix for sprite feet in ground it was caused by
+  spritetopoffset != spriteheight so you can find special code in
+  R_AddSingleSpriteDef who change the topoffset
+- fixed player viewpoint (angle) when using F12
+- the STFB0 is now optinal in a skin replacement
+- TODO : fix light position and such, it use preview frame ! Hurdler ?
+
+27-9-2000
+- fixed memory clash caused by filename lenght too short when loading a
+  wadfile from console
+- renamed function dupstring to Z_StrDup
+
+30-9-2000
+- fixed death meassages issues : telefraged and when weapon change before the
+  player die
+- no more palette change in splitscreen (red screen) should be done by colormap
+- redraw stbar after a wipe this fix little graphic problem
+- removed usergame variable since it is useless and cause bugs !
+- moved code of resizing of corpse, now this is done in a_fall
+  this fix monsters steping
+- when solidecorpse is true you can smash it ant turn it to giblets !
+- turn solidecorpse savable
+- TODO : - fix aiming not good (crosshair) with different viewsize (with and
+           without stbar)
+         - fix cvar savable and network !
+         - more frames for giblets !
+         - fix platform move and stack of corpse
+
+1-10-2000
+- change the way legacy allocate the heap : now it try to detect available
+  memory so it can allocate from 6 to 20 Mb depend on free memory on the
+  system (not yet implemented under Linux)
+- plaine polygone are now allocated in the heap so there is no more limit of
+  polygone pool
+- this two modification allow to load big wad like 6fiffy3.wad without puting
+  any special parameters
+- TODO: - fix polygone anti-aliasing (polygonesmooth)!
+
+2-10-2000
+- fixed little mistake about qmus2mid and sdl
+- fixed monster try to attack corpse with solidecorpse==1
+- menu can now change string cvar
+
+3-10-2000
+- make the start server menu
+
+4-10-2000
+- work more on the server menu
+- make new connect menu
+
+5-10-2000
+- work some more on connect menu
+
+7-10-2000
+- fixed more issues about new menus (demoplayback, pause, display,...)
+
+???
+- changed a little master server code
+- fixed some little dos compiling issues
+- new register and unregister server code is in the right place (not iet
+tested hurdler ?)
+
+
+19-10-2000
+- wake up with a flash and make doom work at 140 TICRATE !
+  so now bunsh of constante are mul by NEWTICRATERATIO
+  specialy monsters speed and load of dehacked and animated texture at load
+- now ther is a spesific type for time : tic_t (was used for detect problem at
+  compil time :) anyway this is good thing)
+- unfortunately there is lot of backward compatibility for addapt the game to
+  play at != 35 fps
+- TODO for fps>35
+  - fix friction
+  - fix gravity
+  - fix old demos
+  - fix network (use entropy)
+  - test on 486/386
+
+20-10-2000
+- new sock_makenode can get port number in the string
+
+22-10-2000
+- fixed some little problem about splat on two sided wall still buged
+  problem come from wrong texture maping (should be from x2 to x1) (TODO)
+
+1-11-2000
+- change the way palette is handled now compute only one time the gamma
+  translation, also palette is static in memory, this allow easy palette
+  to rgba translation (for opengl textures) (not tested under linux)
+
+2-11-2000
+- fixed : cannot do a new game after fail of load wad
+- get convertion of texture/patch directely in RGBA for opengl
+  so no more convertion needed for texture/patch
+  warning : pic_t, flat, ??? continue to use the palette mode
+- now with new hwr_drawpatchincache we can do special effect :
+  partial transparency of torch !
+
+5&6-11-2000
+- made a new span asm code that is faster and better presition !
+- fixed little issue for lookup lookdown of splitscreen player with keyboard
+- added code to draw fake floor plaine in hardware, unfortunatly border isn't
+  easy as plane so it should be harder
+
+8-11-2000
+- well i started to fix the bug of "new single player game" is in deathmatch
+  after a deathmatch network game (the problem happen also when starting a
+  server after a single player game), problem come from that it re-sent to
+  itself modified cvar so cvar don't have enought time to change.
+  Anyway i know that i should modify this since leveltimer have also litle
+  issue with this. cvar must be sent by the savegame (this also fix cvar not
+  save in a single player game). But when client join in intermission it don't
+  receive savegame. So now i must send savegame even if there is no game
+  running (just a dummy one). Hope this will no introduice new bugs....
+- fixe SoM savegame issue caused by new field in vldoor_t badly saved
+- well change my mind the cvar are sent in servercfg packet so no dummy
+  savegame needed. Anyway fixed timelimit issue and "deathmatch single player
+  game" bug
+
+11-11-2000
+- fixed big issue in optimisation of lighting code, (there was no visual issue
+  just speed) (it was using y instead of z)
+- added z checking (or y if you want) for light bbox test should be faster
+
+12-11-2000
+- added backface cull for light, so it is no better than quake and unreal !
+- reading light computation, i see that we can do mush faster using length of
+  the segment that is static and already computed, anyway since Hurdler will
+  rewrite light code with t&l i will no do it now.
+
+19-11-2000
+- long time ago added legacy functions to heretic code
+  today i am trying to get legacy support heretic wads first step data
+  ( info table states, mobj, ...)
+
+21-11-2000
+- hacked a lot of code but i have seen the first level of heretic in legacy !
+  no sprite... but soon :)
+
+24-11-2000
+- fixed last bigs issues for heretic now it work with sprite and monsters
+  and.... WITH 3DCARD !!!
+  still lot to do :
+   + menu
+   + savegame ?
+   + core heretic engine (linetype, sector type, ...)
+   + tintabs
+   - add 3D lights :)
+
+26-11-2000
+- new cvar : joystickfreelook replase mouselook for the joystick
+- fixed somes issies about heretic under the dos version
+
+27-11-2000
+- begin engine join of doom legacy and heretic
+  done : p_floor, p_ceiling, p_door
+  methode : used indent -i4 p_*.c then used dircomp2 with heretic and original
+            doom files
+1-12-2000
+- do p_plat, p_setup, begin of p_spec
+  todo +implement P_InitTerrainTypes
+
+2-12-2000
+- finish join of p_spec
+ conflicting linedef type :
+  106
+    doom :    WR Door OpenStay Blazing
+    heretic : W1 BuildStairs 16
+  108,109,110,119,124,125,126,130,141,120,128,129,
+    define in doom but not in heretic, not disabled
+     (for heretic : missing door blazing sound, ...)
+  100
+    doom    : W1 Stairs Build 16 Turbo
+    heretic : WR Door OpenWaitClose Turbo
+  105
+    D : WR Door OpenWaitClose Blazing
+    H : W1 Exit To 9 (Secret Level)
+  107
+    D : WR Door Close Blazing
+    H : S1 Stairs Build 16 Turbo
+- TODO see if sector wind and scoll are correctely implemented
+- fixed little issue about exitlevel, secretexitlevel and cv_allowexitlevel
+
+3-12-2000
+- done p_switch, p_telept
+  conflicting linedef type :
+  111,112,113,122,127,131,133,135,137,140,114,115,116,123,132,134,136,138,139
+    same as yesterday doom lindefs unused in heretic so not disabled
+  99
+    D : BR BlzOpenDoor BLUE
+    H : Effect Scroll Right
+
+9-12-2000
+- added p_sight of heretic as p_hsight since there is lot of differences,
+  heretic code is called in P_CheckSight
+- done p_light and p_maputl (exactely the sames)
+- done p_map (blood stuff isn't imported from heretic since legacy have better
+  system)
+
+10-12-2000
+- done p_inter TODO : deathmessages, fire death
+- tested : it is very playable : monster, weapons, keys are ok
+
+11-12-2000
+- done p_pspr, since there is lot of new function, the new function are put in
+  p_hpspr, also level2 weapon are handled differentely
+  doen also p_user
+  TODO : + check usage of player->aiming (for legacy it is a angle, for heretic
+           it a a offset)
+         + fly, artefact (folow heretodo)
+- simplify usage of p_bulletslope, since it must be use by heretic code
+- done p_tick (heretic one have savegame stuff, TODO savagame of new heretic
+  field in player and mobj)
+- do p_enemy extra funtion put in p_henemy
+- added heretic statusbar sb_bar
+
+13-12-2000
+- done p_mobj, this finish all p_* files, now i must fix new heretic feature
+  and make code cleaner (sometime there are two way to do something heretic way
+  and legacy way)
+- added also sound and music support since there is no "ds" prefix to heretic
+  sounds
+
+15-12-2000
+- fixed micro bug in save/load menu option (cursore don't move)
+- fixed a lot of little graphical problem with status bar of heretic
+- found a big hack, that use screens[4] just for status bar buffer, i started
+  to put this in end of screen 1 buffer
+
+16-12-2000
+- finish implement of scaling of statuc bar (realy boring)
+- note that sementic of function have changed v_drawtranslationpatch is replace
+  by v_drawmappedpatch this one scale patch by default, you must specify
+  V_NOSCALEPATCH to draw noscaled patch, same with v_drawscaledpatch and
+  v_copyrect
+
+17-12-2000
+- added statusbar scale to heretic
+
+18-12-2000
+- fixed some little issue about heretic status bar
+- implement heretic inventory
+- implement power2 heretics weapon
+
+24/25-12-2000
+- fixed lot of problem about weaponinfo pointer in player, first with status
+  bar that try to render and update even if no local player is spawned, also
+  in multiplayer weapon info was used befor player structure was initilized
+  when loading savegame
+- do some savegame stuff for heretic
+  TODO : - rain1, rain2 unsaved
+         - special1 & 2  are saved as int so there will be probably problems
+
+12-1-2001
+- long time not updated my log sorry :( in this time i have updated heretic
+  code like intermision, stbar, ... and fixed little issue about this
+- fixed crashing state of imp not working (mising corpse flag)
+
+13-1-2001
+- done intermission for heretic (only tested with single player)
+- fixed little issues about new code and opengl, steal bug in glide :(
+
+14-1-2001
+- fixed glide stuffs (was w_cachelump num instead of w_cachepatchnum))
+- fixed some more heretic stuffs
+
+21-1-2001
+- fixed some more heretic issues (line 105 don't active, since checklinetag
+  don't know it)
+
+22-1-2001
+- added p_SignedRandom for replace p_random-p_random since it is compiler
+  dependent, we should also check eatch call to function like
+  f(p_random(),p_random()) since evalutaion of parameter isn't defined too...
+
+24-1-2001
+- added cv_coronasize cvar
+
+25-1-2001
+- fixed notexture flag in hardware mode in glide
+
+28-1-2001
+- fixed texturing problem in hardware mode with midle twosided texture, also
+  simplify HWR_StoreWallRange (there was a big messup)
+
+2-2-2001
+- fixed little issues that prevent lauch more than two client in a computer
+  i tested 1 server and 15 client in my computer work fine except windows that 
+  hang just after !
+
+4-2-2001
+- fixed size of windows in startup screen and in windowed mode
+- using test 16 legacy setion on my computer i tuned network code to send 
+  less data
+
+5-2-2001
+- fixed localangle was not used ?!
+- fixed very rare big when client join it can happens that clietn and server 
+  lock up both
+- found why windows hang after 16 legacy runing, i must close dos setion that 
+  launched the batch file that launch 16 legacy (seem lauching windows program
+  at command line under dos is hard for windows...)
+- fixed big problem of packetsize computation, and legacy wasn't detecting the 
+  problem so the server just lock up
+- allways with my 16 legacy running i discovered that the windows sheduler 
+  isn't fair i observed starvation (process just waiting to have some cpu time)
+
+6-2-2001
+- implemented timout detection and kick player if connection timeout
+
+7-2-2001
+- added cheat code for heretic 
+
+9-2-2001
+- fixed color of automap in heretic mode
+
+10-2-2001
+- added boom and legacy transparent linedef type support to hardware code
+  will not work until we change render order for translucency (TODO)
+- fixed the damn alphatest in glide ! this allow wall to be rendered in 
+  translucent mode so there is more beautiful smoth edge sprite look better 
+  also, this also fixe new coronas alpha test
+
+18-2-2001
+- make join with Calum mac source not bunch differences, just somes endians 
+  stuff, i don't have added all endiand swaps in network code since i think 
+  they is useless 
+- use setblend function in r_opengl to set default mode
+- finish color fix for hardware mode, but it is impossible to get exactely 
+  software colors sine in software there is more complex colormap usage in 
+  conjonction with the fog
+
+  The new systrem is brighten than beffor so the fog default density is put to 
+  1200, i must also fix the fog in glide since it isn't verry good (too quickly 
+  dark)
+
+19-2-2001
+- fixed glide fog table too dark
+- put default fogcolor to 0
+- oops for backward compatibility issue the default density is back to 500 but
+  i chnaged constante so it is like old 1200
+- back to pf_masked for textures since midtextures are not drawned at last and 
+  it blend with sky then render back stuffs :(
+
+21-2-2001
+- fixed little issue in SphereTouchBBox3D (z instead of y)
+- fixed translation table for player in heretic mode
+- change message in screenshot function and clean up a little
+- fixed console translation table in heretic white table is maped to red since 
+  console caraters are white in heretic
+- fixed start multiplayer menu in heretic
+- fixed respawn stuff in heretic, i was esiteting long time to get heretic 
+  "respawnning engine" (it mark mobj invisdible and ungetable and set it in 
+  special state that will get it back after soem time) finily i use old doom 
+  code since it allow to respawn stuff even if respaw cvar is set to false then 
+  to true while in game (we can have the same in heretic but we must keep all 
+  special mobj in memory)
+- discovered that artefact is allways hide instead of to be removed
+- TODO : - fix bug with chicken when attacking other player 
+         - add extra player state to get the full heretic player death anim
+
+22-2-2001
+- fixed bug in backfaceculling of light in planes
+- remove lvertex3D type since it is the same as FVector
+- fixed little issue in setup player 2 menu (there was one extra entry)
+- added text in menu title to display with fontb (for heretic)
+- fixed usage of sfcfnxxx lump in menu repalce by v_drawcaracter this work 
+  under heretic
+- fixed border in menu for heretic
+- TODO : + fix ranking menu in heretic, it don't use right player color
+         +- fix chromakey usage in heretic !
+
+25-2-2001
+- implemented better support of pic_t in hardware this allow heretic main pic 
+  to be drawed, this also add support for high res and high color textures 
+  (untested)
+- it work great under glide but not at all under opengl ?! and I DONT FIND 
+  WHY !!!!! (damned)
+- (...) find WHY : pic was drawed z test enabled !!!
+- TODO: - fix border of some patch in red in heretic probably chroma key color 
+          problem
+        + fix patch not reloaded in opengl when palette is changed 
+
+27-2-2001
+- fixed patch not reloaded when palette change under opengl (was caused by 
+  w_cachepatchnum who set tag mode in pu_cache instead of pu_hwrcache
+- translate chromakey color only when needed this fix litle problem in heretic
+  sprites
+
+28-2-2001
+- replace lot of sprint by snprintf and vsprint by vsnprintf this should fix 
+  some rare stack trash...
+  unfortunately this is not porable at all (not found in djgpp libc) so i make
+  a macro for the other platform in doomdef.h
+- damned this vsnprintf ans snprintf is unkonw for the libc of windows so i 
+  have removed the vsnprintf ans snprintf using macro in doomdef.h
+
+1-3-2001
+- removed my vsnprintf and snprintf since this is useless and can cause 
+  missunderstand of code.. too bad we should do something for this...
+- fixed little issue in dos when vesa desciption is greater than 50 byte
+  hope this fix SoM issue in vid_vesa...
+- udpated whatsnew.txt, legacy.txt, console.txt and editing.txt for next 
+  release.
+- fixed flying icone in heretic mode at start of a level
+- fixed color in deathmatch rancking
+- TODO : - fix bobbing of beak
+
+3-3-2001
+- added fly down key to heretic and fixed lot of little problem of fly movement
+- fixed crach in automap in heretic in hardware mode
+
+10-3-2001
+- fixed palette of starting window in windows mode in hardware
+
+11-3-2001
+- fixed some issue in linux x software mode (removed useless call to 
+  XF86VidModeGetModeLine, and some sigsegv problems)
+- added check of -nomouse to linux 
+
+18-3-2001
+- heavely tested legacy at a net party so find some bugs :
+  - toutching problem back (kick fix)
+  - mkdir(download) dir under linux dont allow to write files after (fixed)
+  - copy file don't work at all under linux (TODO)
+
+19-3-2001
+- check copy file under linux i was unable to reproduice the bug since my 
+  linux make error when doing brodcast send in udp ?!
+
+29-3-2001
+- added very little code from hexen to try to fix some little problem in 
+  heretic code
+- added check for noblood flag before spawn blood under crusher
+
+30-3-2001
+- hey I_freesfx already exist so put this in S_RemoveSound function instead of
+  Z_free of free
+
+31-3-2001
+- totaly disabled legacy z checking code so now only heretic code is used
+- tested legacy with latest driver for voodoo card 1.04.01 beta unfotunatley 
+  it don't allow to set pixelformat twice on the same window (like specs say)
+
+1-4-2001
+- fixed final demon scoll for end of heretic e3m8, beauytful ! (and for 
+  hardware as well)
+- fixed cannot restart game after end of a episode
+- fixed final text in heretic too large
+- changed blendmode for all hw_draw function this fix red border for text in 
+  heretic
+
+2-4-2001
+- disabled the wad check version for the iwad since it don't change anything
+  and it generate a useless mail overhead :)
+- fixed not using "useasm" define
+
+8-4-2001
+- use the right texture and texture coord for thick line and hardware
+
+27-4-2001
+- renamed I_StartTic function to I_OsPolling so it code is more readable
+- re-enabled sharware check for "-file" option, until someone whant to make 
+  better test, problem is that most of third party wad use texture monsters 
+  object of the registered wad so it will not work properly in sharwaremode
+
+xx-5-2001
+- released 1.32 beta 1
+ 
+10-5-2001
+- fixed joystickfreelook cvar not working
+
+14-5-2001
+- added little menu cosmetic that tell when the serverlist his empty
+  and fixed little problem of refresh
+- fixed ":" instead of "." in frensh keymap for del key in keypad
+- fixed (one more time) angle prediction 
+- added posibility to change death message by dehacked scipt and fixed 
+  some ones
+- fixed final cast not showed corectely
+- fixed some problem with heretic final episode stuffs
+
+15-5-2001
+- fixed bug of yesterday
+- replaced whole function by a option to v_drawpatch should be easyer to 
+  maintain
+- make new option to hwr_drawpatch and hwr_drawmappedpatch so it can draw 
+  scaled and not scaled patch it also handle scaled/noscaled start this allow 
+  better usage of such function and make main code mush more simple
+
+16-5-2001
+- finish that was begon yesterday, and fixed litle problems
+- redo the scale statusbar support under hardware since all function used are 
+  changed
+- fixed reset of weapons on doom2 map07, map12 and map21 (bug  
+- TODO : + we must redraw border of status bar when statusbarscale is false
+         - aspect ratio in opengl is wrong when changing viewsize !
+           (this cause crosshair to be wrong plassed !
+
+- added native support of heretic1.wad still left lot of problem when patch is 
+  not found :(
+
+23-5-2001
+- change the way menu eat the event in M_responder, first it alway eat event 
+  when menu is active, this fix problem with inventory key working while in 
+  menu (and probably some other problem too) (this fix bug 426338)
+
+24-5-2001
+- change the way legacy get parameters under windows, this allow legacy to 
+  have the full command line
+- removed lots of #ifdef HW3SOUND and replace it by macros
+- investigate on network heretic bug, i think that it is caused by savegame 
+  problem...
+- i found that heretic do not have tracer field in mobj structure, normal since
+  heretic is based on doom 1 and doom 1 do not have revenant, anyway i replace 
+  usage of special1 as tracer by the tracer field, this allow savegame to save 
+  such pointer (there is special code for pointer), this surely don't fix the 
+  heretic network bug but fix a futur bug :)
+- fixed a crach occuring when fire a missle that explode directely (happens 
+  with heretic rod level 2)
+- fixed big problem in heretic with sector special > 31 problme come form boom 
+  spec that uses this differentely can we find a proper solution since now we 
+  have removed boom sector type suport under heretic? (SoM ?)
+- fixed floor anim not working in heretic ! (SoM bug !)
+- TODO : + fix hanging skull in e2m5 is in floor !
+
+25-5-2001
+- note for hurdle since i see there comment in r_things.R_DrawMaskedColumn 
+  "//Hurdler: bug here" if you have a sigsegv with errorlog.txt you can follow 
+  the stack to know from where the problem come from, most of problem for 
+  drawing routine is that the patch have wrong format or we are trying to draw 
+  a lump that isn't a patch
+
+27-5-2001
+- removed a duplacatred S_StartSound (thing, sfx_slop) in PIT_ChangeSector
+- fixed bug 427507 : doors no more turn corps to giblet, the probem was taht 
+  the solidecorpse code set health of sorpse to positve, the old code used the
+  heart to determine if it is a corpse now it use the MF_CORPSE flag
+- added litte printf in devparm that show how much it took to compute md5 
+  checksum for info in my system (amd k6III 400 hd ATA33) it took 1.08 sec 
+  (wad not in cache) on a P100 with very old 500Mb hd it took : 7.37 sec that 
+  is suriopusely noticeable)
+
+- added gr_coronasize in the menu
+- little changed in the final text display now it can be finish when pressing 
+  a key even in doom1 and heretic (was not there before) and first the text is
+  display then when pushed a seconde time it quit 
+- TODO: it seem like when solidemonsters is true i cannot go on it wihtout 
+        jumping. Is someone have removed the steping for mobjs ?
+
+28-5-2001
+- fixed death message was wrong when killing with bfgspray and we switch weapon
+
+6-6-2001
+- fixed problem with load/save menu screen that screw up the texture cache in 
+  glide, and just display badly in opengl
+
+10-6-2001
+- fixed title of video mode menu in heretic
+- added support of heretic slider used in sound volume controle menu
+- found and fixed heretic consistency failure, was caused by ambient sound 
+  that should be also sychronized by the p_random, i fixed it using m_random 
+  this cause the ambient sound to be local of the computer, if someone want to 
+  resynchonize ambient sound we must save ambient sound in the savegame
+- very kick and bad fix of monster sight bug, commented heretic code so 
+  heretic monster use sight doom code
+- fixed heigh of weapon on heretic 
+
+11-6-2001
+- beta 2 released
+
+13-6-2001
+- fixed heretic weapon heigth in opengl/glide
+- fixed conflicting sector type 4
+
+14-6-2001
+- draw full screen when status bar is not scaled in hardware 
+- fixed moving hanging mobj on platform (e2m5)
+- fixed i_error when saving a void mobj 
+
+15-7-2001
+- fixed crash of e3m8 in heretic caused by objet 56 badly handled
+
+16-7-2001
+- removed viewactive global variable, it was useless and caused crosshair 
+  not drawed bug (in multiplayer) (it was not set to tru in a path... anyway 
+  i don't like global variable)
+
+17-7-2001
+- added direct 3d sound switch to the launcher
+- reput line removed in P_ThingHeightClip, comment :
+   BP: i know that this code cause many trouble but this fix alos 
+   lot of problem, mainly this is implementation of the stepping 
+   for mobj (walk on solid corpse without jumping or fake 3d bridge)
+   problem is imp into imp at map01 and monster going at top of others
+
+24-7-2001
+- added recursiv file search for files for windows version, this fix network 
+  join in game consistancy fail while using addintionnal wad
+
+25-7-2001
+- fixed drawstring with option noscalestart, was used for option "se" of 
+  the overlay
+
+28-7-2001
+- fixed map30 savegame crash, caused by global variable initilalized at wrong 
+  place
+- fixed commander keen dead not open door, caused by solide corpse modif 
+  (health > 0 even if dead, use corpse flag now) anyway i used bossdeeath 
+  methode that work anyway
+- autosave option in the launcher so if the computer crash we have not lost it
+
+29-7-2001
+- investigate on bug map05 "door with blue armor don't open", first i discover 
+  that this bug is a original doom 1.9 bug, second it is caused by the tag 9 
+  that is used but a door neer ans is supposed to open doors, but it thsi case
+  it down the ceiling so when door whant to open it cannot, maybe we can fix 
+  the bug doing test of direction (th ceiling is supposed to go up not down, 
+  but i don't know maybe the feature is used elsewhere
+
+2-8-2001
+- fixed player reset betwwen secrets levels of doom2
+
+xx-8-2001
+- now legacy can load skin using sprite keywork (original spec)
+
+11-8-2001
+- fixed problem of map29 not loading
+- fixed timelimit cvar problem in menu
+- now launcher enclose wad string between quotes to send paramter to legacy
+  this allow space ans special caractere in wad files
+- fixed quoted badly handled in responce file
+
+12-8-2001
+- truly disabled search of divlines in hardware this speed up greatly 
+  load level
+- i reenabled BP_FIX_BBOX in hw_bsp this recompute the bsp bounding boxes, 
+  should optimise a little
+
+19-8-2001
+- added tandl to glide
+
+20-8-2001
+- fixed map30 warp to map31 bug
+
+26-8-2001
+- fixed fov in glide, also generalize the use of fov so it should work 
+  better for coronas

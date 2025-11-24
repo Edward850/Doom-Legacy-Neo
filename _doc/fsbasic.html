@@ -1,0 +1,870 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+ "http://www.w3.org/TR/REC-html40/frameset.dtd">
+<html>
+<head>
+
+<title>FraggleScript Basics</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type-Style" content="text/css">
+<meta name="GENERATOR" content="UltraEdit-32">
+<meta name="author" content="James Haley">
+<meta name="copyright" content="Copyright 2000 James Haley">
+
+</head>
+
+<body text="#70f070" bgcolor="#000000" link="#70f070" vlink="#70f070" alink="#70f070">
+
+<p>Note: We'd like to thanks Quasar for allowing us to modify the docs of the 
+<a href="http://www.doomworld.com/eternity/etcengine.html">Eternity Engine</a>
+ to reflect Legacy FraggleScript implementation.<p>
+
+<a name="top"><h3>FraggleScript Basics -- Updated 14 August 2001</h3></a>
+
+Contents
+<ul>
+  <li><a class="eng" href="#start">Getting Started</a>
+  <li><a class="eng" href="#scripts">Defining Scripts</a>
+  <li><a class="eng" href="#vars">Variables and Data Types</a>
+  <ul>
+    <li><a class="eng" href="#coercions">Type Coercions</a>
+  </ul>
+  <li><a class="eng" href="#functions">Calling Functions</a>
+  <li><a class="eng" href="#control">Control Flow Structures</a>
+  <li><a class="eng" href="#activation">Script Activation Models</a>
+  <li><a class="eng" href="#operators">Operators and Operator Precedence</a>
+  <li><a class="eng" href="#keywords">Keyword List</a>
+</ul>
+
+<p>
+<a name="start"><h4>Getting Started</h4></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;To get started using FraggleScript in your DOOM
+levels, you'll need to fully understand most or all aspects of DOOM level
+editing and WAD file manipulation. If you haven't mastered this basic stuff,
+it would probably be wise to check out the Doomworld tutorials section and to
+look up a few FAQs. These documents assume you understand basic DOOM editing.
+
+<p>
+When you first want to create scripts, you should save a blank file from a
+suitable text editor as something appropriate, like "map01.fs"  The .fs
+extension is not required, but its useful for figuring out what and where your
+files are later.<br>
+When you have the file, you need to place a header in it like this:
+<pre>
+[scripts]
+</pre>
+This tells the game that your mapinfo is declaring a section for scripts. Note
+that FraggleScript scripts in Legacy reside in the map header along with all
+other mapinfo information. If you want to define other mapinfo blocks, you can
+put them before or after this section.<br>
+Example:
+<pre>
+[level info]
+levelname = The Palace of w00t
+creator = Quasar
+
+[scripts]
+</pre>
+
+After the header is in place you can begin defining scripts and variables.
+When your job is done, you can use the add_fs utility, available with Legacy, 
+to insert your scripts into the level. How to define and use scripts is
+covered below.
+<br><br>
+
+<a class="eng" href="#top">Back to Top</a><br><br>
+
+<p>
+<a name="scripts"><h4>Defining Scripts</h4></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scripts are the basic subprogram unit of
+FraggleScript, similar to the functions of C and the procedures of Pascal.
+FraggleScript scripts do not take any explicit parameters, however, and
+cannot return values, which is quite different from most languages.<br>
+Levels can currently have up to 256 scripts, numbered from 0 to 255 (future
+expansion of this number is possible to allow for persistent scripts). Scripts
+exist only within the level to which they belong, and for the most part only
+affect that level, with the exception of hub variables.<br>
+To declare a script, follow the syntax of the following example:
+<pre>
+[scripts]
+
+script 0
+{
+}
+</pre>
+The <span class="keyword">script</span> keyword denotes that the script definition is starting, and the number
+following it is the number for this script. Script numbers should always be
+unique, one per defined script.<br><br>
+
+The script above is valid, but it is not very interesting because it does
+nothing, and a script alone cannot run without first being called. Scripts may
+be invoked in several manners, which is covered in the Script Activation
+Models section.<br><br>
+
+<a class="eng" href="#top">Back to Top</a><br><br>
+
+<p>
+<a name="vars"><h4>Variables and Data Types</h4></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;One way in which scripts can accomplish things is
+to interact with variables. Variables can be of three natures, explained as
+follows:<br><br>
+
+Built-In -- These variables are always present and are defined by the 
+FraggleScript runtime. They can be accessed by any script. Their value typically
+defaults at the beginning of each level.<br><br>
+
+Built-in variables, current to Legacy 1.40, include:<br><br>
+
+<span class="keyword">int</span> consoleplayer - the player number, 0 to 3 
+inclusive, of the player attached to the local machine<br><br>
+
+<span class="keyword">int</span> displayplayer - the player number of the player 
+being displayed on the local machine<br><br>
+
+<span class="keyword">int</span> zoom - the zoom level for the game camera<br><br>
+
+<span class="keyword">mobj</span> trigger - a reference to the mapthing that
+started this script. This variable is important and very useful.<br><br>
+
+Global -- These variables are defined outside of any script, either in a header
+file or in the [scripts] section of the mapinfo lump. Any scripts in the current
+level can access these types of variables. If global variables are declared with
+the <span class="keyword">const</span> keyword, they are constants, and if they are 
+declared with the <span class="keyword">hub</span> keyword, then the current list 
+of hub variables will be searched by name for a match when the declaration is encountered. 
+Hub global variables persist between levels and can be accessed and modified by 
+scripts in any level until the current cluster ends.<br><br>
+
+Examples:
+<pre>
+[scripts]
+
+const DOORSPEED = 4;
+hub int visitedSwamp = 0;
+
+int i = 0;
+
+script 0
+{
+   i = i + 1;
+}
+</pre>
+
+Note that const variables adapt to the default type for their provided literal,
+while hub global variables require explicit typing.<br><br>
+
+Local -- These variables are declared inside a script. They can only be accessed
+within the script itself, and are destroyed when the script completes execution.
+<br><br>
+
+Example:
+<pre>
+[scripts]
+
+int i = 0;
+
+script 0
+{
+   int i = 1;
+   print(i);
+}
+</pre>
+
+Note that the print function in this example will print the string "1" and not
+"0" because local variables always take precedence over any built-in or global
+variables. This is an important distinction to remember.<br><br>
+
+Variable names may be of arbitrary length, but should not be named with any
+FraggleScript reserved word.<br><br>
+
+FraggleScript has four primary data types as follows:<br><br>
+
+<span class="keyword">int</span> - 
+32-bit signed integer. Only decimal integer literals are accepted.<br><br>
+Example:
+<pre>
+int x = 0;
+</pre>
+
+<span class="keyword">fixed</span> (also <span class="keyword">float</span>) - 
+a 32-bit fixed-point number, somewhat similar to floating-point except that the 
+decimal place is fixed at 16 bits so that the word is evenly divided into 
+integer and decimal parts. fixed numbers must be specified with a decimal point, 
+otherwise the literal will be interpreted as an integer. fixed values are used 
+for high precision interaction with the game world.<br><br>
+
+Example:
+<pre>
+fixed f = 2.71828;
+</pre>
+
+<span class="keyword">string</span> - a string of ASCII characters. 
+FraggleScript strings are limited in length to 256 characters. The following 
+escape sequences are supported:<br><br>
+
+\n - line break<br>
+\\ - a literal \ character<br>
+\" - a literal " character<br>
+\? - a literal ? character<br>
+\a - bell character - causes the console to play a sound<br>
+\t - tab<br>
+\0 - write white text
+
+Strings must be delimited by quotation marks as follows:<br><br>
+<pre>
+"Hello, World!\n"
+</pre>
+
+<span class="keyword">mobj</span> - an opaque reference to a DOOM mapthing 
+(ie monster, lamp, fireball, player). The values of these references must either 
+be obtained from object spawning functions, or can be specified by use of 
+integer literals, in which case the mobj reference will point to the mapthing 
+numbered by the map editor with that number<br><br>
+
+Examples:
+<pre>
+// spawn a new dwarf and keep a reference to it in "dwarf"
+mobj dwarf = spawn(HALIF, 0, 0, 0);
+
+// get a reference to the thing numbered 0 at map startup
+mobj firstthing = 0;
+</pre>
+
+Note that using map editor numbers for things has the distinct disadvantage
+that when the map is edited, the things will be automatically renumbered if any
+are deleted. It is suggested that the latter form of mobj
+reference assignment be avoided unless necessary.<br><br>
+
+mobj references are very powerful and allow a large number of effects and
+fine control not available in other languages such as ACS.<br><br>
+
+Also note that although integer literals can be used to assign mobj reference
+values, mobj and int are not interchangeable, and statements such as
+<pre>
+mobj halif2 = halif + firstthing;
+</pre>
+are not, in general, meaningful.<br><br>
+
+<a name="coercions"><h5>Type Coercions</h5></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FraggleScript is a weakly typed language, and
+as such, coercions are made freely between all data types. These coercions
+follow the rules below:<br><br>
+
+Conversion to <span class="keyword">int</span> from:<br><br>
+
+<span class="keyword">string</span> - the string will be passed to the ANSI C function atoi()<br><br>
+<span class="keyword">fixed</span> - the fixed-point value will be chopped to its integer portion with no rounding<br><br>
+<span class="keyword">mobj</span> - coercion is not meaningful, -1 is always returned
+<br><br>
+
+Conversion to <span class="keyword">fixed</span> from:<br><br>
+
+<span class="keyword">string</span> - the string will be passed to the ANSI C function atof(), and then the
+resulting double value is renormalized and chopped into fixed precision (this
+process incurs unavoidable round-off error).<br><br>
+<span class="keyword">int</span> - the integer value is renormalized as a fixed value (overflow is possible if
+the integer is greater than 32767 or less than -32768, and is not checked).<br><br>
+<span class="keyword">mobj</span> - coercion is not meaningful, -1*FRACUNIT is returned (FRACUNIT is equal to
+1<<16 and represents the value 1 in the fixed-point number system).
+<br><br>
+
+Conversion to <span class="keyword">string</span> from:<br><br>
+
+<span class="keyword">int</span> - the value is converted to a string via the rules of ANSI C's stdio functions<br><br>
+<span class="keyword">fixed</span> - the value is renormalized as an IEEE double floating-point number and then
+converted to string via the rules of ANSI C's stdio functions (this process incurs
+some unavoidable round-off error)<br><br>
+<span class="keyword">mobj</span> - coercion is not meaningful, the string "map object" is always returned
+<br><br>
+
+Conversion to <span class="keyword">mobj</span> from:<br><br>
+
+<span class="keyword">int</span> - the level is checked for a mapthing numbered by the value of this integer
+and if it exists, a reference to it is returned -- if it does not exist, a script
+error will occur<br><br>
+<span class="keyword">string</span> - the string will be passed to atoi() and the resulting integer value will
+be cast via the rules above<br><br>
+<span class="keyword">fixed</span> - the fixed value is chopped to its integer portion and then the resulting
+integer value will be cast via the rules above
+<br><br>
+
+Coercion is an automatic process that takes place when a variable is assigned the
+value of a variable of a different type, when values are passed to functions
+that do not match the specified parameter types, and when operands of multiple
+types are used with some operators. Some functions may perform more strict type 
+checking at their own volition, so beware that script errors may occur if 
+meaningless values are passed to some functions.<br><br>
+
+<a class="eng" href="#top">Back to Top</a><br><br>
+
+<p>
+<a name="functions"><h4>Calling Functions</h4></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FraggleScript offers an extensible host of built-in
+functions that are implemented in native code. They are the primary means to 
+manipulate the game and cause things to happen. The FraggleScript Function
+Reference is a definitive guide to all functions supported by the Legacy dialect;
+this document will provide some basic examples of function use.<br><br>
+
+Most functions accept a certain number of parameters and expect them to represent
+values of specific meaning, such as an integer representing a sector tag, or
+an mobj reference to a mapthing to affect.<br><br>
+
+The function reference lists the parameters that each function expects, but
+there are some important things to take note of. As mentioned in the previous
+section, type coercions can occur when functions are passed parameters of other
+types. An excellent example is the following:
+
+<pre>
+script 0
+{
+   startscript("1");
+}
+</pre>
+
+The startscript function expects an integer value corresponding to the number
+of a script to run. Here it has been passed a string, "1". Strings will be
+converted to the integer they represent, if possible, so this string is
+automatically coerced into the integer value 1, and the script 1 will be started.
+<br><br>
+
+An example of a coercion that is NOT meaningful in the intended manner would be
+the following:
+
+<pre>
+script 0
+{
+   mobj halif = 0;
+   
+   startscript(halif);
+}
+</pre>
+
+mobj references can be assigned using integer literals, but the rules for
+coercion from mobj to int state that -1 is always returned for an mobj value
+(this is because there is *not* a one-to-one mapping between mobj references,
+which can include objects spawned after map startup which do not have a number,
+and integers). This statement has the effect of
+<pre>
+startscript(-1);
+</pre>
+and since -1 is not in the domain of startscript, a script error occurs.<br><br>
+
+Parameter coercions of this type should be avoided for purposes of clarity and 
+maintainability of your code. When coercions are convenient or necessary, be
+certain that the value you obtain through coercion will always be meaningful.
+<br><br>
+
+Note that some functions, like print, can take a variable number of parameters.
+These types of functions generally treat all their parameters in a like manner,
+and can accept up to 128 of them. See the reference to get a better idea about
+these types of functions and what they do.<br><br>
+
+Functions may return values, and in fact, most useful functions do. To capture
+the return value of a function, you simply assign it to a variable.<br><br>
+
+Example:
+<pre>
+script 0
+{
+   fixed dist;
+   
+   dist = pointtodist(0, 0, 1, 1);
+}
+</pre>
+This places the fixed-point distance between the points (0,0) and (1,1) into
+the fixed variable dist. It is *not* necessary to capture the return value of
+a function simply because it has one. For instance,
+<pre>
+script 0
+{
+   pointtodist(0, 0, 1, 1);
+}
+</pre>
+is a valid statement; it is simply useless since pointtodist has no side
+effects, or things that occur within a function call that affect the program 
+environment. Likewise, it is possible to use function return values without
+explicitly capturing them in variables, like in the following example:
+<pre>
+script 0
+{
+   print(spawn(IMP, 0, 0, 0));
+}
+</pre>
+This causes a new imp to be spawned at (0,0,0), a side effect. Since spawn
+additionally returns a reference to the new object, the mobj reference returned
+by spawn becomes the parameter to the print function, and the resulting output
+to the console is "map object". The value returned by spawn "disappears" after
+the print function has executed and cannot be retrieved or otherwise used. This
+is useful when you don't need to save the return value of a function beyond
+using it as a parameter.<br><br>
+
+If a function is listed as being of return type void, this means that it does
+not return a meaningful value and that it operates by side effect only, like
+a procedure in some languages. However, unlike in C, void functions in 
+FraggleScript, will return the integer value 0, rather than causing an error 
+when used in assignments. In practice, it is best not to assign variables the 
+null return value from a void  function even though it is allowed, since this 
+is confusing to see in code and useless anyways.<br><br>
+
+Note that it is possible to make limited function calls outside of any script,
+in the surrounding program environment, which in FraggleScript is referred to
+as the levelscript. Function calls placed in the levelscript will be executed
+once (and only once) at the beginning of the level. This is commonly used to
+start scripts to perform certain actions.<br><br>
+
+Example:
+<pre>
+[scripts]
+
+script 0
+{
+   message("Welcome to the Palace of w00t, foolish mortals!");
+}
+
+startscript(0);
+
+</pre>
+
+In this example, all players would see this message at the beginning of the
+level. It is not required, but is good style, to put any levelscript function
+calls after all script definitions.<br><br>
+
+<a class="eng" href="#top">Back to Top</a><br><br>
+
+<p>
+<a name="control"><h4>Control Flow Structures</h4></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Control flow structures allow your code to make
+decisions and repeat actions over and over. There are several basic control
+structures, and each are covered here in full.<br><br>
+
+<span class="keyword">while</span><br><br>
+
+The while loop is the basic loop control structure. It will continually loop
+through its statements until its condition evaluates to 0, or false.<br><br>
+
+Basic syntax:
+<pre>
+while(&lt;condition&gt;)
+{
+   &lt;statements&gt;
+}
+</pre>
+
+Unlike in C, the braces are required to surround the block statement of a while
+loop, even if it only contains one statement. An operative example would be the
+following:
+
+<pre>
+script 0
+{
+   int i = 0;
+   while(i < 10)
+   {
+      print(i, "\n");
+      i = i + 1;
+   }
+}
+</pre>
+
+This code would print the numbers 0 through 9 to the console.<br><br>
+
+The continue() and break() functions are capable of modifying the behavior of
+the while loop. continue() causes the loop to return to the beginning and run
+the next iteration, while break() causes the loop to exit completely, returning
+control to the surrounding script.<br><br>
+
+A while loop can run forever if its condition is never false, but if you write
+a loop like this, be sure to call one of the wait functions inside the body of
+the loop, or else the game will wait on the script to finish forever, effectively
+forcing you to reboot!<br><br>
+
+Example:
+<pre>
+script 0
+{
+   while(1)
+   {
+      if(rnd() < 24)
+      {
+         ambientsound("dsbells");
+      }
+      wait(20);
+   }
+}
+</pre>
+
+This is additionally a fine example of how to do ambient sounds with 
+FraggleScript.<br><br>
+
+<span class="keyword">for</span><br><br>
+
+The for loop is a more sophisticated loop structure that takes three parameters.
+Note that unlike C, the FraggleScript for parameters are separated by commas, not
+by semicolons, and all 3 are required to be present.<br><br>
+
+Basic syntax:
+<pre>
+for(&lt;initialization&gt;, &lt;condition&gt;, &lt;iteration&gt;)
+{
+   &lt;statements&gt;
+}
+</pre>
+
+All three statments may be of any valid form, although typically the initialization
+statement sets a variable to an initial value, the condition statement checks
+that that variable is within a certain bound, and the iteration statement 
+increments the variable by a certain amount.<br><br>
+
+Braces are again required, and the continue() and break() statements work the
+same way here as they do for while(), with the exception that a continuing
+for loop will check its condition and perform its iteration, whereas a while
+loop ignorantly repeats.<br><br>
+
+An operative example:
+<pre>
+script 0
+{
+   int i;
+   
+   for(i=0, i<10, i=i+1)
+   {
+      print(i, "\n");
+   }
+}
+</pre>
+
+This for loop is equivalent to the while loop example above. while and for
+are logically equivalent in general, for simply provides a cleaner way to 
+specify the exact loop behavior. for is a rather complex statement form, so
+if this explanation is insufficient, any decent reference on the C language
+should have more information that is applicable.<br><br>
+
+<span class="keyword">if</span>, <span class="keyword">elseif</span>,
+<span class="keyword">else</span><br><br>
+
+if tests its condition, and if the condition evaluates to any non-zero value,
+or true, the statements inside its body are executed. Note that unlike while
+and for, braces are not required for an if statement UNLESS you either intend
+for the if body to contain more than one statement, OR you intend to place an
+elseif or else clause after the if.<br><br>
+
+Basic syntax:
+<pre>
+if(&lt;condition&gt;)
+  &lt;statement&gt;
+  
+if(&lt;condition&gt;)
+{
+   &lt;statements&gt;
+}
+</pre>
+
+Examples:
+<pre>
+if(i > 10)
+  return();
+</pre>
+
+<pre>  
+if(i)
+{   
+   print(i, "\n");
+   return();
+}
+</pre>
+
+elseif and else are ancilliary clauses that execute when their corresponding
+if statement was not true. elseif tests its own additional condition, and if
+it is false, control passes to the next elseif or else, if one exists. An if
+can have any number of elseif clauses, and one else clause following it. If 
+there is an else clause, it must always be last. When the if statement
+evaluates to true, no elseif or else clauses will be executed.<br><br>
+
+Example:
+<pre>
+script 0
+{
+   int i = rnd()%10;
+   
+   if(i == 1)
+   {
+      spawn(IMP, 0, 0, 0);
+   }
+   elseif(i <= 5)
+   {
+      spawn(DEMON, 0, 0, 0);
+   }
+   else
+   {
+      spawn(BARON, 0, 0, 0);
+   }
+}
+</pre>
+
+This example, as you should expect, spawns one enemy at (0,0,0), its type 
+depending on what random value i was assigned.<br><br>
+
+Note that elseif and else are new to the Eternity and DOOM Legacy dialects of
+FraggleScript and that they are not currently supported by SMMU.<br><br>
+
+<a class="eng" href="#top">Back to Top</a><br><br>
+
+<p>
+<a name="activation"><h4>Script Activation Models</h4></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Script activation models are simply the different
+ways in which scripts can be started.<br><br>
+
+Currently supported activation models include the following:
+<ul>
+  <li> startscript function<br><br>
+  
+       Used to start scripts from within FraggleScript code. There are two
+       possible uses of this function. If used from the outer context, the
+       script will be started automatically at the beginning of the level, and
+       player 0 will be used as the trigger object. If used from inside another
+       script, the current script's trigger object will propagate to the new
+       script.<br><br>
+  
+  <li> StartScript codepointer<br><br>
+  
+       Used to start scripts from mapthing frames, this method relies on and
+       interacts with DeHackEd editing. To use this method, use a BEX codepointer
+       block to place the StartScript pointer into a thing's frame, and then set
+       the frame's "Unknown 1" field to the script number to call. The thing 
+       whose frame called the codepointer becomes the trigger object. This allows 
+       the user to program their own custom codepointer effects in FraggleScript.
+       <br><br>
+  
+  <li> linedef activation<br><br>
+  
+       A host of new linedef types are provided to allow activation of scripts
+       from within levels:
+       <ul>
+         <li> 272  WR  Start script with tag number
+         <li> 273  WR  Start script, 1-way trigger
+         <li> 274  W1  Start script with tag number
+         <li> 275  W1  Start script, 1-way trigger
+         <li> 276  SR  Start script with tag number
+         <li> 277  S1  Start script with tag number
+         <li> 278  GR  Start script with tag number
+         <li> 279  G1  Start script with tag number
+       </ul>
+       <br>
+       To use these lines, simply give them the appropriate type and set the
+       linedef's tag number to the script number you want to be called. The
+       trigger object will be set to the object that activated the line.<br><br>
+</ul>
+
+<a class="eng" href="#top">Back to Top</a><br><br>
+
+<p>
+<a name="operators"><h4>Operators and Operator Precedence</h4></a>
+
+The Legacy dialect of FraggleScript supports the following operators, in
+order of precedence from greatest to least. All operators except = are evaluated
+from left to right.
+
+<ul>
+  <li> . <br><br>
+       Coercions: none<br><br>
+       
+       The structure operator - can be used to beautify function calls by
+       moving the first argument outside the parameter list<br>
+       Example:
+       <pre>
+       script 0
+       {
+          mobj halif = spawn(DWARF, 0, 0, 0);
+          halif.kill();
+       }
+       </pre>
+       This gives FraggleScript a comfortable object-oriented appearance.<br><br>
+  
+  <li> -- <br><br>
+       Coercions: string -> int, mobj -> int<br><br>
+  
+       The decrement operator - use to lower the value of the operand by 1 -
+       if the operator occurs before the operand as a prefix, then the operation
+       is performed first before the value can be used, but if it is used as
+       a postfix operator, the variable's current value is propagated, and then
+       the decrement occurs.<br><br>
+      
+  <li> ++ <br><br>
+       Coercions: string -> int, mobj -> int<br><br>
+       
+       The increment operator - similar to decrement, but increases the variable's
+       value by 1.<br><br>
+  
+  <li> ! <br><br>
+       Coercions: all -> int<br><br>
+       
+       The logical invert operator. Returns 1 if the operand has an integer 
+       value of 0, and 0 otherwise.<br><br>
+       
+  <li> ~ <br><br>
+       Coercions: all -> int<br><br>
+       
+       The binary invert operator. Reverses all bits in the operand's integer
+       value (ie 10101 becomes 01010)<br><br>
+       
+  <li> % <br><br>
+       Coercions: (all*all) -> (int*int)<br><br>
+       
+       The modulus operator. Returns the remainder when its first operand is
+       divided by its second.<br><br>
+       
+  <li> / <br><br>
+       Coercions: (string*all) -> (int*int), (mobj*all) -> (int*int),
+        (fixed*all) -> (fixed*fixed)<br><br>
+        
+       The division operator. Returns the quotient of the first operand divided
+       by the second. Note that if either operand is of type fixed, the other
+       operand is coerced to type fixed.<br><br>
+       
+  <li> * <br><br>
+       Coercions: (string*all) -> (int*int), (mobj*all) -> (int*int),
+        (fixed*all) -> (fixed*fixed)<br><br>
+        
+       The multiplication operator. Returns the product of its operands. Note
+       that if either operand is of type fixed, the other operand is coerced to
+       type fixed.<br><br>
+       
+  <li> - <br><br>
+       Coercions: (string*all) -> (int*int), (mobj*all) -> (int*int),
+        (fixed*all) -> (fixed*fixed)<br><br>
+        
+       The subtraction and unary minus operators. Returns the difference of
+       its operands. FraggleScript treats both subtraction and unary minus 
+       signs the same; an expression such as -1 is evaluated as if it were 0-1. 
+       If either operand is of type fixed, the other operand is coerced to type 
+       fixed.<br><br>
+       
+  <li> + <br><br>
+       Coercions: (string*all) -> (string*string), (mobj*all) -> (int*int),
+        (fixed*all) -> (fixed*fixed)<br><br>
+        
+       The addition operator. Returns the sum of its operands. If either operand
+       is of type fixed, the other operand will be coerced to type fixed.<br><br>
+       
+  <li> &gt;= <br><br>
+       Coercions: (string*all) -> (int*int), (mobj*all) -> (int*int),
+        (fixed*all) -> (fixed*fixed)<br><br>
+        
+       The logical greater than or equal operator. Returns 1 if its first operand
+       is greater than or equal to its second, and 0 otherwise.<br><br>
+       
+  <li> &lt;= <br><br>
+       Coercions: (string*all) -> (int*int), (mobj*all) -> (int*int),
+        (fixed*all) -> (fixed*fixed)<br><br>
+        
+       The logical less than or equal operator. Returns 1 if its first operand
+       is less than or equal to its second, and 0 otherwise.<br><br>
+       
+  <li> &gt; <br><br>
+       Coercions: (string*all) -> (int*int), (mobj*all) -> (int*int),
+        (fixed*all) -> (fixed*fixed)<br><br>
+        
+       The logical greather than operator. Returns 1 if its first operand is
+       greater than its second, and 0 otherwise.<br><br>
+       
+  <li> &lt; <br><br>
+       Coercions: (string*all) -> (int*int), (mobj*all) -> (int*int),
+        (fixed*all) -> (fixed*fixed)<br><br>
+        
+       The logical less than operator. Returns 1 if its first operand is
+       less than its second, and 0 otherwise.<br><br>
+       
+  <li> != <br><br>
+       Coercions: (mobj*all) -> (int*int), (fixed*all) -> (fixed*fixed)<br><br>
+       
+       The logical nonequality operator. For strings, this operator tests against
+       string equality, and for numeric types, it tests against numeric
+       equality. If either operand is of type fixed, the other operand will be
+       coerced to type fixed.<br><br>
+       
+  <li> == <br><br>
+       Coercions: (mobj*all) -> (int*int), (fixed*all) -> (fixed*fixed)<br><br>
+       
+       The logical equality operator. For strings, this operator tests for string
+       equality, and for numeric types, it tests for numeric equality. If either
+       operand is of type fixed, the other operand will be coerced to type
+       fixed.<br><br>
+       
+  <li> & <br><br>
+       Coercions: (all*all) -> (int*int)<br><br>
+       
+       The binary and operator. This operator sets all bits in its result that
+       are set in both of its operands (ie 111010 & 100110 = 100010)<br><br>
+       
+  <li> | <br><br>
+       Coercions: (all*all) -> (int*int)<br><br>
+       
+       The binary or operator. This operator sets all bits in its result that
+       are set in either of its operands (ie 111010 | 100110 = 111110)<br><br>
+       
+  <li> && <br><br>
+       Coercions: (all*all) -> (int*int)<br><br>
+       
+       The logical and operator. This operator returns 1 if both its operands
+       evaluate to 1, and 0 otherwise. If the first operand evaluates to 0, this
+       operator will short-circuit without testing the second operand.<br><br>
+       
+  <li> || <br><br>
+       Coercions: (all*all) -> (int*int)<br><br>
+       
+       The logical or operator. This operator returns 1 if either of its operands
+       evaluate to 1, and 0 otherwise. If the first operand evaluates to 1, this
+       operator will short-circuit without testing the second operand.<br><br>
+       
+  <li> = <br><br>
+       Coercions: coerces type of expression into type of variable<br><br>
+       
+       The assignment operator. This operator sets the variable on its left to
+       the value of the expression on its right. All other evaluations are
+       performed before an assignment takes place.<br><br>
+</ul>
+
+<a class="eng" href="#top">Back to Top</a><br><br>
+
+<p>
+<a name="keywords"><h4>Keyword List</h4></a>
+
+This is a short alphabetical list of keywords in FraggleScript. Variables cannot
+be named these words because they are reserved.<br><br>
+
+const<br>
+else<br> 
+elseif<br>
+fixed<br>
+float<br>
+for<br>
+hub<br>
+if<br> 
+int<br>
+mobj<br>
+script<br> 
+string<br>
+while<br><br>
+
+Remember that break, continue, return, and goto are defined as special functions,
+and not as keywords.
+<br><br>
+
+While the names of functions are not reserved words in the strictest sense,
+you should additionally avoid naming variables with the same name as functions
+since these variables will hide the functions and make them inaccessible. This
+will cause parse errors if you attempt to use the function after declaring a 
+variable with the same name.
+<br><br>
+
+<a class="eng" href="#top">Back to Top</a><br><br>
+
+</body>
+</html>

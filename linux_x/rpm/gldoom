@@ -1,0 +1,14 @@
+#!/bin/sh
+
+[ -d ~/.legacy ] || mkdir -m go-rwx ~/.legacy
+
+cd ~/.legacy
+
+[ -f llsndserv ] || ln -s /usr/lib/games/doom/llsndserv llsndserv
+[ -f musserver ] || ln -s /usr/lib/games/doom/musserver musserver
+[ -f r_opengl.so ] || ln -s /usr/lib/games/doom/r_opengl.so r_opengl.so
+
+export DOOMWADDIR=/usr/lib/games/doom
+export PATH=~/.legacy:$PATH
+
+/usr/lib/games/doom/llxdoom -grabmouse -opengl -res 640 480 "$@"

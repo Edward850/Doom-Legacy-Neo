@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <!-- Useful resources about Win32 manifests:
+       https://learn.microsoft.com/en-us/windows/win32/sbscs/application-manifests
+       https://learn.microsoft.com/en-us/windows/win32/sysinfo/targeting-your-application-at-windows-8-1
+       https://learn.microsoft.com/en-us/windows/win32/hidpi/high-dpi-desktop-application-development-on-windows
+       https://learn.microsoft.com/en-us/windows/compatibility/application-executable-manifest
+  -->
+
+  <!-- Operating system compatibility
+       If this section is absent, apps will be launched in Windows Vista compatibility mode by default -->
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <!-- Windows Vista -->
+      <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}" />
+      <!-- Windows 7 -->
+      <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}" />
+      <!-- Windows 8 -->
+      <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}" />
+      <!-- Windows 8.1 -->
+      <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}" />
+      <!-- Windows 10 and Windows 11 -->
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" />
+    </application>
+  </compatibility>
+
+  <!-- Ask Windows to tag us as the highest supported version of DPI-awareness. So we don't get bitmap scaled to oblivion! -->
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <!-- "dpiAwareness" key introduced by Windows 10, version 1607, if present, the old "dpiAware" key is ignored -->
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2, PerMonitor, System</dpiAwareness>
+      <!-- Try to get PerMonitor support, else System -->
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/PM</dpiAware>
+    </windowsSettings>
+  </application>
+
+  <!-- There are two keys in this block, one which makes the ANSI WinAPI functions use UTF-8 instead of the system codepage,
+       and another which marks us as supporting paths longer than 260 characters. They are relatively
+       recent Windows additions (10 version 1903 for UTF-8, and 10 version 1607 for long paths) -->
+  <application>
+    <windowsSettings>
+      <activeCodePage xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">UTF-8</activeCodePage>
+      <ws2:longPathAware xmlns:ws2="http://schemas.microsoft.com/SMI/2016/WindowsSettings">true</ws2:longPathAware>
+    </windowsSettings>
+  </application>
+
+  <!-- Version 6 of the common controls DLL, present since Windows XP.
+       Provides themed controls for GDI elements and DPI scaling if we have PerMonitorV2 DPI awareness. -->
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity
+        type="win32"
+        name="Microsoft.Windows.Common-Controls"
+        version="6.0.0.0"
+        processorArchitecture="*"
+        publicKeyToken="6595b64144ccf1df"
+        language="*"
+      />
+    </dependentAssembly>
+  </dependency>
+
+</assembly>

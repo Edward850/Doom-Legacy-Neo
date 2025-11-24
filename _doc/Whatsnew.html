@@ -1,0 +1,1023 @@
+<html>
+<body text="#70f070" bgcolor="#000000" link="#70f070" vlink="#70f070" alink="#70f070">
+<pre>
+
+ DooM LEGACY
+ Release v1.40, September 2002.
+
+ Last Updated: September 2002
+
+ Original game & sources by: Id Software.
+ Additions: (c)1998 by: Fabrice Denis & Boris Pereira
+            (c)1999 by: Fabrice Denis, Boris Pereira & Thierry Van Elsuwe
+            (c)2000 by: Boris Pereira & Thierry Van Elsuwe
+            (c)2001-2002 by: Doom Legacy Team
+ 
+ Special thanks to Steven McGranahan, Robert Bäuml and Bell Kin for
+ their large contribution and to others Legacy Team members.
+
+ Web site: http://legacy.newdoom.com
+   e-mail: legacy@newdoom.com
+
+
+ -----------------------------------------------------------------------
+ WHAT'S NEW
+ -----------------------------------------------------------------------
+
+ Doom Legacy 1.40 (September 2002)
+ =====================================
+ 
+ TODO
+
+
+ Doom Legacy 1.32 Beta 3 (August 2001)
+ =====================================
+
+   Lot of fixes as usual for a beta.
+
+     - Translucent 3D water and 3D floors in hardware mode
+     - Coloured sector lighting in hardware mode
+     - New corona code
+     - Improved load level time in hardware mode
+     - Show a status of level load in hardware mode
+     - now legacy can load skin using sprite keywork (original spec)
+     - Use Transform and lighting in OpenGl
+     - draw full screen when status bar is not scaled in hardware
+     - fixed heretic weapon height in opengl/glide
+     - fixed conflicting sector type 4 (heretic/doom)
+     - fixed moving hanging mobj on platform (heretic e2m5)
+     - fixed error message while saving
+     - fixed crash of e3m8 in heretic caused by objet 56 badly handled
+     - fixed corsshair not showed when joining multiplayer game
+     - fixed file search in windows version, was causing problem in
+       multiplayer game with additional files
+     - fixed option "se" not drawed is some video modes
+     - fixed map30 savegame crash
+     - fixed commander keen dead not open door
+     - fixed player reset between secrets levels of doom2
+     - fixed problem of map29 not loading
+     - fixed timelimit cvar problem in menu
+     - fixed quoted badly handled in responce file
+
+  Shipped with Launcher 1.4
+     - handle e?m? map name in heretic mode
+     - added direct 3d sound switch in setup panel
+     - now launcher enclose wad string between quotes to send
+       parameter to legacy this allow space ans special
+       caractere in wad files
+     - option are now saved when legacy is started
+
+   Was in beta 2 but no doc updated
+     - fixed joystickfreelook cvar not working
+     - added little menu cosmetic that tell when the serverlist
+       is empty and fixed little problem of refresh
+     - fixed (one more time) angle prediction
+     - added posibility to change death message by dehacked scipt
+       and fixed some ones
+     - added gr_coronasize in the menu
+     - fixed final cast not showed corectely
+     - fixed some problem with heretic final episode stuffs
+     - fixed reset of weapons on doom2 map07, map12 and map21 
+     - fixed bug 427507 : doors no more turn corps to giblet
+     - fixed problem with load/save menu screen that screw up 
+       the texture cache in glide, and display badly in opengl
+     - fixed 3D floors crash in software
+     - improved heretic support :
+       - fixed network not working
+       - fixed height of weapons on heretic 
+       - fixed heretic invenory key handled in menu (bug 426338)
+       - added native support of heretic1.wad
+
+   Was in beta 1 but we forgot to mension it
+     - removed main wad version checking
+     - fixed cannot restart game after end of a episode
+
+ Doom Legacy 1.32 Beta 1 (May 2001)
+ ==================================
+
+   Added Heretic support it is already playable but still experimental
+   see heretic note in legacy.txt for more
+
+   - OPENGL/3DFX
+     - added gr_coronasize cvar this allow to adjust coronas size 
+       to you screen size and your distance to the screen
+     - fixed litle glide issues
+     - fixed texturing problem in hardware mode with midle twosided texture
+     - change the way legacy handle color in opengl/3dfx
+       this allow better contrast
+     - fixed little problem of backface culling of lights
+
+   - SOUND
+     - added support for 3D positional sound cards (now under Win32 only).
+       See Legacy.txt for more details.
+
+   - MULTIPLAYER
+     - enable client angle prediction was removed from 1.31 by mistake
+     - fixed some issues in network (game sometime lock)
+     - implemented timout detection and kick player if connection timeout
+
+   - MISC
+     - added cvar scalestatusbar so you can see it in original size 
+       or scaled to your resolution
+     - Win32: added -nodinput command line parameter (use standard Windows 
+       mouse input instead of DirectInput) to resolve issues with some mouses
+       under Win32 systems (like issues with mouse whell support under 
+       Win95/WinNT 4.0)
+
+   - GAMEPLAY
+     - joystick can be used for free look using joystickfreelook cvar
+     - like in heretic now missile can now active weapons switches
+     - suport heretic ambient sound
+
+   - BUG FIXES
+     - fixed little issue that allow to exitlevel even if allowexitlevel 
+       cvar was set to false
+
+   - Know bug (don't mail us about it !)
+     - in 3dfx/opengl :
+       - splat/bullet hole have serious problems
+       - water don't show properly
+       - there is white dots around some wall/floors/ceiling
+       - the lighting is slow (mainly on slow 3d cards or low end PC)
+       - missing polygone/textures one some levels 
+         (need to be rebuild with new nodes builders like zennode or deepbsp)
+
+ Doom Legacy 1.31  (December 2000)
+ =================================
+
+   - OPENGL/3DFX
+     - no more coronas for mancubus balls
+     - added light for revenent fireball, lost soul and candle
+     - fixed full transparency of torch 
+     - make backface culling for lights
+ 
+   - MULTIPLAYER
+     - new menu option : create server and connect server
+     - use masterserver to detect all server in the world !
+     - added "internetserver" ,"masterserver" and "servername"
+       to use in conjunction of new multplayer features 
+       see console.txt for more
+     - no more palette change in splitscreen
+     - fixed issues with netgame and dehacked (it is now copyed automaticaly 
+       like all wads)
+     - deathmatch team-start-sectors can be created with normal deathmatch-
+       starts in a sector. A sector/line-tag and a line with linedef-type
+       1000-1031 prevents other teams from respawning there.
+       
+   - GAMEPLAY
+     - when solidecorpse is true you can smash it and turn it to giblets !
+     - adjust buchholz for suicide.  
+     - added FraggleScript scripting capability ! (as beta for now)
+         Read the doc for more
+     - added 3DFloors capability (as Beta for now)
+         Read the doc for more
+
+   - MISC
+     - Legacy now detect free memory and allocate from 6 to 20 Mb
+       The "-mb" option overwrite detection
+     - remove limit of polygone pool
+     - the STFB0 is now optinal in a skin replacement
+     - allow use of joystick y axis for looking up/down just use mouselook cvar
+     - added support of mouse wheel under WinNT
+     - Support Dolby Surround sound (only for external decoder)
+     - display #SECRETS and #MONSTERS on the overlay!  NOTE: add 'S' (secrets) 
+       and 'E' (monsters) to the "overlay" cvar for seing them.
+
+   - BUG FIXES
+     - fixed crash with splat on two sided wall
+     - fixed little issue for look up/down of splitscreen player with keyboard
+     - fixed splitscreen variable with demoplayback
+     - fixed player viewpoint when using F12
+     - removed monsters steping
+     - fixed random crach in OpenGl/Glide when load level
+     - fixed minor stuff to increase compatibility with old wad
+     - fixed death meassages issues : telefraged and when weapon change before
+       the player die
+
+
+ Doom Legacy 1.30  (August 2000)
+ =================================
+
+   - VIDEO
+     - Thierry Van Elsuwe (aka Hurdler) ported to OpenGL our glide code
+       so Legacy have now OpenGL support with some new OpenGL specific
+       features like FOV "what you want" (zooming),...
+     - improve glide support, fixed all texture problem and so one
+     - fixed many splats problem so now is enabled in the code
+     - Opengl/3Dfx added new features like coronas and dynamic lighting
+       (unfinished),... added new cvar for this at the same time.
+     - fullscreen and windowed mode under Linux or Windows+OpenGL
+     
+   - MULTIPLAYER
+     - Join in game : now you can join the game without a restart of the
+       server.
+     - added automatic file copy through network
+     - added seconde mouse support for splitscreen
+       read the legacy.txt for more about it
+     - added support for ipx under win32
+     - now the engine wrape around level in deathmatch no more final screen
+       etc...
+     - splitscreen variable can now be changed while in netgame
+
+   - CONSOLE
+     - added -noresetplayer to map command
+       use this option to keep your weapon and keys through a map change
+       it is used internaly by the engine for usual map change
+     - added allowturbo and allowexitlevel cvar
+     - added splats cvar to enable/disable splats
+     - added translucency cvar so slow cumputer can disable translucentcy
+     - added controlperkey cvar this allow you to enable/desable
+       more than one control per keys
+     - added screenlink cvar so you can enable the color melt screen link
+     - added gimme map
+
+   - MISC
+     - Boom compatibility, except BEX and lindef 260, Thanks to SoM
+     - impoved Linux support (similar to win32 one)
+     - Dos version can now use winsock 2.0 (default in Win98)
+       Thanks to the libsocket team
+     - enable color blend for screen translation (was in the original sources)
+     - added video menu and move some option there
+     - support mouse wheel in win32 version thanks to Dominique Leger
+     - added joystick hat support under win32
+     - improved launcher for windows version
+
+   - BUG FIXES
+     - fixed some serious network issues
+     - fixed multiple dehacked don't load
+     - fixed can take the chainsaw in doom1 or udoom with next/prev weapon key
+     - fixed can't save when use -warp or +map
+     - fixed timedemo work now more than one time
+     - fixed cdvolume bounds in win32 version
+     - translucency now use colormaps
+     - and fixed some more tiny bugs
+
+   - Know bug (don't mail us about it !)
+     - in 3dfx/opengl :
+       - splat/bullet hole have serious problems
+       - water don't show properly
+       - monsters/sprite have feet(head) in ground
+       - there is white dots around some wall/floors/ceiling
+       - the lighting is slow (mainly on slow 3d cards or low end PC)
+       - the light of sector is not correct !
+       - missing polygone/textures one some levels 
+         (need to be rebuild with new nodes builders like zennode or deepbsp)
+
+ Doom Legacy 1.28  (14 April 1999)
+ =================================
+
+   - FULL WIN32 PORT
+     - no more compatibility problem with sound and graphics card
+     - plays MIDI music through whatever MIDI output you have set
+       (including software midi synthesizers like those of Yamaha)
+     - uses TCP/IP network instead of IPX, allows internet play
+     - includes a preview of the 3Dfx mode (that r_glide.dll file)
+
+   - 3DFX BETA VERSION
+     - you can choose between software or 3Dfx accelerated mode
+       in the Doom Legacy Launcher 'Setup' panel, without the
+       launcher, use "-3dfx" on the command-line
+     - 3Dfx mode is available through the r_glide.dll, you need
+       the latest Glide 3 drivers from www.3dfx.com
+     - fixed shooting with mouselook, note you can fire at 90 degree
+       up and down, but he sprites will look 'flat'
+     - you can now change resolution at run time through the video
+       modes menu (F5), just like in software mode
+     - uses external r_glide.dll file : this WILL be a feature,
+       because it allows for future extensions with OpenGL,
+       Direct3D, or even hi-color software modes
+
+   - COOL LAUNCHER
+     - setup single and multiplayer games easily
+     - add external wad files with file dialog
+     - set your Preferred Weapons Order (tm) =)
+     - easily switch between Doom1, Doom2 etc..
+     - Demos section allows quick 'n easy playback of demos, the launcher
+       saves the external files, and your comments into the demos!
+     - forget about the command-line !
+
+   - SPLITSCREEN !
+     - two player game on one computer!
+     - within a multiplayer game, any computer can 'host' 2 players
+       thus with 2 computers, you can have a 4 player game !
+     - when playing back a demo, type in 'splitscreen 1' at the
+       console to show 2 views at the same time
+
+   - TCP/IP MULTIPLAYER
+     - Legacy now uses TCP/IP (DOS version also supports IPX)
+     - '-connect' auto-detects the server on a LAN (when computers
+       are directly connected together)
+     - the server passes the list of files added with '-file' to the
+       clients (but clients MUST have the file)
+       Note: the files on each computer must have the same date or
+       Legacy will stop with a warning message, you can disable date
+       checking with '-notime' cmd-line option
+
+   - DEMOS
+     - demos can be recorded by only one player in a network game
+       (use "stopdemo" to stop recording without quitting the game)
+     - "playdemospeed" console variable allows faster playback of demos
+
+   - CONSOLE
+     - "addfile" and "map" commands can load skins while in game
+     - "fastmonsters" : same as -fastparm parameter
+     - "map" command enhanced :
+        map <mapname[.wad]> [-skill <1..5>] [-monsters <0\1>]
+        this allows to change skill and monsters at run time
+        note : these two parameters are optional, if not specified the
+               current value is used
+     - "timelimit" allows server to set a time limit on a level
+     - "chasecam" activates or desactivate the chase-cam mode
+     - "cam_height","cam_dist", "cam_speed"  to customize the chase-cam
+
+   - GAME STUFF
+     - display KEYS on the overlay!  NOTE: MAKE SURE TO ADD 'K' TO
+       THE "overlay" CONSOLE VARIABLE IF YOU KEEP YOUR OLD CONFIGURATION
+     - Next and Previous weapons controls added in 'Setup Controls' game menu
+     - Legacy's 'true' water effect was enhanced with physics: press
+       Jump button to swim up, or use mouselook, friction, gravity..
+
+   - MISC
+     - "-iwad xxx.wad" : you can keep all your original Doom versions
+       in a single directory and choose which one to run with this switch
+       (example: -iwad plutonia.wad)
+     - "-file" searches for files recursively, starting at the directory
+       where you run Doom Legacy, it will find files in any subdirectories
+       THIS IS VERY USEFUL FOR MULTIPLAYER : for example, provided everyone
+       has the 'hipafrag.wad' map, the server just types 'map hipafrag.wad'
+       and all clients will load the map, even if they have placed the file
+       in different directories
+     - savegames enhanced (works better)
+
+   - DOS VERSION ONLY
+     - the DOS version supports both TCP/IP _AND_ IPX
+       TCP/IP is used when you use the "-connect" or "-server" parameters
+     - Joystick support enhanced, type "help use_joystick" at the console
+       for more
+
+   - FIXES
+     - mouseaiming works better, and aim is now correct independently of the
+       screen resolution
+     - fixed crash when starting netgame in Cooperative and there are not 
+       enough player starts
+     - fixed many problems.. (ok, bugs) with 1.27 and 1.28 betas
+     - fixed 1.9 original bug : demos get out of synch if you go into the menu
+       while recording
+
+   - KNOWN BUGS
+     - Alt-Tab/Alt-Escape in windows with 3Dfx preview may crash
+     - Sometimes video modes are not detected when you start Legacy WIN32 from
+       a fullscreen DOS box, just use Doom Legacy Launcher, damnit !
+
+   - AND...
+     - documented version 1.27 changes! see below
+
+
+ Doom Legacy 1.27  (December 1998)
+ =================================
+
+   - GAME STUFF
+     - new in-game menus allows setting console options easily
+
+   - MULTIPLAYER
+     - "deathmatch" console variable : change deathmatch mode
+       at any time!
+       deathmatch 0 = cooperative
+       deathmatch 3 = deathmatch 2 + weapon stay (dm1+dm2)
+     - fixed problem where 2 or more skins would have the same
+       name, made it impossible to browse all skins in the
+       multiplayer menu.
+     - "fraglimit" : go to intermission after limit of frags is
+       reached
+     - the DOS version should work better with modem
+       (using HX8 or SERSETUP)
+     - the DOS version supports TCP/IP using __Winsock 1.0__ ONLY
+       See section [5-5] of the main documentation
+
+   - CONSOLE
+     - pass console commands on the command-line using a "+"
+       prefix, example:
+
+           > legacy +color 7 +name "the killer"
+
+     - human readable console variables, example:
+          color red
+          chasecam on
+
+       instead of:
+          color 4
+          chasecam 1
+
+       type "help <commandname>" to see possible values for each
+       console variable, note the old system still works
+
+     - "exitlevel" : ends level and goes to intermission, comes in
+       handy when you get stuck in a level or you don't find the key
+     - "bind" : attach console commands to a key, example:
+          bind s "screenshot"
+          bind h "sayteam help me guys!!"
+     - "screenshot" command takes a screenshot, pssst: bind it
+       or you will screenshot the console =)
+     - "vid_ticrate" shows a graph of rendered frames timing
+     - "save" command : saves game, works in multiplayer too
+     - "load" command : load previously saved game, multiplayer too
+     - "timedemo" : like -timedemo it will playback a demo as fast
+       as possible to test the speed of the renderer
+     - "map" and "addfile" commands now loads textures!
+     - "sayteam" : sends a message only to your own team
+     - added 3 new commands related to configuration :
+       loadconfig   : load a previously saved config file
+       saveconfig   : save the current config, you must give
+                      an explicit file name
+       changeconfig : switch to the config (saves current config, and
+                      load another one)
+
+   - EDITING
+     - supports 'multipatch' textures on any 2-sided wall !
+     - 5 new linedef types for translucent walls : 201 to 205
+
+   - FIXES
+     - fixed 32 skins limit, would not check for the limit,
+       and crash if more than 32 skins used. No more crash but
+       the limit is still 32 skins.
+     - fixed bug in the display of frag in intermission in teamskin
+     - fixed map7 bug when the 2 last babyspider die at same time
+       (original 1.9 bug)
+     - fixed gamma max value
+     - fixed final pic shows in doom1 and bunny scroll
+     - fixed "got unknow netcmd 109" when changing player config
+     - many, many bugfixes and internal changes.
+
+
+ Doom Legacy Update v1.25  25-Aug-1998:
+ ======================================
+
+    NOTE! The chasecam key is now '/' slash on the keypad, and it
+          is available only in '-devparm' mode.
+
+    - SKINS !!! : a skin is basically a full sprite replacement
+      for the player, with optional specific sounds (hurt, death,
+      jump etc..) and optional status bar face to go with it.
+
+      Skins are simple wad files, that can be added with '-file'
+      on the command line, and you can have as many skins as you
+      want into a wadfile, so prepare for skinspacks galore!
+
+      With Doomatic (our deathmatch launcher), the copying of
+      files to other players is automatic, so the skins are
+      automatically copied to other players. Using your pre-
+      ferred deathmatch launcher, just make sure everybody
+      have the skins wads.
+
+      Skins work in single player too, you can admire your skin
+      while in chasecam mode (use '/' slash key on keypad while
+      in -devparm mode).
+
+    - TEAMPLAY and TEAMSKIN deathmatch modes : you know about
+      teamplay, teamskin is like teamplay, but using skins to
+      identify teams instead of the color. Of course the frag
+      rankings and intermission are updated to show team scores.
+      Plus, there's a 'teamdamage' console variable that allows
+      to choose whether your team partners get hurt when you
+      shoot'em or not. Quake's teamplay is Legacy's teamplay
+      with 'teamdamage' at 0.
+
+      Cool! 'teamdamage' also works in cooperative, so in
+      cooperative you can choose whether you can hurt your
+      coop partners or not.
+
+      Like in Quake, the armor is always damaged in teamplay
+      if you hurt your partners.
+
+      When you are hurt by a partner, and teamdamage is off,
+      you won't see blood and the screen won't go red.
+
+    - NETWORK IMPROVED : the 'slow turn' seems to be fixed now.
+      Even better, we can call this the 'angle-turn client
+      prediction' as your view now moves _before_ the server
+      receives it. As you move around the view quicly in multiplayer,
+      it is now smoother, especially in higher resolutions.
+      Please tell us how you feel the improvement!
+
+
+    Console:
+    --------
+    - viewheight : set the height of view, if you want to see what a Leprechaun
+                   sees, just lower that! It's good to frag those giant marines
+                   when you're a little teeny-weeny Leprechaun, heheheeee
+    - skin,teamplay,teamdamage : for teamplay modes
+    - frags,teamfrags : these shows the original Doom frag table, and also for
+                        teams vs teams !
+    - memfree,help : see what memory is used in Doom's heap, see how much physical
+                     memory is left after you run Legacy.
+    - addfile : completes 'map' command, loads external pwads at run time, currently
+                able to load the sprites, sounds, musics, flats, and maps,... but
+                not new textures (to do). Also to do is load the skins in pwads
+                at run time.
+
+    Editing:
+    --------
+    - 'hall of mirrors' removed (thanks to Demiurg and his cool rivbrid.wad which
+      looks really nice)
+
+    - visplanes limit increased (should be plenty) (thanks to Russel and his huge
+      pract.wad that broke Legacy's 256 drawsegs and 256 visplanes with... up to
+      896 drawsegs at once (2sided lines), and 380+ visplanes when flying above the
+      map with 'IDFLY' !!!)
+
+
+    Misc:
+    -----
+    - dehacked patches files with .DEH extension can be added
+      after '-file', which makes it very easy to use patches
+      with your usual deathmatch launcher (it doesn't have
+      to know about the dehacked, then, and Doomatic will
+      copy the dehacked patches automatically since it is
+      part of the wad files).
+
+    - end sequence (finale) fixed for higher resolutions
+      (thanks Kege)
+
+    - 'splash' sounds when walking and jumping in water
+
+    - can't cheat anymore by jumping in dangerous fluids to
+      avoid the damage as it does more damage now.
+      This makes a lot of deathtag levels playable again
+      with Legacy (as lava was used to prevent scoring unless
+      you have got the 'steel boots' armor)
+
+    - testing deathmatch maps alone using '-deathmatch -warp'
+      didn't work in last version, now fixed
+
+    - that horrible 'SIGSEGV' bug due to a faulty CD-library,
+      fixed.
+
+    - other little goodies you'll find yourself...
+
+
+
+ Doom Legacy Update v1.24  19-July-1998:
+ =======================================
+
+    - added CD Audio music, along with console commands 'play','stop',
+      'info', etc. CD Music volume is in the sounds menu (F4).
+
+      Note: cd audio and midi music are separate, and can be active
+            at the same time. This is useful if, like me, you have
+            some 'ambiance sound' cd's like sounds of storm, rain..
+            you can use it to add ambiance, while still listening to
+            the midi music.
+
+            Usually, you will want to turn either the music or CD
+            audio volume to zero.
+
+    - some minor changes in the network, we noticed a serious problem
+      with FAST machines & SLOW network cards, seems to work fine now.
+    - fixed the backspace problem in the chat
+    - fixed problem with some playback of lmp version 1.20
+    - warp parameter work again with doom1 and ultimate
+    - fixed switch textures that didn't 'switch' in ultimate doom.
+    - fixed stupid bug with the statusbar numbers not refreshing.
+    - the 'map' console command now works in multiplayer.
+    - blood sprite changed so it looks better when staying longer
+    - bloodtime is now a network variable, the server sets it for
+      everybody
+    - added gravity variable
+
+
+ Doom Legacy Update v1.23  17-July-1998:
+ =======================================
+
+    - this version was a 'source release' for some projects, it was
+      a work in progress, not released on the site.
+
+
+ Doom Legacy Update v1.22  5-Jun-1998:
+ =====================================
+
+    - the slow turning left & right is fixed. Sorry we have forget to
+      put the right code in the release.
+    - added command "say" and "sayto". This fix chat problem.
+    - word wraping in the console.
+    - fixed problems with the new head up display.
+    - fixed shift key problem.
+
+
+ Doom Legacy Update v1.21 25-May-1998:
+ =====================================
+
+ Network:
+    - the slow turning left & right is fixed
+    - playing back demos of the latest version, along with the support
+      for v1.12 demos didn't work : fixed. If you happened to record
+      demos and thought they didn't work, they will now playback cor-
+      rectly as they were recorded properly.
+    - now SERSETUP works.. but more work need to be done, especially
+      testing it , so please mail us how it worked for U !!
+      Check LEGACY.TXT section 5/6 for more.
+
+ Video:
+    - fixed a nasty bug with getting the vesa extended modes. On some
+      cards like Matrox Millenium it either showed less video modes,
+      or didn't work at all.
+
+ Misc:
+    - fixed 'netgame' name used for savegames sometimes.
+    - starting a game with more players than deathmatch starts will
+      not crash anymore.. but some players will be spawned at the
+      same point and will be stuck (yes it is a quickfix, this
+      problem arises only at the very beginning of the game,
+      usually there is always a dm start free)
+    - the demons are opaque.. and the spectres translucent.
+    - removed the "F***" word from fragging messages by request
+
+
+
+ Release v1.20 Undocumented:
+ ===========================
+    - Doom Legacy supports 64 deathmatch starts (the original game
+      used up to 10 dmstarts)
+
+    - height checks added for melee attacks: so monsters can't hit you
+      if they are not on the same level, when using short range attacks.
+
+    - when you are under Invisibility (blur sphere) and it is running out,
+      you will switch between hi translucency and low translucency, and
+      only when the invisibility is fully finished, you become opaque.
+
+    - Supports FLATS and SPRITES in pwad, from the very old 'dmadds' pwads
+      up to the latest dehacked patches using sprite renaming.
+
+      See EDITING.TXT for more about using sprites/flats in pwad.
+
+    - Can replace only some frames of a sprite in a pwad.
+
+    - Sprites/Textures in a pwad are not supported at run-time using
+      the map command, to do. Flats in pwad work at run-time.
+
+    - the automap displays the right player colors
+
+    - savegame buffer upped to 512kb
+
+    - supports multiple dehacked eg: -dehacked one.deh two.deh three.deh
+
+    - supports DIGMID (digital midi) using the sound.cfg
+
+
+
+ Release 1.20 Updated 19-May-98:
+ ===============================
+
+ NOTE: THIS IS NOT COMPLETE AT ALL, WE WILL DOCUMENT THE CHANGES OF
+       VERSION 1.2 AS SOON AS POSSIBLE, THERE ARE MANY ONES! BUT WE
+       GOTTA RELEASE..
+
+ Engine/Game:
+    - Added the Doom Console! Enter commands and change game var-
+      iables at any time! If you are not used to it, the console
+      will allow you to be a 'Doom power user' ! We have worked
+      a lot on the console itself, and have implemented a basic
+      set of commands and variables. In the future we will be
+      able to add any kind of commands easily. Any command or
+      variable that you'd like? We are open to suggestions.
+
+      Check the console section for more about all the commands
+      available.
+
+    - Finally improved and fixed the translucency on sprites:
+      - the spectres (pink like demons) are really hard to see
+      - translucency on torches is now correct, only the flame
+        part is translucent
+      - most projectiles are now brighter : the translucency
+        used to diminish the colours intensity, now they look
+        as bright as the original game
+      - each sprite, and each frame can use a different trans-
+        lucency eg: the bullet puffs are more translucent than
+        the fireballs, the plasma bullets gets more translucent
+        as they disappear
+      - the blur sphere will make you as translucent as the
+        pink demons, which means very hard to see! So the blur
+        sphere item will probably become a strategic weapon!
+
+
+ Multiplayer/Network:
+    - Totally rewritten the network code of Doom : the method
+      is now a very basic implementation of Client/Server. It uses
+      less transfer, and allow up to 32 players simultaneously.
+      Actually there is one drawback : you have to be sure that
+      the server is fast enough, and doesn't slowdown, because
+      if the server slows down, everybody in the game experience
+      the 'lag'.
+
+    - We have cleaned up the intermission screen with the death-
+      match scores. It displays now several kinds of rankings,
+      including the death rankings :) See Section [5-9] of the
+      main documentation.
+
+      We will document these scoring modes better in the future.
+      Please note that this was quickly added: we can add any type
+      of scoring system provided it's interesting enough, and
+      funny :)
+
+    - The deathmatch rankings are now automatically displayed when
+      you are dead, until you respawn.
+
+
+
+ Demos:
+    - When playing back a demo, it tells the name of the player
+      you are looking at when pressing F12. It is also displayed
+      white in the deathmatch rankings. When you are actually
+      playing, it is always YOUR name that is displayed white in
+      the deathmatch rankings.
+
+
+ Miscellaneous:
+    - The old sky textures are stretched and displayed right. It
+      doesn't look great, but that's better than nothing.
+    - The jump key is no more repeatable. If you keep it pressed,
+      the marine will jump only once.
+    - Restored the sound caching system: if soundprecache is set
+      to false, it will not load all the sounds at startup, but
+      only when needed.
+    - Restored the original game title screen, since there is now
+      the Doom Legacy logo at the game startup screen. Phew! I'm
+      happy to see that great titlepic of Doom1 back!
+
+
+ Bugfixes:
+    - Items under crushing sectors that could not be picked up is
+      fixed. A ridiculous test == should have been <=, arh!
+      Fixed the crushing ceilings that didn't crush too.
+    - The game can now be started in standard VGA 320*200 on
+      older non-vesa graphic cards.
+    - Fixed an important bug with memory usage under Windows and
+      OS2 systems, please tell is if it works under WinNT !
+      We have tested it under OS2 and it works now perfectly!
+    - Fixed Win95 asking for 'switch to DOS mode'.
+
+
+ In development:
+    - Started working on hicolor : the engine will use HICOLOR
+      textures, instead of simply converting the 256color graphics
+      to hicolor.
+
+    - The console border graphics, and the loading screen picture
+      were done in a hurry, I have to finish them.
+
+    - Finish that damn water, arh! We have to make a simple editor
+      for this. The tools will be developed under Windows.
+
+
+
+
+ Release 1.12 Updated 06-Mar-98:
+ ===============================
+
+ As you can see, we've taken some time to write a better docu-
+ mentation, we hope you'll appreciate, and read the full doc
+ before sending us reports about bugs/trouble shooting.
+
+
+ Engine/Game:
+    - You can now shoot up and down, in the free look direction!
+    - You can shoot the ceiling and the floor, and see the puffs
+      of smoke.
+    - Doom didnt draw the puffs of smoke when shooting on some
+      walls in open areas, this is now fixed!
+    - Autoaim on/off. When autoaim is off, you can still use the
+      freelook to shoot up and down, but only when there's nothing
+      to aim in front of you.
+    - Crosshair preference : Off, Cross, Angle, or Point. It's drawn
+      a little translucent too.
+    - Added jump ability, key mappable in the menu of course.
+    - Can walk under and over monsters/inanimate objects.
+      All Doom things (sprites) are now collision-checked in real 3d,
+      thus things can stay on top of other things, monsters and player
+      avatar can walk/fly over stacked things and so on...
+      Eg: we've tested a 'solid corpse' feature and all the corpses
+      were stacking one on another in maps with lots of ennemies!
+    - Added transparency on other sprites, as requested : arachno,
+      barons, caco and mancubus projectiles, the lost soul, blood
+      'puffs', eye in symbol, demon (big boss) spawn fire.
+
+ Multiplayer/Network:
+    - You can now frag with the barrels!!! For the frag artists out
+      there, now you're rewarded by your talent! Let me explain:
+      when you shoot a barrel, and then later one or more guys die
+      by the explosion of the barrels, you get the frags!!! This
+      works like dominoes too : whatever number of barrels they are,
+      they all know who caused the first explosion! Now there should
+      be a special deathmatch mode with respawning barrels :) !!!
+    - Fixed a bug that MAY have caused some 'consistancy failures'
+      with more than 4 players (the more players, the more this bug
+      happened).
+
+ Demos:
+    - Demos now record the mouse look, change of color, change of
+      name, and the messages (talk key) when multiplayer!!
+    - Demos now record the timer, so you don't need to set -timer
+      when you playback the demo.
+    - Demos are somewhat 'compressed' and takes less space.
+    - Fixed demos not being recorded when you exited using F10 key.
+    - The 'q' key no longer ends a demo recording. Too many times
+      someones presses this key by error. Now use 'F10' to end a
+      demo (or quit from the menu).
+    - Older demos may not run well. We don't like putting a lot of
+      dirty code for the sake of backward compatibility. Especially
+      now with the mouse aiming, old demos just look crap! They're
+      always looking straight ahead! Anyway, before sending your
+      bug reports : we're trying all we can to keep the compatibilty,
+      we know a lot of old demos don't playback well now... we're
+      trying to fix that. For now, just keep your old exes to play
+      your old demos!
+    - Fixed a bug with demos not recording the right name for the
+      Deathmatch Rankings.
+    - Demos doesn't record pause now.
+
+
+ New mappable controls (Setup Controls menu):
+
+    The Setup Controls menu has been reworked. It now accepts a lot
+    more combinations. eg: you can now 'Backward' and 'Use' with one
+    key.
+
+    - Weapon Keys !!! Map your preferred weapons to easily accessible
+      keys!
+    - Deathmatch Rankings (it was stuck to 'f', now mappable)
+    - Talk key (used to be 't') now mappable.
+    - F11 : gamma key is back, I removed the key when I put the gamma
+      in the menu, but then I could have let the key. I restored it.
+    - Jump key, everybody on da plasma at map01!
+
+
+ Menus keys remapped:
+    - F5 (used to be lowdetail) : since lowdetail is no more useful,
+      this key activates the Video Options menu.
+    - F7 (used to be endgame) : now calls the main Options menu.
+
+ Miscellaneous:
+    - Added joystick support : useless but demanded... so there you
+      have it, and since we don't do it half : you have support
+      for the 'hat' plus 6 joystick buttons. Check the 'Joystick
+      Support' section for more.
+    - Removed the translucency from 2sided walls. There still need
+      to do an 'editing' support for this, so that new-made levels
+      can use it...work in progress.
+    - As requested, a '-fuzzy' parameter disables the translucency
+      and restores the old spectre 'fuzz' effect. Hey! We DO KNOW
+      that translucency is too low on the spectres (ie: too much
+      visible), but that's another problem! As we have tested, the
+      spectres look MUCH better with a high translucency than with
+      the old fuzz effect...
+    - Can now use keypad arrows in the menu, as requested.
+    - A new cheat to fly around levels, this is NOT FOR MUTLIPLAYER.
+      Don't mail us to know about it, we won't tell you!!!
+    - Added 'crunchy' sound when a sector crushes a dead corpse :)
+    - Restored the ENDOOM screen ('beg' end screen).
+    - Ctrl-C no longer interrupts the game, as requested, now use
+      Ctrl-Break to cleanly exit at any time.
+
+ Bugfixes:
+    - Fixed autodetection of Ultimate Doom, however it stills shows
+      'Doom Registered Startup' on the title bar.
+    - Some new features like rocket trails were disabled when playing
+      back an old demo, but wasn't restored when starting a new game.
+      Fixed. (this was a problem with in-game demo sequences)
+    - Fixed the problem with people having 'detaillevel 1' in their
+      default.cfg. The game exited with an error message.
+    - Fixed the messages was offset a little in some resolutions.
+    - Fixed the config not saved when playing back or recording
+      a demo.
+    - Fixed the 'RROCK17' texture not found with Doom1/Doom Ultimate.
+    - Fixed a bug with 'french' keymap used when it should not. Now
+      use it only for the french version, so you have 'qwerty' keymap
+      when entering messages, American people happy?
+    - Some other boooring little bugs crushed with our mighty feet.
+
+ In development:
+    - Transparent water in development (test it at map30)
+      this is unfinished and given as a 'preview shot', if you
+      like/dislike please mail us!! We think that it looks
+      much better than Quake2's transparent water. If you dont
+      think so, mail us, but then please read first the
+      following!
+
+      SNEAK PREVIEW HINT:
+
+      To see it, with Doom2, go at map30. Right now, its slower
+      than it could be so don't look at the speed, it will be
+      done a faster way later.. just wanted to do a fast preview
+      so that you can tell us what you think about it!!
+
+      Still to do : all kinds of sounds when walking/jumping into
+      water, new colors when underwater, different sound when
+      under water, new sprites when shooting into water and so on...
+
+    - Chase cam! Use the 'c' key when in '-devparm' mode to test
+      this. Remember: its just a quick addition, unfinished.
+      Anyway real cool to look at demos with this.
+
+    - Solid corpses : corpses stack one on another. This will be
+      implemented as a multiplayer option for fun deathmatches.
+
+      SNEAK PREVIEW HINT:
+
+      For now, you can test it with the -solidcorpse option.
+
+      Consider this as a quick way to see the new walk over/under
+      possibilities.
+
+      New problems arise in this mode, sometimes you're blocked
+      by corpses, and there should be a way to clear out the path!
+
+    - Better things-on-top-of-things handling : if you walk over
+      a monster and the monster moves, you should move with it.
+      That's not implemented right now: if the monster move,
+      you fall.
+
+    - Some kind of detection of the old skys, disabling the sky
+      from moving when mouse looking or something like that...
+
+
+
+ Release 1.11 Updated 14-Feb-98:
+ ===============================
+
+    - Full support SVGA : can switch to any VESA2 mode with the good
+      aspect ratio, can switch video mode in the menu, save video mode
+      in default config
+    - We have added - Transparence - , better say 'translucency', which
+      replace the old 'partial invisibility' effect. A selection of
+      objects are now transparent : BFG and Plasma balls, monsters fireball,
+      bullet puff, ...
+    - Full setup controls from the game menu, much better than 'setup',
+      now you can assign any 'control' to any key/mousebutton or joybutton.
+      Assign mouse and keys to anything.
+    - Free look : look up and down like Heretic (mouse supported).
+    - Multiplayer menu: choose your preferred color and enter your name.
+      The name of the players are displayed in the deathmatch rankings,
+      and also when receiving messages. You can change your color at any
+      time while playing a net game (your name too)!
+
+ Mutliplayers News
+    - We have added support for 8 player. We could not test it much, but
+      it seems to work fine now.
+      Test it, and send us a report if it run great. Thanks.
+      However you'll need a deathmatch launcher which supports more
+      than 4 players... why not try our great launcher called 'Doomatic'?
+    - We have added 7 'deathmatch' colors (for a total 11 colors).
+    - We have added 'preferred weapons order'. However we didn't finish
+      it at the time you read this, so its not configurable in the menu
+      right now , but you can edit the default.cfg (hint)
+
+ Compatibility support
+    - can load demos of doom v1.9, some new additions are automatically
+      disabled when playing back older demos so that they run fine.
+    - Support dehacked patches : use -dehacked <filename.deh>
+      If you like superweapons patches, and the like, it should work
+      no problem with our support. The difference is that now you don't
+      need  to patch the exe.
+
+ Minor news
+    - play demos from any directory (eg: -playdemo demos\cooldemo)
+    - show player's statusbar and hear player's sounds when changing the
+      viewpoint while looking at a demo (F12)
+    - autorun toggle (menu)
+    - mouselook toggle (menu)
+    - mouselook y sensitivity (menu)
+    - invert mouse for mouselook (menu)
+    - Load MIDI file in wad (autodetect if is MUS or MID)
+      This one is for you wad creators : just insert a MID as a raw
+      file in place of a 'D_XXXX' resource and it works.
+    - Some network optimisations (but run only with doomatic).
+
+ Know bugs:
+    - Yes, there's transparency on 2sided walls, but be reassured, this
+      is a simple 'quicktest' feature, to see what it looks like,
+      we've left it until the next version so that you can see it.
+    - When a 'marine' is translucent (pickup blur sphere), it looks
+      like a green marine... instead of using the player color. todo..
+    - You'll have only access to 320x200 video mode, if you don't run
+      a VESA2 driver (we don't support mode-X VGA 'tweaked' modes...)
+      UNIVBE is recommended, you can use S3VBE20 (freeware) if you have
+      an S3 card..
+    - automap is not aspect ratio correct in modes like 320x400
+    - the intermission screen might display garbage or even crash the game,
+      when playing more than 4 players
+    - if you use Doomatic : we added the name and preferred colors in
+      Doomatic, at that time doom sources were not released... but now
+      that we have added name and color in Doom LEGACY, these settings in
+      Doomatic don't have effect
+    - no win95 specific code, we might do a simple support for win95,
+      eg: a setup/launcher program. If you really need something for w95,
+      try to convince us!!
+    - no waitvbl (no pageflipping)
+
+
+ ============================================================================
+ END OF WHATSNEW.TXT
+ ============================================================================
+ 
+</pre>
+</html>

@@ -1,0 +1,19 @@
+All dates in European format.
+
+04-04-2001
+- Developed common API for support the hardware 3D sound. 
+  The DirectSound3D driver for Win32.
+
+21-01-2001
+- Win32: Just a some fine-tunings for system mouse input
+
+06-01-2001
+- Win32: Added alternate mouse input subsystem (system mouse input)
+
+
+27-10-2000
+- Win32: Added support for the SurroundSound software encoding. Win32 only yet.
+  Just a test version (code packed into several ifdef's)
+
+23-10-2000
+- Win32: Fixed some bugs (midi stream bug and mouse wheel bug)

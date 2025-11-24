@@ -1,0 +1,17 @@
+06/13/2002
+
+Added a "gamemode" fragglescript command upon SoM's request. It returns 2 if in Deathmatch,
+1 if in Cooperative, and 0 for single player.
+
+Also added code in P_ZMovement to check an object's FloorZ even if its MOMX and MOMY == 0. This
+keeps objects from falling through things like 3DFloors.
+
+06/23/2002
+
+Fixed a bug with animated flats in p_spec.c. It wasn't pulling the 'speed' setting from the right place, and would always use "8" no matter what you set.
+
+Fixed the problem in p_saveg.c that was not always saving the Z value of objects and resetting the floorz to sector->floorheight instead of checking for 3d floors.
+
+06/30/2002
+
+Added up and down vertical currents. They work just like Boom's horizontal ones. Linedef #292 for Up, #293 for down.

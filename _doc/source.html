@@ -1,0 +1,190 @@
+<html>
+<body text="#70f070" bgcolor="#000000" link="#70f070" vlink="#70f070" alink="#70f070">
+<pre>
+
+1. Compile Legacy
+2. Know bugs
+3. Explanation of the code
+ 3.1 The memory model
+ 3.2 Hardware Texture model
+
+1. Compile Legacy
+=================
+
+Sources can be found here:
+http://sourceforge.net/projects/doomlegacy/
+
+
+DOS
+---
+
+need:
+- djgpp 2.02     (http://www.delorie.com)
+- allegro 3.12   (http://www.talula.demon.co.uk/allegro/)
+- libsocket 0.7.4 (beta 4) or better
+  (http://www.phekda.freeserve.co.uk/richdawe/lsck/lsck.htm)
+- bcd 1.03 (inlcude in this package)
+- gcc 2.95.2 is recommended
+- nasm 0.98 (or better)     (http://www.cryogen.com/Nasm)
+
+compile:
+make
+
+debug:
+when craching legacy will return eip
+type make asm, then you will have a 8 megs doom3.s (a assembler file)
+the you can find the faulting instruction and function
+
+------------------------------------------------------------------------
+
+Linux
+-----
+
+need:
+- you can compile X or GGI version just modify the makefile
+  for GGI you will need GGI library
+- tested with gcc 2.7 and 2.95.
+- Mesa (or other OpenGL implementation) (optional: for OpenGL renderer)
+- nasm 0.98 (or better)     (http://www.cryogen.com/Nasm)
+
+compile
+make LINUX=1
+
+debug:
+gdb ?
+
+------------------------------------------------------------------------
+
+Win32
+-----
+
+need :
+- glide 3.x sdk (optional)  (http://www.3dfx.com) 
+- directx6 sdk (or higher)  (http://www.micosoft.com/directx)
+- nasm 0.98 (or better)     (http://www.cryogen.com/Nasm)
+- VC6 should also work with VC5
+  use the file in the VC6 dir and copy it in to the main directory
+
+debug:
+press on "step over" with the release version (there is some debug info 
+on it). Then change the eip in the regster window when you will type 
+enter the edi will go to the faulting instruction. don't forget that 
+you can follow the stack for calls.
+You can also use trace with the debug version but add -win and -nomouse.
+
+
+
+2. Know bugs/issues
+===================
+
+ - opengl/glide lighting may be slow (we have some
+   project to use the bsp to optimize all the stuff)
+ - splats on opengl/glide have seriouse z-problem and is not clipped 
+   to the seg 
+ - the splats schould be in segs and not in linedef, so we can clip it 
+   and render only when needed (actualy there is overdraw in opengl/3dfx)
+ - the sky in opengl/3dfx is not well maped and we have big problem with 
+   large sky like in tnt map01
+ - when clientprediction2 is enabled (see doomdef.h) the spirit mobj
+   have some serious z problem when quiting/entering moving platform
+ - monsters/sprite have feet(head) in ground, caused by z-buffer,
+   solution : trace all view using back-to-front rendering and use
+   clipping like in software for spite (lot of work here)
+   also debug the clipwall in harware, this will also fix the water
+   and transparent wall problems
+ - there is white dots around some wall/floors/ceiling, caused by :
+   - T-intersection in walls, since wall height is define in sector
+   - maybe because the bsp is in fixed and we use float (not sure)
+   - maybe hwr_bsp.c buged :(
+ - midi under win32 don't work properly
+ - palette problem under winNT4
+ - there is no splats on floors and ceiling, fab have begon but 
+   haven't finish
+ - 3dfx splitscren have seriouse projection probleme
+ - sprite that have transparent region (torch, lost soul...) are full 
+   transparent in 3dfx/opengl
+ - and some others surprise :)
+
+3. Explanation of the code
+==========================
+
+ 3.1 The memory model (original) (z_zone.c) (by BP)
+ --------------------
+
+ Doom allocate a heap of 6 megs at begining and provide a Z_Malloc function
+ to allocate in this heap. 
+ 
+   Z_Malloc( int size,int tag,void* user )
+
+    size is the size in byte
+    tag can be : PU_STATIC   allocated static (like malloc do)
+                             call Z_Free to free it
+                 PU_LEVEL    same as static but the zone is "tagged" with the 
+                             tag PU_LEVEL, when calling 
+                             Z_FreeTag (PU_LEVEL, PU_LEVEL) all zone tagged 
+                             with PU_LEVEL are freed (at the end of the level)
+                 PU_CACHE    this one _can_ be freed automatiquely by one other
+                             call to Z_Malloc. the *user point to a pointer 
+                             to this zone so when freed automatiquely the 
+                             pointer is set to NULL so eatch time you use it
+                             you must check if the pointer is not NULL and 
+                             reload it.
+
+ (...)
+
+ 3.2 Hardware Texture model (by BP)
+ --------------------------
+
+ Eatch texture/patch/flats/pic in legacy are converted to hardware texture at 
+ runtime (the GlideMipmap_s structure (hw_data.h)). I will call hardware 
+ texture a gr_texture so there is no confusion.
+
+ To remind you :
+  - Texture are set of patch and are associate to linedefs (walls) can be 
+    upper, lower or middle texture. It can have hole on it.
+  - patch are sprites (the doom patch are run of vertical lines)
+  - flats are used for floors and ceiling of sectors and have size of 64x64
+    it can't have hole on it
+  - pic are new legacy format for picture, it can only handle plain texture 
+    like flats it is now used for hud in full screen for the main picture 
+    of legacy and for coronas (the format was extended to handle 32 bit color
+    or intensity + alpha, not all are implemented at this time)
+
+ Since patch, flat and pic are basic structure represented by only one lump in
+ the wad, the wad loader allocate for eatch lump a GlideMipmap_s (cache3Dfx) 
+ and init data field to NULL. Since the data structure is allocated in 
+ PU_3DFXCACHE (like PU_CACHE) the data will be initilised when needed 
+ (hw_cache.c).
+
+ The GlideMipmap_s structures for textures are initialized on 
+ HWR_PrepLevelCache (hw_cache.c) it is called in P_SetupLevel (load level)
+ the number of textures is computed with TEXTURE1, TEXTURE2 lumps since this
+ can be changed in runtime in legacy (load a wad while runing) it must be 
+ reallocated. Well, at this time it is realloceted at eatch level start. We 
+ can do better, since numtextures change only when a wad is loaded.
+
+ The 3dfx driver use glide3, it load gr_texture in gr_texture memory of the 
+ card in fifo order when there is no more place it remove the first gr_texture,
+ the downloaded field of GlideMipmap_s go to false and when needed it is 
+ reloaded in gr_texture memory. In OpenGl, since OpenGl keep texture in there 
+ own memory and handle gr_texture memory of the card we no more need to 
+ redownload it but if we not free time to time gr_texture memory in opengl, 
+ it will get alot of memory, so the gr_texture memory is cleared at eatch 
+ new level (same time of texture reallocation). Opengl and 3dfx link the 
+ loaded gr_texture with the nextmipmap field of GlideMipmap_s so before clear 
+ textures of the heap we MUST free gr_texture memory of OpenGl or 3dfx !
+
+ Legacy can also draw patch with a differant colormap (thanks to Hurdler).
+ When needed it create the same gr_texture but just with a differant colormap. 
+ This one is linked with the original in the GlideMipmap_s with the 
+ nextcolormap field.
+
+ So when a polygone with a gr_texture must be drawn, first we check if the 
+ gr_textures is not allready loaded in hadware memory (downloaded field) if 
+ not then we check if gr_texture data is there (not grabbed by z_malloc 
+ function) if not we must recompute it eatch type of gr_texture (texture, 
+ patch, flat, pic have there own methode) the we can send the gr_texture 
+ to 3dfx or OpenGl.
+ 
+</pre>
+</html>

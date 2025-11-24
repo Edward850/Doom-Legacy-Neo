@@ -1,0 +1,5 @@
+NAME        DOOM2   WINDOWAPI
+
+DESCRIPTION 'DoomLegacy for OS/2 (C) 1998-2001 Yuri Dario mc6530@mclink.it'
+
+STACKSIZE   524288

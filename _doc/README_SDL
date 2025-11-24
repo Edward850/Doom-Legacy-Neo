@@ -1,0 +1,30 @@
+Linux SDL Doom Legacy 1.40
+==========================
+
+This is the first public release of the Linux SDL Version
+of Doom Legacy.
+
+Known bugs:
+- in windowed mode the mouse can leave the window even if
+  mouse is in use
+- when entering the window with the mouse the players view
+  tilts
+- you need to have a libGL.so and libGLU.so installed, even
+  if you play with SW rendering - this is not considered a
+  bug at the moment, maybe in the future when too many
+  users complain :)
+
+You will need SDL-1.2 minimum, SDL_Mixer-1.2 and the timidity
+patches.
+
+If you don´t have SDL installed on your system you can use the
+SDL libraries that come with Legacy. Just go to the appropriate
+directory and type "run-lsdldoom.sh". As SDL is built to ones
+system configuration I can not guarantee that these libraries
+work for you. If you have any problems with the SDL libs
+contained in this package, please go to
+http://www.libsdl.org and compile it yourself.
+
+Send feedback to metzgermeister@users.sourceforge.net
+
+Enjoy !

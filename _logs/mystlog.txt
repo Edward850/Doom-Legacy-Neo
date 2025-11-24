@@ -1,0 +1,7 @@
+Mysterial's Log
+
+7/23/2002
+
+-Messages in splitscreen that belong to the second player now appear on the top of the second player's screen. A message is designated as being the second player's either by being put into his message variable or by prefixing it with character 4 ('\4') when sending it to CONS_Printf or CONS_Print.
+*Death messages & constant messages (e.g. "You need a blue key to open this door") only. Chat messages and any other variable messages (e.g. chat messages) are unaffected, and only appear on the top of the screen.
+*If the console is opened, both players' messages will appear in the message history.

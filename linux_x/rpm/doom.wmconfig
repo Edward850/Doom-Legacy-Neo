@@ -1,0 +1,4 @@
+doom name "Doom Legacy"
+doom description "Doom Legacy"
+doom group Games/Action
+doom exec "/usr/games/doom &"

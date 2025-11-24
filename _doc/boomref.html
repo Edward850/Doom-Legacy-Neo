@@ -1,0 +1,2672 @@
+<html>
+<body text="#70f070" bgcolor="#000000" link="#70f070" vlink="#70f070" alink="#70f070">
+<tt>
+<font>
+>>>>>>>>>>>>>>>>>>>>>>>>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<br>>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;
+<br>>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BOOM reference v1.3 4/12/98&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;
+<br>>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;
+<br>>>>>>>>>>>>>>>>>>>>>>>>>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+<p>======================================================================
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Part I Linedef Types
+<br>======================================================================
+<p>#######################
+<br>Section 0. Terminology
+<br>#######################
+<p>In BOOM actions are caused to happen in the game thru linedef types.
+<br>BOOM has three kinds of linedef types:
+<p>Regular&nbsp;&nbsp;&nbsp;&nbsp; - the linedef types that were already
+in DOOM II v1.9
+<p>Extended&nbsp;&nbsp;&nbsp; - linedef types not in DOOM II v1.9 but less
+than 8192
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+in value
+<p>Generalized - linedef types over 8192 in value that contain bit
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+fields that independently control the actions of the sector
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+affected.
+<p>A linedef with non-zero linedef type is called a linedef trigger. A
+<br>linedef trigger is always activated in one of three ways - pushing
+on
+<br>the first sidedef of the linedef, walking over the linedef, or
+<br>shooting the linedef with an impact weapon (fists, chainsaw, pistol,
+<br>shotgun, double barreled, or chaingun).
+<p>Linedefs activated by pushing on them come in two varieties. A manual
+<br>linedef affects the sector on the second sidedef of the line pushed.
+<br>A switched linedef affects all sectors that have the same tag field
+<br>as the linedef that was pushed.
+<p>Nearly all switched, walkover, and gun linedefs operate on the sectors
+<br>with the same tag as that in the tag field of the linedef.
+<p>Some linedefs are never activated per se, but simply create or control
+<br>an effect thru their existence and properties, usually affecting the
+<br>sectors sharing the linedef's tags. There are also a few special case
+<br>like line-line teleporters and exit linedefs that do not affect
+<br>sectors.
+<p>Some linedefs are only triggerable once, others are triggerable as
+<br>many times as you like.
+<p>Triggering types are denoted by the letters P, S, W, and G for
+<br>manual(push), switched, walkover, and gun. Their retriggerability is
+<br>denoted by a 1 or R following the letter. So the triggering types for
+<br>linedefs are:
+<p>P1 PR S1 SR W1 WR G1 GR
+<p>Often linedef actions depend on values in neighboring sectors. A
+<br>neighboring sector is one that shares a linedef in common, just
+<br>sharing a vertex is not sufficient.
+<p>In DOOM only one action on a sector could occur at a time. BOOM
+<br>supports one floor action, one ceiling action, and one lighting
+<br>action simultaneously.
+<br>&nbsp;
+<p>################
+<br>Section 1. Doors
+<br>################
+<p>A door is a sector, usually placed between two rooms, whose ceiling
+<br>raises to open, and lowers to close.
+<p>A door is fully closed when its ceiling height is equal to its floor
+<br>height.
+<p>A door is fully open when its ceiling height is 4 less than the lowest
+<br>neighbor ceiling adjacent to it.
+<p>A door may be set to an intermediate state initially, or thru the action
+<br>of a linedef trigger that affects ceilings or floors. The door is passable
+<br>to a player when its ceiling is at least 56 units higher than its floor.
+<br>In general the door is passable to a monster or a thing when its ceiling
+<br>is at least the monster or thing's height above the floor.
+<p>If a door has a ceiling height ABOVE the fully open height, then an
+<br>open door action moves the ceiling to the fully open height
+<br>instantly.
+<p>If a door has a ceiling height BELOW the fully closed height (that is
+<br>the ceiling of the door sector is lower than the floor of the door
+<br>sector) a close door action moves the ceiling to the fully closed
+<br>height instantly.
+<p>--------------------------
+<br>Section 1.1 Door functions
+<br>--------------------------
+<p>Open, Wait, Then Close
+<p>On activation, door opens fully, waits a specified period, then
+<br>closes fully.
+<p>Open and Stay Open
+<p>On activation, door opens fully and remains there.
+<p>Close and Stay Closed
+<p>On activation, door closes fully, and remains there.
+<p>Close, Wait, Then Open
+<p>On activation, door closes fully, waits a specified period, then
+<br>opens fully.
+<p>------------------------------
+<br>Section 1.2 Varieties of doors
+<br>------------------------------
+<p>A door can be triggered by pushing on it, walking over or pressing a
+<br>linedef trigger tagged to it, or shooting a linedef tagged to it.
+<br>These are called manual, walkover, switched, or gun doors resp.
+<p>Since a push door (P1/PR) has no use for its tag, BOOM has extended
+<br>the functionality to include changing any tagged sectors to maximum
+<br>neighbor lighting on fully opening, then to minimum neighbor lighting
+<br>on fully closing. This is true for regular, extended, and generalized
+<br>doors with push triggers.
+<p>A door trigger can be locked. This means that the door function will
+only
+<br>operate if the player is in possession of the right key(s). Regular
+<br>and extended door triggers only care if the player has a key of the
+<br>right color, they do not care which. Generalized door triggers
+<br>can distinguish between skull and card keys, and can also require
+<br>any key, or all keys in order to activate.
+<p>A door can have different speeds, slow, normal, fast or turbo.
+<p>A door can wait for different amounts of time.
+<p>A door may or may not be activatable by monsters.
+<p>Any door function except Close and Stay Closed, when closing and
+<br>encountering a monster or player's head will bounce harmlessly off
+<br>that head and return to fully open. A Close and Stay Closed will rest
+<br>on the head until it leaves the door sector.
+<p>------------------------------
+<br>Section 1.3 Door linedef types
+<br>------------------------------
+<p>Regular and Extended Door Types
+<br>---------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Lock&nbsp;&nbsp; Speed&nbsp;&nbsp;&nbsp; Wait&nbsp; Monst&nbsp;&nbsp;&nbsp;
+Function
+<p>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+PR&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+4s&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait, Then
+Close
+<br>117&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; PR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; 4s&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait, Then Close
+<br>63&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+SR&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+4s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait,
+Then Close
+<br>114&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; 4s&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait, Then Close
+<br>29&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+S1&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+4s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait,
+Then Close
+<br>111&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; 4s&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait, Then Close
+<br>90&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+WR&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+4s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait,
+Then Close
+<br>105&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; 4s&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait, Then Close
+<br>4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+W1&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+4s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait,
+Then Close
+<br>108&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; 4s&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait, Then Close
+<p>31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; P1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>118&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; P1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>61&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+SR&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay
+Open
+<br>115&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>112&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>86&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+WR&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay
+Open
+<br>106&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+W1&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay
+Open
+<br>109&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>46&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+GR&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay
+Open
+<p>42&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close and Stay Closed
+<br>116&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close and Stay Closed
+<br>50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+S1&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close and Stay
+Closed
+<br>113&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close and Stay Closed
+<br>75&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+WR&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close and Stay
+Closed
+<br>107&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close and Stay Closed
+<br>3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+W1&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close and Stay
+Closed
+<br>110&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close and Stay Closed
+<p>196&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp; 30s&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close, Wait, Then Open
+<br>175&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp; 30s&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close, Wait, Then Open
+<br>76&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+WR&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+30s&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close, Wait, Then
+Open
+<br>16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+W1&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+30s&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close, Wait, Then
+Open
+<p>Regular and Extended Locked Door Types
+<br>---------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Lock&nbsp;&nbsp; Speed&nbsp;&nbsp;&nbsp; Wait&nbsp; Monst&nbsp;&nbsp;&nbsp;
+Function
+<p>26&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; PR&nbsp;&nbsp;&nbsp;&nbsp;
+Blue&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp; 4s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Open, Wait, Then Close
+<br>28&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+PR&nbsp;&nbsp;&nbsp;&nbsp; Red&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+4s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait,
+Then Close
+<br>27&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+PR&nbsp;&nbsp;&nbsp;&nbsp; Yell&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+4s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open, Wait,
+Then Close
+<p>32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; P1&nbsp;&nbsp;&nbsp;&nbsp;
+Blue&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Open and Stay Open
+<br>33&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+P1&nbsp;&nbsp;&nbsp;&nbsp; Red&nbsp;&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay
+Open
+<br>34&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+P1&nbsp;&nbsp;&nbsp;&nbsp; Yell&nbsp;&nbsp; Slow&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay
+Open
+<br>99&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp;
+SR&nbsp;&nbsp;&nbsp;&nbsp; Blue&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay
+Open
+<br>134&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Red&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>136&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Yell&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Open and Stay Open
+<br>133&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Blue&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Open and Stay Open
+<br>135&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Red&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp;
+No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay Open
+<br>137&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Yell&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Open and Stay Open
+<br>&nbsp;
+<p>There are two generalized door linedef types, Generalized Door, and
+<br>Generalized Locked Door. The following tables show the possibilities
+<br>for each parameter, any combination of parameters is allowed:
+<p>Slow and Fast represent the same speeds as slow and fast regular doors.
+Normal
+<br>is twice as fast as slow, Fast is twice normal, Turbo is twice Fast.
+<p>Generalized Door Types
+<br>---------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Lock&nbsp;&nbsp; Speed&nbsp;&nbsp;&nbsp; Wait&nbsp; Monst&nbsp;&nbsp;&nbsp;
+Function
+<p>3C00H-&nbsp;&nbsp; Gen&nbsp;&nbsp;&nbsp;&nbsp; P1/PR&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;
+Slow&nbsp;&nbsp;&nbsp;&nbsp; 1s&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Open, Wait, Then Close
+<br>4000H&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+S1/SR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Normal&nbsp;&nbsp;
+4s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Open and Stay
+Open
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+W1/WR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp;
+9s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Close and Stay Closed
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+G1/GR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Turbo&nbsp;&nbsp;&nbsp;
+30s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Close,
+Wait, Then Open
+<br>&nbsp;
+<p>Generalized Locked Door Types
+<br>---------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Lock&nbsp;&nbsp; Speed&nbsp;&nbsp;&nbsp; Wait&nbsp; Monst&nbsp;&nbsp;&nbsp;
+Function
+<p>3800H-&nbsp;&nbsp; Gen&nbsp;&nbsp;&nbsp;&nbsp; P1/PR&nbsp; Any&nbsp;&nbsp;&nbsp;
+Slow&nbsp;&nbsp;&nbsp;&nbsp; 1s&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Open, Wait, Then Close
+<br>3C00H&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+S1/SR&nbsp; Blue&nbsp;&nbsp; Normal&nbsp;&nbsp; 4s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Open and Stay Open
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+W1/WR&nbsp; Red&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp; 9s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Close and Stay Closed
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+G1/GR&nbsp; Yell&nbsp;&nbsp; Turbo&nbsp;&nbsp;&nbsp; 30s&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Close, Wait, Then Open
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+BlueC
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+RedC
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+YellC
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+BlueS
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+RedS
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+YellS
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+All3
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+All6
+<br>&nbsp;
+<br>#################
+<br>Section 2. Floors
+<br>#################
+<p>----------------------------
+<br>Section 2.1 Floor targets
+<br>----------------------------
+<p>Lowest Neighbor Floor (LnF)
+<p>This means that the floor moves to the height of the lowest
+<br>neighboring floor including the floor itself. If the floor
+<br>direction is up (only possible with generalized floors) motion is
+<br>instant, else at the floor's speed.
+<p>Next Neighbor Floor (NnF)
+<p>This means that the floor moves up to the height of the lowest
+<br>adjacent floor greater in height than the current, or down to the
+<br>height of the highest adjacent floor less in height than the current,
+<br>as determined by the floor's direction. Instant motion is not
+<br>possible in this case. If no such floor exists, the floor does not
+move.
+<p>Lowest Neighbor Ceiling (LnC)
+<p>This means that the floor height changes to the height of the lowest
+<br>ceiling possessed by any neighboring sector, including that floor's
+<br>ceiling. If the target height is in the opposite direction to floor
+<br>motion, motion is instant, otherwise at the floor action's speed.
+<p>8 Under Lowest Neighbor Ceiling (8uLnC)
+<p>This means that the floor height changes to 8 less than the height
+<br>of the lowest ceiling possessed by any neighboring sector, including
+<br>that floor's ceiling. If the target height is in the opposite
+<br>direction to floor motion, motion is instant, otherwise at the floor
+<br>action's speed.
+<p>Highest Neighbor Floor (HnF)
+<p>This means that the floor height changes to the height of the highest
+<br>neighboring floor, excluding the floor itself. If no neighbor floor
+<br>exists, the floor moves down to -32000. If the target height is in
+<br>the opposite direction to floor motion, the motion is instant,
+<br>otherwise it occurs at the floor action's speed.
+<p>8 Above Highest Neighbor Floor (8aHnF)
+<p>This means that the floor height changes to 8 above the height of
+<br>the highest neighboring floor, excluding the floor itself. If no
+<br>neighbor floor exists, the floor moves down to -31992. If the target
+<br>height is in the opposite direction to floor motion, the motion is
+<br>instant, otherwise it occurs at the floor action's speed.
+<p>Ceiling
+<p>The floor moves up until its at ceiling height, instantly if floor
+<br>direction is down (only available with generalized types), at the
+<br>floor speed if the direction is up.
+<p>24 Units (24)
+<p>The floor moves 24 units in the floor action's direction. Instant
+<br>motion is not possible with this linedef type.
+<p>32 Units (32)
+<p>The floor moves 32 units in the floor action's direction. Instant
+<br>motion is not possible with this linedef type.
+<p>512 Units (512)
+<p>The floor moves 512 units in the floor action's direction. Instant
+<br>motion is not possible with this linedef type.
+<p>Shortest Lower Texture (SLT)
+<p>The floor moves the height of the shortest lower texture on the
+<br>boundary of the sector, in the floor direction. Instant motion is not
+<br>possible with this type. In the case that there is no surrounding
+<br>texture the motion is to -32000 or +32000 depending on direction.
+<p>None
+<p>Some pure texture type changes are provided for changing the floor
+<br>texture and/or sector type without moving the floor.
+<p>--------------------------------
+<br>Section 2.2 Varieties of floors
+<br>--------------------------------
+<p>A floor can be activated by pushing on a linedef bounding it
+<br>(generalized types only), or by pushing on a switch with the same tag
+<br>as the floor sector, or by walking over a linedef with the same tag
+<br>as the floor, or by shooting a linedef with the same tag as the
+<br>floor with an impact weapon.
+<p>A floor can move either Up or Down.
+<p>A floor can move with speeds of Slow, Normal, Fast, or Turbo. If the
+<br>target height specified by the floor function (see Floor Targets
+<br>above) is in the opposite direction to the floor's motion, then
+<br>travel is instantaneous, otherwise its at the speed specified.
+<p>A floor action can be a texture change type, in which case after the
+<br>action the floor texture of the affected floor, and possibly the
+<br>sector type of the affected floor are changed to those of a model
+<br>sector. The sector type may be zeroed instead of copied from the
+<br>model, or not changed at all. These change types are referred to
+<br>below as Tx (texture only), Tx0 (type zeroed), and TxTy (texture and
+<br>type changed). The model sector for the change may be the sector on
+<br>the first sidedef of the trigger (trigger model) or the sector with
+<br>floor at destination height across the lowest numbered two-sided
+<br>linedef surrounding the affected sector (numeric model). If no model
+<br>sector exists, no change occurs. If a change occurs, floor texture
+is
+<br>always affected, lighting is never affected, even that corresponding
+<br>to the sector's type, nor is any other sector property other than the
+<br>sector's type.
+<p>Numeric model algorithm:
+<p>1) Find all floors adjacent to the tagged floor at destination height
+<br>2) Find the lowest numbered linedef separating those floors from that
+tagged
+<br>3) The sector on the other side of that linedef is the model
+<p>A floor action can have the crush property, in which case players and
+<br>monsters are crushed when the floor tries to move above the point
+<br>where they fit exactly underneath the ceiling. This means they take
+<br>damage until they die, leave the sector, or the floor action is stopped.
+<br>A floor action never reverses on encountering an obstacle, even if
+<br>the crush property is not true, the floor merely remains in the same
+<br>position until the obstacle is removed or dies, then continues.
+<p>-------------------------------
+<br>Section 2.3 Floor linedef types
+<br>-------------------------------
+<p>Regular and Extended Floor Types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp; Dir Spd&nbsp;&nbsp;
+Chg&nbsp; Mdl Mon Crsh&nbsp; Target
+<p>60&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Floor
+<br>23&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Floor
+<br>82&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Floor
+<br>38&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Floor
+<br>&nbsp;
+<br>177&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; TxTy Num No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest Neighbor
+Floor
+<br>159&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; TxTy Num No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest Neighbor
+Floor
+<br>84&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; TxTy Num No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest Neighbor
+Floor
+<br>37&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; TxTy Num No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest Neighbor
+Floor
+<p>69&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>18&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>128&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>119&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<p>132&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Fast&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>131&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Fast&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>129&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Fast&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>130&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Fast&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<p>222&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>221&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>220&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>219&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<p>64&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<br>101&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<br>91&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<br>5&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<br>24&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; G1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<p>65&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; Yes&nbsp;&nbsp; Lowest Neighbor
+Ceiling - 8
+<br>55&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; Yes&nbsp;&nbsp; Lowest Neighbor
+Ceiling - 8
+<br>94&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; Yes&nbsp;&nbsp; Lowest Neighbor
+Ceiling - 8
+<br>56&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; Yes&nbsp;&nbsp; Lowest Neighbor
+Ceiling - 8
+<p>45&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Highest
+Neighbor Floor
+<br>102&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Highest
+Neighbor Floor
+<br>83&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Highest
+Neighbor Floor
+<br>19&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Highest
+Neighbor Floor
+<p>70&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Fast&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Highest
+Neighbor Floor + 8
+<br>71&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Fast&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Highest
+Neighbor Floor + 8
+<br>98&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Fast&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Highest
+Neighbor Floor + 8
+<br>36&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Fast&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Highest
+Neighbor Floor + 8
+<p>180&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute
+24
+<br>161&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute
+24
+<br>92&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute
+24
+<br>58&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute
+24
+<p>179&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; TxTy Trg No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute 24
+<br>160&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; TxTy Trg No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute 24
+<br>93&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; TxTy Trg No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute 24
+<br>59&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; TxTy Trg No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute 24
+<p>176&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Abs Shortest
+Lower Texture
+<br>158&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Abs Shortest
+Lower Texture
+<br>96&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Abs Shortest
+Lower Texture
+<br>30&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Abs Shortest
+Lower Texture
+<p>178&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute
+512
+<br>140&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute
+512
+<br>147&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute
+512
+<br>142&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None --&nbsp; No&nbsp; No&nbsp;&nbsp;&nbsp; Absolute
+512
+<p>190&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ----&nbsp; TxTy Trg No&nbsp; No&nbsp;&nbsp;&nbsp; None
+<br>189&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ----&nbsp; TxTy Trg No&nbsp; No&nbsp;&nbsp;&nbsp; None
+<br>154&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ----&nbsp; TxTy Trg No&nbsp; No&nbsp;&nbsp;&nbsp; None
+<br>153&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ----&nbsp; TxTy Trg No&nbsp; No&nbsp;&nbsp;&nbsp; None
+<p>78&nbsp;&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ----&nbsp; TxTy Num No&nbsp; No&nbsp;&nbsp;&nbsp; None
+<br>241&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ----&nbsp; TxTy Num No&nbsp; No&nbsp;&nbsp;&nbsp; None
+<br>240&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ----&nbsp; TxTy Num No&nbsp; No&nbsp;&nbsp;&nbsp; None
+<br>239&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ----&nbsp; TxTy Num No&nbsp; No&nbsp;&nbsp;&nbsp; None
+<p>The following tables show the possibilities for generalized floor
+<br>linedef type parameters. Any combination of parameters is allowed:
+<p>Slow and Fast represent the same speeds as slow and fast regular
+<br>floors. Normal is twice as fast as slow, Fast is twice normal, Turbo
+<br>is twice Fast.
+<p>Generalized Floor Types
+<br>---------------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Dir Spd&nbsp;&nbsp; *Chg *Mdl Mon Crsh&nbsp; Target
+<p>6000H- Gen&nbsp;&nbsp;&nbsp;&nbsp; P1/PR&nbsp; Up&nbsp; Slow&nbsp;&nbsp;
+None Trg Yes Yes&nbsp;&nbsp; Lowest Neighbor Floor
+<br>7FFFH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S1/SR&nbsp;
+Dn&nbsp; Normal Tx&nbsp;&nbsp; Num No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Floor
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+W1/WR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp; Tx0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Lowest Neighbor Ceiling
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+G1/GR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Turbo&nbsp; TxTy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Highest Neighbor Floor
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Ceiling
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+24
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+32
+<br>*Mon(ster) enabled must be No if&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Shortest Lower Texture
+<br>Chg field is not None
+<p>Tx = Texture copied only&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Trg = Trigger Model
+<br>Tx0 = Texture copied and Type->0&nbsp;&nbsp; Num = Numeric Model
+<br>TxTy = Texture and Type copied
+<br>&nbsp;
+<p>####################
+<br>Section 3. Ceilings
+<br>####################
+<p>----------------------------
+<br>Section 3.1 Ceiling Targets
+<br>----------------------------
+<p>Highest Neighbor Ceiling (HnC)
+<p>This means that the ceiling moves to the height of the highest
+<br>neighboring ceiling NOT including the ceiling itself. If the ceiling
+<br>direction is down (only possible with generalized ceilings) motion
+is
+<br>instant, else at the ceiling's speed. If no adjacent ceiling exists
+<br>the ceiling moves to -32000 units.
+<p>Next Neighbor Ceiling (NnC)
+<p>This means that the ceiling moves up to the height of the lowest
+<br>adjacent ceiling greater in height than the current, or to the
+<br>height of the highest adjacent ceiling less in height than the current,
+<br>as determined by the ceiling's direction. Instant motion is not
+<br>possible in this case. If no such ceiling exists, the ceiling does
+<br>not move.
+<p>Lowest Neighbor Ceiling (LnC)
+<p>This means that the ceiling height changes to the height of the lowest
+<br>ceiling possessed by any neighboring sector, NOT including itself.
+<br>If the target height is in the opposite direction to ceiling
+<br>motion, motion is instant, otherwise at the ceiling action's speed.
+<br>If no adjacent ceiling exists the ceiling moves to 32000 units.
+<p>Highest Neighbor Floor (HnF)
+<p>This means that the ceiling height changes to the height of the
+<br>highest neighboring floor, excluding the ceiling's floor itself. If
+<br>no neighbor floor exists, the ceiling moves down to -32000 or the
+<br>ceiling's floor, whichever is higher. If the target height is in the
+<br>opposite direction to ceiling motion, the motion is instant,
+<br>otherwise it occurs at the ceiling action's speed.
+<p>Floor
+<p>The ceiling moves down until its at floor height, instantly if
+<br>ceiling direction is up (only available with generalized types), at
+<br>the ceiling speed if the direction is down.
+<p>8 Above Floor (8aF)
+<p>This means that the ceiling height changes to 8 above the height of
+<br>the ceiling's floor. If the target height is in the opposite direction
+<br>to ceiling motion, the motion is instant, otherwise it occurs at the
+<br>ceiling action's speed.
+<p>24 Units (24)
+<p>The ceiling moves 24 units in the ceiling action's direction. Instant
+<br>motion is not possible with this linedef type.
+<p>32 Units (32)
+<p>The ceiling moves 32 units in the ceiling action's direction. Instant
+<br>motion is not possible with this linedef type.
+<p>Shortest Upper Texture (SUT)
+<p>The ceiling moves the height of the shortest upper texture on the
+<br>boundary of the sector, in the ceiling direction. Instant motion is
+not
+<br>possible with this type. In the case that there is no surrounding
+<br>texture the motion is to -32000 or +32000 depending on direction.
+<p>----------------------------------
+<br>Section 3.2 Varieties of ceilings
+<br>----------------------------------
+<p>A ceiling can be activated by pushing on a linedef bounding it
+<br>(generalized types only), or by pushing on a switch with the same tag
+<br>as the ceiling sector, or by walking over a linedef with the same tag
+<br>as the ceiling, or by shooting a linedef with the same tag as the
+<br>ceiling with an impact weapon (generalized types only).
+<p>A ceiling can move either Up or Down.
+<p>A ceiling can move with speeds of Slow, Normal, Fast, or Turbo. If the
+<br>target height specified by the ceiling function (see Ceiling Targets
+<br>above) is in the opposite direction to the ceiling's motion, then
+<br>travel is instantaneous, otherwise its at the speed specified.
+<p>A ceiling action can be a texture change type, in which case after
+<br>the action the ceiling texture of the affected ceiling, and possibly
+<br>the sector type of the affected ceiling are changed to those of a
+<br>model sector. The sector type may be zeroed instead of copied from
+<br>the model, or not changed at all. These change types are referred to
+<br>below as Tx (texture only), Tx0 (type set to 0), and TxTy (texture
+<br>and type copied from model). The model sector for the change may be
+<br>the sector on the first sidedef of the trigger (trigger model) or the
+<br>sector with ceiling at destination height across the lowest numbered
+<br>two-sided linedef surrounding the affected sector (numeric model).
+If
+<br>no model sector exists, no change occurs. If a change occurs, ceiling
+<br>texture is always affected, lighting is never affected, even that
+<br>corresponding to the sector's type, nor is any other sector property
+<br>other than the sector's type.
+<p>Numeric model algorithm:
+<p>1) Find all ceilings adjacent to the tagged ceiling at destination height
+<br>2) Find the lowest numbered linedef separating those ceilings from
+that tagged
+<br>3) The sector on the other side of that linedef is the model
+<p>A ceiling action can have the crush property (generalized types only),
+<br>in which case players and monsters are crushed when the ceiling tries
+<br>to move below the point where they fit exactly underneath the
+<br>ceiling. This means they take damage until they die, leave the
+<br>sector, or the ceiling action is stopped.&nbsp; A ceiling action never
+<br>reverses on encountering an obstacle, even if the crush property is
+<br>not true, the ceiling merely remains in the same position until the
+<br>obstacle is removed or dies, then continues.
+<p>---------------------------------
+<br>Section 3.3 Ceiling linedef types
+<br>---------------------------------
+<p>Regular and Extended Ceiling Types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp; Dir Spd&nbsp;&nbsp;
+*Chg *Mdl Mon Crsh Target
+<p>43&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Fast&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Floor
+<br>41&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Fast&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Floor
+<br>152&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Fast&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Floor
+<br>145&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Fast&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Floor
+<p>186&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Highest
+Neighbor Ceiling
+<br>166&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Highest
+Neighbor Ceiling
+<br>151&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Highest
+Neighbor Ceiling
+<br>40&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Highest
+Neighbor Ceiling
+<p>187&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; 8 Above
+Floor
+<br>167&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; 8 Above
+Floor
+<br>72&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; 8 Above
+Floor
+<br>44&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; 8 Above
+Floor
+<p>205&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<br>203&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<br>201&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<br>199&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<p>206&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Highest
+Neighbor Floor
+<br>204&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Highest
+Neighbor Floor
+<br>202&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Highest
+Neighbor Floor
+<br>200&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Dn&nbsp; Slow&nbsp; None&nbsp; --&nbsp; No&nbsp; No&nbsp;&nbsp; Highest
+Neighbor Floor
+<p>Generalized Ceiling Types
+<br>---------------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Dir Spd&nbsp;&nbsp; *Chg *Mdl Mon Crsh&nbsp; Target
+<p>4000H- Gen&nbsp;&nbsp;&nbsp;&nbsp; P1/PR&nbsp; Up&nbsp; Slow&nbsp;&nbsp;
+None Trg Yes Yes&nbsp;&nbsp; Highest Neighbor Ceiling
+<br>5FFFH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S1/SR&nbsp;
+Dn&nbsp; Normal Tx&nbsp;&nbsp; Num No&nbsp; No&nbsp;&nbsp;&nbsp; Next Neighbor
+Ceiling
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+W1/WR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp; Tx0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Lowest Neighbor Ceiling
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+G1/GR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Turbo&nbsp; TxTy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Highest Neighbor Floor
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Floor
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+24
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+32
+<br>*Mon(ster) enabled must be No if&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Shortest Upper Texture
+<br>Chg field is not None
+<p>Tx = Texture copied only&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Trg = Trigger Model
+<br>Tx0 = Texture copied and Type->0&nbsp;&nbsp; Num = Numeric Model
+<br>TxTy = Texture and Type copied
+<br>&nbsp;
+<p>############################
+<br>Section 4. Platforms (Lifts)
+<br>############################
+<p>A platform is basically a floor action involving two heights. The
+<br>simple raise platform actions, for example, differ from the
+<br>corresponding floor actions in that if they encounter an obstacle,
+<br>they reverse direction and return to their former height.
+<p>The most often used kind of platform is a lift which travels from its
+<br>current height to the target height, then waits a specified time and
+<br>returns to it former height.
+<p>-----------------------------
+<br>Section 4.1 Platform Targets
+<br>-----------------------------
+<p>Lowest Neighbor Floor
+<p>This means that the platforms "low" height is the height of the
+<br>lowest surrounding floor, including the platform itself. The "high"
+<br>height is the original height of the floor.
+<p>Next Lowest Neighbor Floor
+<p>This means that the platforms "low" height is the height of the
+<br>highest surrounding floor lower than the floor itself. If no lower
+<br>floor exists, no motion occurs as the "low" and "high" heights are
+<br>then both equal to the floors current height.
+<p>Lowest Neighbor Ceiling
+<p>This means that the platforms "low" height is the height of the
+<br>lowest surrounding ceiling unless this is higher than the floor
+<br>itself. If no adjacent ceiling exists, or is higher than the floor
+no
+<br>motion occurs as the "low" and "high" heights are then both equal to
+<br>the floors current height.
+<p>Lowest and Highest Floor
+<p>This target sets the "low" height to the lowest neighboring floor,
+<br>including the floor itself, and the "high" height to the highest
+<br>neighboring floor, including the floor itself. When this target is
+<br>used the floor moves perpetually between the two heights. Once
+<br>triggered this type of linedef runs permanently, even if the motion
+<br>is temporarily suspended with a Stop type. No other floor action can
+<br>be commanded on the sector after this type is begun.
+<p>Ceiling
+<p>This target sets the "high" height to the ceiling of the sector and
+<br>the "low" height to the floor height of the sector and is only used
+in
+<br>the instant toggle type that switches the floor between the ceiling
+<br>and its original height on each activation. This is also the ONLY
+<br>instant platform type.
+<p>Raise Next Floor
+<p>This means that the "high" height is the lowest surrounding floor
+<br>higher than the platform. If no higher adjacent floor exists no
+<br>motion will occur.
+<p>Raise 24 Units
+<p>The "low" height is the original floor height, the "high" height is
+24
+<br>more.
+<p>Raise 32 Units
+<p>The "low" height is the original floor height, the "high" height is
+32
+<br>more.
+<p>-----------------------------------
+<br>Section 4.2 Varieties of Platforms
+<br>-----------------------------------
+<p>A platform can be activated by pushing on a linedef bounding it
+<br>(generalized types only), or by pushing on a switch with the same tag
+<br>as the platform sector, or by walking over a linedef with the same
+tag
+<br>as the platform, or by shooting a linedef with the same tag as the
+<br>platform with an impact weapon.
+<p>A platform can move with speeds of Slow, Normal, Fast, or Turbo.
+<br>Only the instant toggle platform moves instantly, all others move at
+<br>the platform's speed.
+<p>A platform can have a delay, in between when it reaches "high" height
+<br>and returns to "low" height, or at both ends of the motion in the
+<br>case of perpetual lifts.
+<p>A platform action can be a texture change type, in which case after
+<br>the action the floor texture of the affected floor, and possibly the
+<br>sector type of the affected floor are changed to those of a model
+<br>sector. The sector type may be zeroed instead of copied from the
+<br>model, or not changed at all. These change types are referred to
+<br>below as Tx (texture only), Tx0 (type zeroed), and TxTy (texture and
+<br>type changed). The model sector for the change is always the sector
+<br>on the first sidedef of the trigger (trigger model).&nbsp; If a change
+<br>occurs, floor texture is always affected, lighting is never affected,
+<br>even that corresponding to the sector's type, nor is any other sector
+<br>property other than the sector's type.
+<p>-----------------------------------
+<br>Section 4.3 Platform Linedef types
+<br>-----------------------------------
+<p>Regular and Extended Platform Types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig&nbsp;&nbsp; Dly Spd&nbsp;
+Chg&nbsp; Mdl Mon Target
+<p>66&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx&nbsp;&nbsp; Trg No&nbsp; Raise 24 Units
+<br>15&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx&nbsp;&nbsp; Trg No&nbsp; Raise 24 Units
+<br>148&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;
+Slow Tx&nbsp;&nbsp; Trg No&nbsp; Raise 24 Units
+<br>143&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;
+Slow Tx&nbsp;&nbsp; Trg No&nbsp; Raise 24 Units
+<p>67&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx0&nbsp; Trg No&nbsp; Raise 32 Units
+<br>14&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx0&nbsp; Trg No&nbsp; Raise 32 Units
+<br>149&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;
+Slow Tx0&nbsp; Trg No&nbsp; Raise 32 Units
+<br>144&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;
+Slow Tx0&nbsp; Trg No&nbsp; Raise 32 Units
+<p>68&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx0&nbsp; Trg No&nbsp; Raise Next Floor
+<br>20&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx0&nbsp; Trg No&nbsp; Raise Next Floor
+<br>95&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx0&nbsp; Trg No&nbsp; Raise Next Floor
+<br>22&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx0&nbsp; Trg No&nbsp; Raise Next Floor
+<br>47&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; G1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; Slow Tx0&nbsp; Trg No&nbsp; Raise Next Floor
+<p>181&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp; 3s&nbsp;
+Slow None --&nbsp; No&nbsp; Lowest and Highest Floor (perpetual)
+<br>162&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp; 3s&nbsp;
+Slow None --&nbsp; No&nbsp; Lowest and Highest Floor (perpetual)
+<br>87&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+3s&nbsp; Slow None --&nbsp; No&nbsp; Lowest and Highest Floor (perpetual)
+<br>53&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+3s&nbsp; Slow None --&nbsp; No&nbsp; Lowest and Highest Floor (perpetual)
+<p>182&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;
+---- ---- --&nbsp; --&nbsp; Stop
+<br>163&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;
+---- ---- --&nbsp; --&nbsp; Stop
+<br>89&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ---- ---- --&nbsp; --&nbsp; Stop
+<br>54&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+--&nbsp; ---- ---- --&nbsp; --&nbsp; Stop
+<p>62&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp;
+3s&nbsp; Slow None --&nbsp; No&nbsp; Lowest Neighbor Floor (lift)
+<br>21&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+3s&nbsp; Slow None --&nbsp; No&nbsp; Lowest Neighbor Floor (lift)
+<br>88&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+3s&nbsp; Slow None --&nbsp; No&nbsp; Lowest Neighbor Floor (lift)
+<br>10&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+3s&nbsp; Slow None --&nbsp; No&nbsp; Lowest Neighbor Floor (lift)
+<p>123&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp; 3s&nbsp;
+Fast None --&nbsp; No&nbsp; Lowest Neighbor Floor (lift)
+<br>122&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp; 3s&nbsp;
+Fast None --&nbsp; No&nbsp; Lowest Neighbor Floor (lift)
+<br>120&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp; 3s&nbsp;
+Fast None --&nbsp; No&nbsp; Lowest Neighbor Floor (lift)
+<br>121&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp; 3s&nbsp;
+Fast None --&nbsp; No&nbsp; Lowest Neighbor Floor (lift)
+<p>211&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;
+Inst None --&nbsp; No&nbsp; Ceiling (toggle)
+<br>212&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp; --&nbsp;
+Inst None --&nbsp; No&nbsp; Ceiling (toggle)
+<p>Generalized Lift Types
+<br>---------------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Dly Spd&nbsp;&nbsp;&nbsp; Mon&nbsp; Target
+<p>3400H- Gen&nbsp;&nbsp;&nbsp;&nbsp; P1/PR&nbsp; 1s&nbsp; Slow&nbsp;&nbsp;
+Yes&nbsp; Lowest Neighbor Floor
+<br>37FFH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S1/SR&nbsp;
+3s&nbsp; Normal No&nbsp;&nbsp; Next Lowest Neighbor Floor
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+W1/WR&nbsp; 5s&nbsp; Fast&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lowest
+Neighbor Ceiling
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+G1/GR&nbsp; 10s Turbo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lowest and Highest
+Floor (perpetual)
+<p>############################
+<br>Section 5. Crusher Ceilings
+<br>############################
+<p>A crusher ceiling is a linedef type that causes the ceiling to cycle
+<br>between its starting height and 8 above the floor, damaging
+<br>monsters and players that happen to be in between. Barrels explode
+<br>when crushed.
+<p>Once a crusher ceiling is started it remains running for the
+<br>remainder of the level even if temporarily suspended with a stop type.
+<br>No other ceiling action can be used in that sector thereafter.
+<p>----------------------------------
+<br>Section 5.1 Varieties of Crushers
+<br>----------------------------------
+<p>A crusher can be activated by pushing on a linedef bounding it
+<br>(generalized types only), or by pushing on a switch with the same tag
+<br>as the crusher sector, or by walking over a linedef with the same tag
+<br>as the crusher, or by shooting a linedef with the same tag as the
+<br>crusher with an impact weapon (generalized types only).
+<p>A crusher has a speed: slow, normal, fast, or turbo. The slower the
+<br>speed, the more damage the crusher does when crushing, simply thru
+<br>being applied longer. When a slow or normal crusher is moving down
+<br>and encounters something to crush, it slows down even more, by a
+<br>factor of 8. This persists until it reaches bottom of stroke and
+<br>starts up again. Fast and turbo crushers do not slow down.
+<p>A crusher can be silent. The regular silent crusher makes platform
+<br>stop and start noises at top and bottom of stroke. The generalized
+<br>silent crusher is completely quiet.
+<p>A crusher linedef is provided to stop a crusher in its current
+<br>position. Care should be used that this doesn't lock the player out
+<br>of an area of the wad if the crusher is too low to pass. A crusher
+<br>can be restarted, but not changed, with any crusher linedef.
+<p>----------------------------------
+<br>Section 5.2 Crusher Linedef Types
+<br>----------------------------------
+<p>Regular and Extended Crusher Types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig&nbsp;&nbsp; Spd&nbsp; Mon
+Silent Action
+<p>184&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp; Slow
+No&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Start
+<br>49&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp;
+Slow No&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Start
+<br>73&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Slow No&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Start
+<br>25&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Slow No&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Start
+<p>183&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp; Fast
+No&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Start
+<br>164&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp; Fast
+No&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Start
+<br>77&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp;
+Fast No&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Start
+<br>6&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp;
+Fast No&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; Start
+<p>185&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp; Slow
+No&nbsp; Yes&nbsp;&nbsp;&nbsp; Start
+<br>165&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp; Slow
+No&nbsp; Yes&nbsp;&nbsp;&nbsp; Start
+<br>150&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp; Slow
+No&nbsp; Yes&nbsp;&nbsp;&nbsp; Start
+<br>141&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp; Slow
+No&nbsp; Yes&nbsp;&nbsp;&nbsp; Start
+<p>188&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp;&nbsp; ----
+--&nbsp; --&nbsp;&nbsp;&nbsp;&nbsp; Stop
+<br>168&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;&nbsp; ----
+--&nbsp; --&nbsp;&nbsp;&nbsp;&nbsp; Stop
+<br>74,&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp;&nbsp; ----
+--&nbsp; --&nbsp;&nbsp;&nbsp;&nbsp; Stop
+<br>57,&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;&nbsp; ----
+--&nbsp; --&nbsp;&nbsp;&nbsp;&nbsp; Stop
+<p>Generalized Crusher Types
+<br>---------------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Spd&nbsp;&nbsp;&nbsp; Mon&nbsp; Silent
+<p>2F80H- Gen&nbsp;&nbsp;&nbsp;&nbsp; P1/PR&nbsp; Slow&nbsp;&nbsp; Yes&nbsp;
+Yes
+<br>2FFFH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S1/SR&nbsp;
+Normal No&nbsp;&nbsp; No
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+W1/WR&nbsp; Fast
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+G1/GR&nbsp; Turbo
+<p>##########################
+<br>Section 6. Stair Builders
+<br>##########################
+<p>A stair builder is a linedef type that sets a sequence of sectors
+<br>defined by a complex rule to an ascending or descending sequence of
+<br>heights.
+<p>The rule for stair building is as follows:
+<p>1) The first step to rise or fall is the tagged sector. It rises or
+<br>falls by the stair stepsize, at the stair speed.
+<p>2) To find the next step (sector) affected examine all two-sided
+<br>linedefs with first sidedef facing into the previous step for the one
+<br>with lowest linedef number. The sector on the other side of this
+<br>linedef is the next step. If no such linedef exists, stair building
+<br>ceases.
+<p>3) If the next step is already moving, or has already risen as part
+<br>of the stair, stair building ceases. Optionally if the floor texture
+<br>of the next step is different from the previous step's the stair
+<br>building stops. Otherwise the next step moves to the height of the
+<br>previous step plus or minus the stepsize depending on the direction
+<br>the stairs build, up or down. If the motion is in the same direction
+<br>as the stairs build, it occurs at stair build speed, otherwise it is
+<br>instant.
+<p>4) Repeat from step 2 until stair building ceases.
+<p>----------------------------------------
+<br>Section 6.1 Varieties of Stair Builders
+<br>----------------------------------------
+<p>A stair can be activated by pushing on a linedef bounding it
+<br>(generalized types only), or by pushing on a switch with the same tag
+<br>as the stair sector, or by walking over a linedef with the same tag
+<br>as the stair, or by shooting a linedef with the same tag as the
+<br>stair with an impact weapon (generalized types only).
+<p>Only extended and generalized stair types are retriggerable. The
+<br>extended retriggerable stairs are mostly useless, though triggering
+a
+<br>stair with stepsize 8 twice might be used. The generalized
+<br>retriggerable stairs alternate building up and down on each
+<br>activation which is much more useful.
+<p>A stair can build up or down (generalized types only).
+<p>A stair can have a step size of 4, 8, 16, or 24. Only generalized
+<br>types support stepsize of 4 or 24.
+<p>A stair can have build speeds of slow, normal, fast or turbo. Only
+<br>generalized types support speeds of normal or turbo.
+<p>A stair can stop on encountering a different texture or ignore
+<br>(generalized types only) different textures and continue.
+<p>Only the regular build fast, stepsize 16 stair has the property that
+<br>monsters and players can be crushed by the motion, all others do not
+<br>crush.
+<p>----------------------------------------------------
+<br>Section 6.2 Regular and Extended Stair Builder Types
+<br>----------------------------------------------------
+<p>Regular and Extended Stairs Types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig&nbsp; Dir Spd&nbsp;&nbsp;
+Step Ignore Mon
+<p>258&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Up&nbsp;
+Slow&nbsp; 8&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; No
+<br>7&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; 8&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; No
+<br>256&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Up&nbsp;
+Slow&nbsp; 8&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; No
+<br>8&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp;
+Up&nbsp; Slow&nbsp; 8&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; No
+<p>259&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Up&nbsp;
+Fast&nbsp; 16&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; No
+<br>127&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Up&nbsp;
+Fast&nbsp; 16&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; No
+<br>257&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Up&nbsp;
+Fast&nbsp; 16&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; No
+<br>100&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Up&nbsp;
+Fast&nbsp; 16&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp; No
+<p>Generalized Stairs Types
+<br>---------------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp;&nbsp; Trig&nbsp;&nbsp;
+Dir Spd&nbsp;&nbsp;&nbsp;&nbsp; Step&nbsp; Ignore Mon
+<p>3000H- Gen&nbsp;&nbsp;&nbsp;&nbsp; P1/PR&nbsp; Up&nbsp; Slow&nbsp;&nbsp;&nbsp;
+4&nbsp;&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp; Yes
+<br>33FFH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; S1/SR&nbsp;
+Dn&nbsp; Normal&nbsp; 8&nbsp;&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;
+No
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+W1/WR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;&nbsp; 16
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+G1/GR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Turbo&nbsp;&nbsp; 24
+<p>####################
+<br>Section 7 Elevators
+<br>####################
+<p>An elevator is a linedef type that moves both floor and ceiling
+<br>together. All elevator linedefs are extended, there are no regular
+or
+<br>generalized elevator types. Instant elevator motion is not possible,
+<br>and monsters cannot activate elevators. All elevator triggers are
+<br>either switched or walkover.
+<p>-----------------------------
+<br>Section 7.1 Elevator Targets
+<br>-----------------------------
+<p>Next Highest Floor
+<p>The elevator floor moves to the lowest adjacent floor higher than the
+<br>elevator's floor, the ceiling staying the same height above the floor.
+<br>If there is no higher floor the elevator doesn't move.
+<p>Next Lowest Floor
+<p>The elevator floor moves to the highest adjacent floor lower than the
+<br>current floor, the ceiling staying the same height above the floor.
+If
+<br>there is no lower floor the elevator doesn't move.
+<p>Current Floor
+<p>The elevator floor moves to the height of the floor on the first
+<br>sidedef of the triggering line, the ceiling remaining the same height
+<br>above the elevator floor.
+<p>-----------------------------------
+<br>Section 7.2 Elevator Linedef Types
+<br>-----------------------------------
+<p>Extended Elevator types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig&nbsp; Spd&nbsp;&nbsp;&nbsp;
+Target
+<p>230&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Next Highest Floor
+<br>229&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Next Highest Floor
+<br>228&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Next Highest Floor
+<br>227&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Next Highest Floor
+<p>234&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Next Lowest Floor
+<br>233&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Next Lowest Floor
+<br>232&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Next Lowest Floor
+<br>231&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Next Lowest Floor
+<p>238&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Current Floor
+<br>237&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Current Floor
+<br>236&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Current Floor
+<br>235&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Fast&nbsp;&nbsp;
+Current Floor
+<p>###################
+<br>Section 7 Lighting
+<br>###################
+<p>The lighting linedef types change the lighting in the tagged sector.
+<br>All are regular or extended types, there are no generalized lighting
+<br>types. All are switched or walkovers.
+<p>-----------------------------
+<br>Section 7.1 Lighting Targets
+<br>-----------------------------
+<p>Lights to Minimum Neighbor
+<p>Each tagged sector is set to the minimum light level found in any
+<br>adjacent sector. The tagged sectors are changed in numerical order,
+<br>and this may influence the result.
+<p>Lights to Maximum Neighbor
+<p>Each tagged sector is set to the maximum light level found in any
+<br>adjacent sector. The tagged sectors are changed in numerical order,
+<br>and this may influence the result.
+<p>Blinking
+<p>Each tagged sector begins blinking between two light levels. The
+<br>brighter level is the light level in the tagged sector. The darker
+<br>level is the minimum neighbor light level, or 0 if all neighbor
+<br>sectors have lighting greater than or equal to the sector's at the
+<br>time of activation. The blinking is non-synchronous, beginning 1-9
+<br>gametics after activation, with a dark period of 1 sec (35 gametics)
+<br>and a bright period of 1/7 sec (5 gametics).
+<p>35 Units
+<p>Each tagged sector is set to a light level of 35 units.
+<p>255 Units
+<p>Each tagged sector is set to a light level of 255 units.
+<p>-----------------------------------
+<br>Section 7.2 Lighting Linedef Types
+<br>-----------------------------------
+<p>Regular and Extended Lighting types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig&nbsp; Target
+<p>139&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; 35 Units
+<br>170&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; 35 Units
+<br>79&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; 35
+Units
+<br>35&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; 35
+Units
+<p>138&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; 255 Units
+<br>171&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; 255 Units
+<br>81&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; 255
+Units
+<br>13&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; 255
+Units
+<p>192&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Maximum Neighbor
+<br>169&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Maximum
+Neighbor
+<br>80&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Maximum
+Neighbor
+<br>12&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Maximum
+Neighbor
+<p>194&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Minimum Neighbor
+<br>173&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Minimum
+Neighbor
+<br>157&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Minimum
+Neighbor
+<br>104&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Minimum
+Neighbor
+<p>193&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Blinking
+<br>172&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Blinking
+<br>156&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Blinking
+<br>17&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Blinking
+<br>&nbsp;
+<p>################
+<br>Section 8 Exits
+<br>################
+<p>An exit linedef type ends the current level bringing up the
+<br>intermission screen with its report of kills/items/secrets or frags
+<br>in the case of deathmatch. Obviously, none are retriggerable, and
+<br>none require tags, since no sector is affected.
+<p>---------------------------
+<br>Section 8.1 Exit Varieties
+<br>---------------------------
+<p>An exit can be activated by pushing on a switch with the exit type
+<br>or&nbsp; by walking over a linedef with the exit type, or by shooting
+a
+<br>linedef with the exit type with an impact weapon.
+<p>An exit can be normal or secret. The normal exit simply ends the
+<br>level and takes you to the next level via the intermission screen.
+A
+<br>secret exit only works in a special level depending on the IWAD being
+<br>played. In DOOM the secret exits can be on E1M3, E2M5, or E3M6. In
+<br>DOOM II they can be in levels 15 and 31. If a secret exit is used in
+<br>any other level, it brings you back to the start of the current
+<br>level. In DOOM the secret exits go from E1M3 to E1M9, E2M5 to E2M9,
+<br>and E3M6 to E3M9. In DOOM II they go from 15 to 31 and from 31 to 32.
+<br>In DOOM II a normal exit from 31 or 32 goes to level 16.
+<p>-----------------------------------
+<br>Section 8.2 Exit Linedef Types
+<br>-----------------------------------
+<p>Regular and Extended Exit types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig&nbsp; Type
+<p>11&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Normal
+<br>52&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Normal
+<br>197&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; G1&nbsp;&nbsp;&nbsp; Normal
+<p>51&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Secret
+<br>124&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Secret
+<br>198&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; G1&nbsp;&nbsp;&nbsp; Secret
+<p>######################
+<br>Section 9 Teleporters
+<br>######################
+<p>A teleporter is a linedef that when crossed or switched makes the
+<br>player or monster appear elsewhere in the level. There are only
+<br>regular and extended teleporters, no generalized teleporters exist
+<br>(yet).&nbsp; Teleporters are the only direction sensitive walkover
+<br>triggers in DOOM (to allow them to be exited without teleporting
+<br>again). They must be crossed from the first sidedef side in order to
+<br>work.
+<p>The place that the player or monster appears is set in one of two
+<br>ways. The more common is by a teleport thing in the sector tagged to
+<br>the teleport line. The newer completely player preserving line-line
+<br>silent teleport makes the player appear relative to the exit line
+<br>(identified by having the same tag as the entry line) with the same
+<br>orientation, position, momentum and height that they had relative to
+<br>the entry line just before teleportation. A special kind of line-line
+<br>teleporter is also provided that reverses the player's orientation
+by
+<br>180 degrees.
+<p>In the case of several lines tagged the same as the teleport line, or
+<br>several sectors tagged the same, or several teleport things in the
+<br>tagged sector, in all cases the lowest numbered one is used.
+<p>In DOOM crossing a W1 teleport line in the wrong direction used it
+<br>up, and it was never activatable. In BOOM this is not the case, it
+<br>does not teleport but remains active until next crossed in the right
+<br>direction.
+<p>If the exit of a teleporter is blocked a monster (or anything besides
+<br>a player) will not teleport thru it. However if the exit of teleporter
+<br>is blocked a player will, including into a down crusher, a monster,
+<br>or another player. In the latter two cases the monster/player
+<br>occupying the spot dies messily, and this is called a telefrag.
+<p>-------------------------------
+<br>Section 9.1 Teleport Varieties
+<br>-------------------------------
+<p>A teleporter can be walkover or switched, and retriggerable or not.
+<p>A teleporter can have destination set by a teleport thing in the
+<br>tagged sector, or by a line tagged the same as the teleport line.
+<br>These are called thing teleporters and line teleporters resp.
+<p>A teleporter can preserve orientation or set orientation from the
+<br>position, height, and angle of the teleport thing. Note a thing
+<br>destination teleporter always sets position, though it may preserve
+<br>orientation otherwise.
+<p>A teleporter can produce green fog and a whoosh noise, or it can be
+<br>silent, in which case it does neither.
+<p>A teleporter can transport monsters only, or both players and
+<br>monsters.
+<p>-----------------------------------
+<br>Section 9.2 Teleport Linedef types
+<br>-----------------------------------
+<p>Regular and Extended Teleport types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig&nbsp; Silent Mon Plyr Orient&nbsp;&nbsp;&nbsp;
+Dest
+<p>195&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TP thing in tagged
+sector
+<br>174&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TP thing in tagged
+sector
+<br>97&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TP thing in tagged
+sector
+<br>39&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TP thing in tagged
+sector
+<p>126&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;
+Yes No&nbsp;&nbsp; Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TP thing in
+tagged sector
+<br>125&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; No&nbsp;&nbsp;&nbsp;&nbsp;
+Yes No&nbsp;&nbsp; Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TP thing in
+tagged sector
+<br>269&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes No&nbsp;&nbsp; Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TP thing in
+tagged sector
+<br>268&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes No&nbsp;&nbsp; Set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TP thing in
+tagged sector
+<p>210&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Preserve&nbsp; TP thing in tagged sector
+<br>209&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; S1&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Preserve&nbsp; TP thing in tagged sector
+<br>208&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Preserve&nbsp; TP thing in tagged sector
+<br>207&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Preserve&nbsp; TP thing in tagged sector
+<p>244&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Preserve&nbsp; Line with same tag
+<br>243&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Preserve&nbsp; Line with same tag
+<br>263&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Preserve&nbsp; Line with same tag (reversed)
+<br>262&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes Yes&nbsp; Preserve&nbsp; Line with same tag (reversed)
+<p>267&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes No&nbsp;&nbsp; Preserve&nbsp; Line with same tag
+<br>266&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes No&nbsp;&nbsp; Preserve&nbsp; Line with same tag
+<br>265&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes No&nbsp;&nbsp; Preserve&nbsp; Line with same tag (reversed)
+<br>264&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1&nbsp;&nbsp;&nbsp; Yes&nbsp;&nbsp;&nbsp;
+Yes No&nbsp;&nbsp; Preserve&nbsp; Line with same tag (reversed)
+<p>##################
+<br>Section 10 Donuts
+<br>##################
+<p>A donut is a very specialized linedef type that lowers a pillar in a
+<br>surrounding pool, while raising the pool and changing its texture and
+<br>type.
+<p>The tagged sector is the pillar, and its lowest numbered line must be
+<br>two-sided. The sector on the other side of that is the pool. The pool
+<br>must have a two-sided line whose second sidedef does not adjoin the
+<br>pillar, and the sector on the second side of the lowest numbered such
+<br>linedef is the model for the pool's texture change. The model sector
+<br>floor also provides the destination height both for lowering the
+<br>pillar and raising the pool.
+<p>No generalized donut linedefs exist, and all are switched or
+<br>walkover.
+<p>---------------------------------
+<br>Section 10.1 Donut Linedef types
+<br>---------------------------------
+<p>Regular and Extended Donut types
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig
+<p>191&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; SR
+<br>9&nbsp;&nbsp;&nbsp;&nbsp; Reg&nbsp;&nbsp;&nbsp; S1
+<br>155&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; WR
+<br>146&nbsp;&nbsp; Ext&nbsp;&nbsp;&nbsp; W1
+<p>#############################
+<br>Section 11 Property Transfer
+<br>#############################
+<p>These linedefs are special purpose and are used to transfer
+<br>properties from the linedef itself or the sector on its first sidedef
+<br>to the tagged sector(s). None are triggered, they simply exist.
+<p>Extended Property Transfer Linedefs
+<br>-------------------------------------------------------------------
+<br>#&nbsp;&nbsp;&nbsp;&nbsp; Class&nbsp; Trig Description
+<p>213&nbsp;&nbsp; Ext --&nbsp;&nbsp; Set Tagged Floor Lighting to Lighting
+on 1st Sidedef's Sector
+<p>Used to give the floor of a sector a different light level from the
+<br>remainder of the sector. For example bright lava in a dark room.
+<p>261&nbsp;&nbsp; Ext --&nbsp;&nbsp; Set Tagged Ceiling Lighting to Lighting
+on 1st Sidedef's Sector
+<p>Used to give the ceiling of a sector a different light level from the
+<br>remainder of the sector.
+<p>260&nbsp;&nbsp; Ext --&nbsp;&nbsp; Make Tagged Lines (or this line if
+tag==0) Translucent
+<p>Used to make 2s normal textures translucent. If tag==0, then this linedef's
+<br>normal texture is made translucent if it's 2s, and the default translucency
+<br>map TRANMAP is used as the filter. If tag!=0, then all similarly-tagged
+2s
+<br>linedefs' normal textures are made translucent, and if this linedef's
+first
+<br>sidedef contains a valid lump name for its middle texture (as opposed
+to a
+<br>texture name), and the lump is 64K long, then that lump will be used
+as the
+<br>translucency filter instead of the default TRANMAP, allowing different
+<br>filters to be used in different parts of the same maps. If the first
+side's
+<br>normal texture is not a valid translucency filter lump name, it must
+be a
+<br>valid texture name, and will be displayed as such on this linedef.
+<p>242&nbsp;&nbsp; Ext --&nbsp;&nbsp; Set Tagged Lighting, Flats Heights
+to 1st Sidedef's Sector,
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+and set colormap based on sidedef textures.
+<p>This allows the tagged sector to have two levels -- an actual floor
+and
+<br>ceiling, and another floor or ceiling where more flats are rendered.
+Things
+<br>will stand on the actual floor or hang from the actual ceiling, while
+this
+<br>function provides another rendered floor and ceiling at the heights
+of the
+<br>sector on the first sidedef of the linedef. Typical use is "deep water"
+that
+<br>can be over the player's head.
+<p>&nbsp;&nbsp;&nbsp;&nbsp; ----------------------------------&nbsp; &lt;
+real sector's ceiling height
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+real ceiling&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; control sector's ceiling texture
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; control sector's lightlevel
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; upper texture as colormap
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; control sector's floor texture
+<br>&nbsp;&nbsp;&nbsp;&nbsp; ----------------------------------&nbsp; &lt;
+control sector's ceiling height
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+fake ceiling&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; real sector's ceiling texture
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; real sector's lightlevel
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; normal texture as colormap
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+fake floor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; real sector's floor texture
+<br>&nbsp;&nbsp;&nbsp;&nbsp; ----------------------------------&nbsp; &lt;
+control sector's floor height
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; control sector's ceiling texture
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; control sector's lightlevel
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; lower texture as colormap
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+real floor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; control sector's floor texture
+<br>&nbsp;&nbsp;&nbsp;&nbsp; ----------------------------------&nbsp; &lt;
+real sector's floor height
+<p>Boom sectors controlled by a 242 linedef are partitioned into 3 spaces.
+<br>The viewer's xyz coordinates uniquely determine which space they are
+in.
+<p>If they are in space B (normal space), then the floor and ceiling textures
+<br>and lightlevel from the real sector are used, and the colormap from
+the 242
+<br>linedef's first sidedef's normal texture is used (COLORMAP is used
+if it's
+<br>invalid or missing). The floor and ceiling are rendered at the control
+<br>sector's heights.
+<p>If they are in space C ("underwater"), then the floor and ceiling textures
+<br>and lightlevel from the control sector are used, and the lower texture
+in
+<br>the 242 linedef's first sidedef is used as the colormap.
+<p>If they are in space A ("head over ceiling"), then the floor and ceiling
+<br>textures and lightlevel from the control sector are used, and the upper
+<br>texture in the 242 linedef's first sidedef is used as the colormap.
+<p>If only two of these adjacent partitions in z-space are used, such as
+<br>underwater and normal space, one has complete control over floor textures,
+<br>ceiling textures, light level, and colormaps, in each of the two partitions.
+<br>The control sector determines the textures and lighting in the more
+"unusual"
+<br>case (e.g. underwater).
+<p>It's also possible for the fake floor to extend below the real floor,
+in
+<br>which case an invisible platform / stair effect is created. In that
+case,
+<br>the picture looks like this (barring any ceiling effects too):
+<p>&nbsp;&nbsp;&nbsp;&nbsp; ----------------------------------&nbsp; &lt;
+real sector's ceiling texture
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; real ceiling = fake ceiling&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; real sector's lightlevel
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; normal texture's colormap
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+real floor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp;&nbsp; ----------------------------------&nbsp; &lt;
+invisible, no texture drawn
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; real sector's lightlevel
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; normal texture's colormap
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|
+<br>&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+fake floor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| &lt; real sector's floor texture
+<br>&nbsp;&nbsp;&nbsp;&nbsp; ----------------------------------&nbsp; &lt;
+fake sector's floor height
+<p>In this case, since the viewer is always at or above the fake floor,
+no
+<br>colormap/lighting/texture changes occur -- the fake floor just gets
+drawn
+<br>at the control sector's height, but at the real sector's lighting and
+<br>texture, while objects stand on the higher height of the real floor.
+<p>It's the viewer's position relative to the fake floor and/or fake ceiling,
+<br>which determines whether the control sector's lighting and textures
+should
+<br>be used, and which colormap should be used. If the viewer is always
+between
+<br>the fake floor and fake ceiling, then no colormap, lighting, or texture
+<br>changes occur, and the view just sees the real sector's textures and
+light
+<br>level drawn at possibly different heights.
+<p>If the viewer is below the fake floor height set by the control sector,
+or is
+<br>above the fake ceiling height set by the control sector, then the corresponding
+<br>colormap is used (lower or upper texture name), and the textures and
+lighting
+<br>are taken from the control sector rather than the real sector. They
+are still
+<br>stacked vertically in standard order -- the control sector's ceiling
+is always
+<br>drawn above the viewer, and the control sector's floor is always drawn
+below
+<br>the viewer.
+<p>The kaleidescope effect only occurs when F_SKY1 is used as the control
+sector's
+<br>floor or ceiling. If F_SKY1 is used as the control sector's ceiling
+texture,
+<br>then under water, only the control sector's floor appears, but it "envelops"
+<br>the viewer. Similarly, if F_SKY1 is used as the control sector's floor
+texture,
+<br>then when the player's head is over a fake ceiling, the control sector's
+<br>ceiling is used throughout.
+<p>F_SKY1 causes HOM when used as a fake ceiling between the viewer and
+normal
+<br>space. Since there is no other good use for it, this kaleidescope is
+an
+<br>option turned on by F_SKY1. Note that this does not preclude the use
+of sky
+<br>REAL ceilings over deep water -- this is the control sector's ceiling,
+the
+<br>one displayed when the viewer is underwater, not the real one.
+<p>A colormap has the same size and format as Doom's COLORMAP. Extra colormaps
+<br>may defined in Boom by adding them between C_START and C_END markers
+in wads.
+<br>Colormaps between C_START and C_END are automatically merged by Boom
+with any
+<br>previously defined colormaps.
+<p>WATERMAP is a colormap predefined by Boom which can be used to provide
+a
+<br>blue-green tint while the player is under water. WATERMAP can be modified
+by
+<br>pwads.
+<p>Ceiling bleeding may occur if required upper textures are not used.
+<p>223&nbsp;&nbsp; Ext --&nbsp;&nbsp; Length Sets Friction in tagged Sector,Sludge&lt;100,
+Ice>100
+<p>The length of the linedef with type 223 controls the amount of friction
+<br>experienced by the player in the tagged sector, when in contact with
+the
+<br>floor. Lengths less than 100 are sticker than normal, lengths greater
+than
+<br>100 are slipperier than normal. The effect is only present in the tagged
+<br>sector when its friction enable bit (bit 8) in the sector type is set.
+<br>This allows the flat to be changed in conjunction with turning the
+effect
+<br>on or off thru texture/type changes.
+<br>&nbsp;
+<p>Constant pushers
+<br>----------------
+<br>Two types of constant pushers are available, wind and current. Depending
+<br>on whether you are above, on, or below (special water sectors) the
+ground
+<br>level, the amount of force varies.
+<p>The length of the linedef defines the 'full' magnitude of the force,
+and
+<br>the linedef's angle defines the direction.
+<p>&nbsp;&nbsp;&nbsp;&nbsp; line type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+above&nbsp; on&nbsp;&nbsp; under
+<br>&nbsp;&nbsp;&nbsp;&nbsp; ---------&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-----&nbsp; --&nbsp;&nbsp; -----
+<br>&nbsp;&nbsp;&nbsp;&nbsp; wind&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 224&nbsp;&nbsp;&nbsp;
+full&nbsp; half&nbsp; none
+<br>&nbsp;&nbsp;&nbsp;&nbsp; current&nbsp;&nbsp;&nbsp; 225&nbsp;&nbsp;&nbsp;
+none&nbsp; full&nbsp; full
+<p>The linedef should be tagged to the sector where you want the effect.
+The
+<br>special type of the sector should have bit 9 set (0x200). If this bit
+<br>is turned off, the effect goes away. For example, a fan creating a
+wind
+<br>could be turned off, and the wind dies, by changing the sector type
+and
+<br>clearing that bit.
+<p>Constant pushers can be combined with scrolling effects and point
+<br>pushers.
+<p>224&nbsp; Ext&nbsp; --&nbsp;&nbsp; Length/Direction Sets Wind Force
+in tagged Sectors
+<br>&nbsp;
+<p>225&nbsp; Ext&nbsp; --&nbsp;&nbsp; Length/Direction Sets Current Force
+in tagged Sectors
+<p>Point pushers
+<br>-------------
+<br>Two types of point pushers are available, push and pull.
+<p>The previous implementation of these was SECTOR-SPECIFIC. The new
+<br>implementation ignores sector boundaries and provides the effect in
+a
+<br>circular area whose center is defined by a Thing of type 5001 (push)
+<br>or 5002 (pull). You now also don't have to set any option flags on
+these
+<br>Things. A new linedef type of 226 is used to control the effect, and
+this
+<br>line should be tagged to the sector with the 5001/5002 Thing.
+<p>The length of the linedef defines the 'full' magnitude of the force,
+and
+<br>the force is inversely proportional to distance from the point source.
+If
+<br>the length of the controlling linedef is L, then the force is reduced
+to
+<br>zero at a distance of 2L.
+<p>The angle of the controlling linedef is not used.
+<p>The sector where the 5001/5002 Things reside must have bit 9 set (0x200)
+<br>in its type. If this is turned off, the effect goes away.
+<p>Point pushers can be combined with scrolling effects and constant
+<br>pushers.
+<p>226&nbsp; Ext&nbsp; --&nbsp;&nbsp; Length Sets Point Source Wind/Current
+Force in Tagged Sectors
+<p>###########################################
+<br>Section 12 Scrolling Walls, Flats, Objects
+<br>###########################################
+<br>&nbsp;
+<p>Static Scrollers
+<p>The most basic kind of scrolling linedef causes some part of the tagged
+<br>sector or tagged wall to scroll, in proportion to the length of the
+<br>linedef the trigger is on, and according to the direction that trigger
+<br>linedef lies. For each 32 units of length of the trigger, the tagged
+<br>object scrolls 1 unit per frame. Since the length of a linedef doesn't
+<br>change during gameplay, these types are static, the scrolling effect
+<br>remains constant during gameplay. However, these effects can be combined
+<br>with, and/or canceled by, other scrollers.
+<br>&nbsp;
+<p>250&nbsp;&nbsp;&nbsp; -- Scroll Tagged Ceiling
+<p>The ceiling of the tagged sector scrolls in the direction of the linedef
+<br>trigger, 1 unit per frame for each 32 units of linedef trigger length.
+<br>Objects attached to the ceiling do not move.
+<br>&nbsp;
+<p>251&nbsp;&nbsp;&nbsp; -- Scroll Tagged Floor
+<p>The floor of the tagged sector scrolls in the direction of the linedef
+<br>trigger, 1 unit per frame for each 32 units of linedef trigger length.
+<br>Objects resting on the floor do not move.
+<br>&nbsp;
+<p>252&nbsp;&nbsp;&nbsp; -- Carry Objects on Tagged Floor
+<p>Objects on the floor of the tagged sector move in the direction of the
+<br>linedef trigger, 1 unit per frame for each 32 units of linedef trigger
+<br>length. The floor itself does not scroll.
+<br>&nbsp;
+<p>253&nbsp;&nbsp;&nbsp; -- Scroll Tagged Floor, Carry Objects
+<p>Both the floor of the tagged sector and objects resting on that floor
+<br>move in the direction of the linedef trigger, 1 unit per frame for
+each
+<br>32 units of linedef trigger length.
+<br>&nbsp;
+<p>254&nbsp;&nbsp;&nbsp; -- Scroll Tagged Wall, Same as Floor/Ceiling
+<p>Walls with the same tag as the linedef trigger scroll at the same
+<br>rate as a floor or ceiling controlled by one of 250-253, allowing
+<br>their motion to be synchronized. When the linedef trigger is not
+<br>parallel to the wall, the component of the linedef in the direction
+<br>perpendicular to the wall causes the wall to scroll vertically. The
+<br>length of the component parallel to the wall sets the horizontal
+<br>scroll rate, the length of the component perpendicular to the wall
+<br>sets the vertical scroll rate.
+<br>&nbsp;
+<p>Simple Static Scrollers
+<p>For convenience three simpler static scroll functions are provided
+<br>for when you just need a wall to scroll and don't need to control its
+<br>rate and don't want to bother with proportionality.
+<p>255&nbsp;&nbsp;&nbsp; -- Scroll Wall Using Sidedef Offsets
+<p>For simplicity, a static scroller is provided that scrolls the first
+<br>sidedef of a linedef, based on its x- and y- offsets. No tag is used.
+<br>The x offset controls the rate of horizontal scrolling, 1 unit per
+<br>frame per x offset, and the y offset controls the rate of vertical
+<br>scrolling, 1 unit per frame per y offset.
+<p>48&nbsp;&nbsp;&nbsp;&nbsp; -- Animated wall, Scrolls Left
+<p>A linedef with this type scrolls its first sidedef left at a
+<br>constant rate of 1 unit per frame.
+<p>85&nbsp;&nbsp;&nbsp;&nbsp; -- Animated wall, Scrolls Right
+<p>A linedef with this type scrolls its first sidedef right at a
+<br>constant rate of 1 unit per frame.
+<br>&nbsp;
+<br>&nbsp;
+<p>Dynamic Scrolling
+<p>To achieve dynamic scrolling effects, the position or rate of scrolling
+<br>is controlled by the relative position of the floor and ceiling of
+the
+<br>sector on the scrolling trigger's first sidedef. The direction of
+<br>scrolling remains controlled by the direction of the linedef trigger.
+<br>Either the floor or ceiling may move in the controlling sector, or
+<br>both. The control variable is the amount of change in the sum of the
+<br>floor and ceiling heights.
+<p>All scroll effects are additive, and thus two or more effects may
+<br>reinforce and/or cancel each other.
+<p>Displacement Scrollers
+<p>In the first kind, displacement scrolling, the position of the scrolled
+<br>objects or walls changes proportionally to the motion of the floor
+or
+<br>ceiling in the sector on the first sidedef of the scrolling trigger.
+<br>The proportionality is set by the length of the linedef trigger. If
+it
+<br>is 32 units long, the wall, floor, ceiling, or object moves 1 unit
+for
+<br>each unit the floor or ceiling of the controlling sector moves. If
+it
+<br>is 64 long, they move 2 units per unit of relative floor/ceiling motion
+<br>in the controlling sector and so on.
+<p>245&nbsp;&nbsp;&nbsp; -- Scroll Tagged Ceiling w.r.t. 1st Side's Sector
+<p>The tagged sector's ceiling texture scrolls in the direction of the
+<br>scrolling trigger line, when the sector on the trigger's first sidedef
+<br>changes height. The amount moved is the height change times the trigger
+<br>length, divided by 32. Objects attached to the ceiling do not move.
+<br>&nbsp;
+<p>246&nbsp;&nbsp;&nbsp; -- Scroll Tagged Floor w.r.t. 1st Side's Sector
+<p>The tagged sector's floor texture scrolls in the direction of the
+<br>scrolling trigger line when the sector on the trigger's first sidedef
+<br>changes height. The amount moved is the height change times the trigger
+<br>length, divided by 32. Objects on the floor do not move.
+<br>&nbsp;
+<p>247&nbsp;&nbsp;&nbsp; -- Push Objects on Tagged Floor wrt 1st Side's
+Sector
+<p>Objects on the tagged sector's floor move in the direction of the
+<br>scrolling trigger line when the sector on the trigger's first sidedef
+<br>changes height. The amount moved is the height change times the trigger
+<br>length, divided by 32.
+<br>&nbsp;
+<p>248&nbsp;&nbsp;&nbsp; -- Push Objects &amp; Tagged Floor wrt 1st Side's
+Sector
+<p>The tagged sector's floor texture, and objects on the floor, move in
+<br>the direction of the scrolling trigger line when the sector on the
+<br>trigger's first sidedef changes height.&nbsp; The amount moved is the
+height
+<br>change times the trigger length, divided by 32.
+<br>&nbsp;
+<p>249&nbsp;&nbsp;&nbsp; -- Scroll Tagged Wall w.r.t 1st Side's Sector
+<p>Walls with the same tag as the linedef trigger scroll at the same
+<br>rate as a floor or ceiling controlled by one of 245-249, allowing
+<br>their motion to be synchronized. When the linedef trigger is not
+<br>parallel to the wall, the component of the linedef in the direction
+<br>perpendicular to the wall causes the wall to scroll vertically. The
+<br>length of the component parallel to the wall sets the horizontal
+<br>scroll displacement, the length of the component perpendicular to
+<br>the wall sets the vertical scroll displacement. The distance scrolled
+<br>is the controlling sector's height change times the trigger length,
+<br>divided by 32.
+<br>&nbsp;
+<p>Accelerative Scrollers
+<p>The second kind of dynamic scrollers, accelerative scrollers, also
+<br>react to height changes in the sector on the first sidedef of the
+<br>linedef trigger, but the RATE of scrolling changes, not the
+<br>displacement. That is, changing the controlling sector's height
+<br>speeds up or slows down the scrolling by the change in height
+<br>times the trigger's length, divided by 32.
+<p>An on/off scroller can be made by using an accelerative scroller
+<br>and any linedef that changes the controlling sector's heights.
+<br>If a scroll effect which is initially on is desired, then the
+<br>accelerative scroller should be combined with a static one which
+<br>turns the scroll effect on initially. The accelerative scroller
+<br>would then need to be set up to cancel the static scroller's
+<br>effect when the controlling sector's height changes.
+<br>&nbsp;
+<p>214&nbsp;&nbsp;&nbsp; -- Accel Tagged Ceiling w.r.t. 1st Side's Sector
+<p>The tagged sector's ceiling's rate of scroll changes in the direction
+<br>of the trigger linedef (use vector addition if already scrolling) by
+<br>the change in height of the sector on the trigger's first sidedef
+<br>times the length of the linedef trigger, divided by 32. For example,
+<br>if the ceiling is motionless originally, the linedef trigger is 32
+<br>long, and the ceiling of the controlling sector moves 1 unit, the
+<br>tagged ceiling will start scrolling at 1 unit per frame.
+<br>&nbsp;
+<p>215&nbsp;&nbsp;&nbsp; -- Accel Tagged Floor w.r.t. 1st Side's Sector
+<p>The tagged sector's floor's rate of scroll changes in the direction
+of
+<br>the trigger linedef (use vector addition if already scrolling) by the
+<br>change in height of the sector on the trigger's first sidedef times
+<br>the length of the linedef trigger, divided by 32. For example, if
+<br>the floor is motionless originally, the linedef trigger is 32 long,
+<br>and the ceiling of the controlling sector moves 1 unit, the tagged
+<br>floor will start scrolling at 1 unit per frame.
+<br>&nbsp;
+<p>216&nbsp;&nbsp;&nbsp; -- Accel Objects on Tagged Floor wrt 1st Side's
+Sector
+<p>Objects on the tagged sector's floor's rate of motion changes in the
+<br>direction of the trigger linedef (use vector addition if already
+<br>moving) by the change in height of the sector on the trigger's first
+<br>sidedef times the length of the linedef trigger divided by 32. For
+<br>example, if the objects are motionless originally, the linedef trigger
+<br>is 32 long, and the ceiling of the controlling sector moves 1 unit,
+<br>the objects on the tagged floor will start moving at 1 unit per frame.
+<br>&nbsp;
+<p>217&nbsp;&nbsp;&nbsp; -- Accel Objects&amp;Tagged Floor wrt 1st Side's
+Sector
+<p>The tagged sector's floor, and objects on it, change its rate of
+<br>motion in the direction of the trigger linedef (use vector addition
+<br>if already moving) by the change in height of the sector on the
+<br>trigger's first sidedef times the length of the linedef trigger, divided
+<br>by 32. For example, if the floor and objects are motionless originally,
+<br>the linedef trigger is 32 long, and the ceiling of the controlling
+<br>sector moves 1 unit, the objects and the tagged floor will start moving
+<br>at 1 unit per frame.
+<br>&nbsp;
+<p>218&nbsp;&nbsp;&nbsp; -- Accel Tagged Wall w.r.t 1st Side's Sector
+<p>Walls with the same tag as the linedef trigger increase their
+<br>scroll rate in sync with a floor or ceiling controlled by one of
+<br>214-217. When the linedef trigger is not parallel to the wall, the
+<br>component of the linedef in the direction perpendicular to the wall
+<br>causes the wall to increase its vertical scroll rate. The length of
+<br>the component parallel to the wall sets the change in horizontal
+<br>scroll rate, the length of the component perpendicular to the wall
+<br>sets the change in vertical scroll rate. The rate change is the height
+<br>change times the trigger length, divided by 32.
+<br>&nbsp;
+<p>======================================================================
+<p>#######################################################
+<br>Section 13 Detailed Generalized Linedef Specification
+<br>#######################################################
+<br>&nbsp;
+<p>BOOM has added generalized linedef types that permit the parameters
+<br>of linedef actions to be nearly independently chosen.
+<p>To support these, DETH has been modified to support them via dialogs
+<br>for each generalized type; each dialog allows the parameters for
+<br>that type to be independently specified by choice from a array of
+<br>radio buttons. A parser has also been added to support reading back
+<br>the function of a generalized linedef from its type number.
+<p>NOTE to wad authors:
+<p>This requires a lot of type numbers, 20608 in all so far. Some
+<br>editors may object to the presence of these new types thru assuming
+<br>that a lookup table of size 256 suffices (or some other reason). For
+<br>those that must continue to use such an editor, it may be necessary
+<br>to stick to the old linedef types, which are still present.
+<p>We are also providing command line tools to set these linedef types,
+<br>independent of which editor you happen to use, but they are a lot
+<br>less slick, and more difficult to use than DETH. See TRIGCALC.EXE and
+<br>CLED.EXE in the EDITUTIL.ZIP package of the BOOM distribution.
+<p>== Generalized Linedef Ranges =======================================
+<p>There are types for Floors, Ceilings, Doors, Locked Doors, Lifts,
+<br>Stairs, and Crushers. The allocation of linedef type field numbers
+is
+<br>according to the following table:
+<p>Type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Start&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Length&nbsp;&nbsp; (Dec)
+<br>-----------------------------------------------------------------
+<br>Floors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x6000&nbsp;&nbsp;&nbsp;&nbsp;
+0x2000&nbsp; (8192)
+<br>Ceilings&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x4000&nbsp;&nbsp;&nbsp;&nbsp;
+0x2000&nbsp; (8192)
+<br>Doors&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x3c00&nbsp;&nbsp;&nbsp;&nbsp;
+0x0400&nbsp; (1024)
+<br>Locked Doors&nbsp;&nbsp;&nbsp; 0x3800&nbsp;&nbsp;&nbsp;&nbsp; 0x0400&nbsp;
+(1024)
+<br>Lifts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x3400&nbsp;&nbsp;&nbsp;&nbsp;
+0x0400&nbsp; (1024)
+<br>Stairs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x3000&nbsp;&nbsp;&nbsp;&nbsp;
+0x0400&nbsp; (1024)
+<br>Crushers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x2F80&nbsp;&nbsp;&nbsp;&nbsp;
+0x0080&nbsp;&nbsp; (128)
+<br>-----------------------------------------------------------------
+<br>Totals:&nbsp; 0x2f80-0x7fff&nbsp;&nbsp;&nbsp;&nbsp; 0x5080&nbsp; (20608)
+<p>======================================================================
+<p>The following sections define the placement and meaning of the bit
+<br>fields within each linedef category. Fields in the description are
+<br>listed in increasing numeric order.
+<p>Some nomenclature:
+<p>Target height designations:
+<p>H means highest, L means lowest, N means next, F means floor, C means
+<br>ceiling, n means neighbor, Cr means crush, sT means shortest
+<br>lower texture.
+<p>Texture change designations:
+<p>c0n&nbsp; change texture, change sector type to 0, numeric model change
+<br>c0t&nbsp; change texture, change sector type to 0, trigger model change
+<br>cTn&nbsp; change texture only, numeric model change
+<br>cTt&nbsp; change texture only, trigger model change
+<br>cSn&nbsp; change texture and sector type to model's, numeric model
+change
+<br>cSt&nbsp; change texture and sector type to model's, trigger model
+change
+<p>A trigger model change uses the sector on the first side of the
+<br>trigger for its model. A numeric model change looks at the sectors
+<br>adjoining the tagged sector at the target height, and chooses the one
+<br>across the lowest numbered two sided line for its model. If no model
+<br>exists, no change occurs. Note that in DOOM II v1.9, no model meant
+<br>an illegal sector type was generated.
+<br>&nbsp;
+<p>------------------------------------------------------------------
+<br>generalized floors (8192 types)
+<p>field&nbsp;&nbsp; description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NBits&nbsp;&nbsp; Mask&nbsp;&nbsp;&nbsp;&nbsp; Shift
+<br>------------------------------------------------------------------
+<p>trigger W1/WR/S1/SR/G1/GR/D1/DR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp; 0x0007&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0
+<br>speed&nbsp;&nbsp; slow/normal/fast/turbo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp; 0x0018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3
+<br>model&nbsp;&nbsp; trig/numeric -or- nomonst/monst&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp; 0x0020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5
+<br>direct&nbsp; down/up&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp; 0x0040&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+<br>target&nbsp; HnF/LnF/NnF/LnC/C/sT/24/32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp; 0x0380&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7
+<br>change&nbsp; nochg/zero/txtonly/type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp; 0x0c00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10
+<br>crush&nbsp;&nbsp; no/yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp; 0x1000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12
+<p>DETH Nomenclature:
+<p>W1[m] F->HnF DnS [c0t] [Cr]
+<br>WR[m] F->LnF DnN [c0n]
+<br>S1[m] F->NnF DnF [cTt]
+<br>SR[m] F->LnC DnT [cTn]
+<br>G1[m] F->C&nbsp;&nbsp; UpS [cSt]
+<br>GR[m] FbysT&nbsp; UpN [cSn]
+<br>D1[m] Fby24&nbsp; UpF
+<br>DR[m] Fby32&nbsp; UpT
+<p>Notes:
+<p>1) When change is nochg, model is 1 when monsters can activate trigger
+<br>&nbsp;&nbsp; otherwise monsters cannot activate it.
+<br>2) The change fields mean the following:
+<br>&nbsp;&nbsp; nochg&nbsp;&nbsp; - means no texture change or type change
+<br>&nbsp;&nbsp; zero&nbsp;&nbsp;&nbsp; - means sector type is zeroed,
+texture copied from model
+<br>&nbsp;&nbsp; txtonly - means sector type unchanged, texture copied
+from model
+<br>&nbsp;&nbsp; type&nbsp;&nbsp;&nbsp; - means sector type and floor texture
+are copied from model
+<br>3) down/up specifies the "normal" direction for moving. If the
+<br>&nbsp;&nbsp; target specifies motion in the opposite direction, motion
+is instant.
+<br>&nbsp;&nbsp; Otherwise it occurs at speed specified by speed field.
+<br>4) Speed is 1/2/4/8 units per tic
+<br>5) If change is nonzero then model determines which sector is copied.
+<br>&nbsp;&nbsp; If model is 0 its the sector on the first side of the
+trigger.
+<br>&nbsp;&nbsp; if model is 1 (numeric) then the model sector is the sector
+at
+<br>&nbsp;&nbsp; destination height on the opposite side of the lowest
+numbered
+<br>&nbsp;&nbsp; two sided linedef around the tagged sector. If it doesn't
+exist
+<br>&nbsp;&nbsp; no change occurs.
+<p>------------------------------------------------------------------
+<br>generalized ceilings (8192 types)
+<p>field&nbsp;&nbsp; description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NBits&nbsp;&nbsp; Mask&nbsp;&nbsp;&nbsp;&nbsp; Shift
+<br>------------------------------------------------------------------
+<p>trigger W1/WR/S1/SR/G1/GR/D1/DR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp; 0x0007&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0
+<br>speed&nbsp;&nbsp; slow/normal/fast/turbo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp; 0x0018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3
+<br>model&nbsp;&nbsp; trig/numeric -or- nomonst/monst&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp; 0x0020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5
+<br>direct&nbsp; down/up&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp; 0x0040&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+<br>target&nbsp; HnC/LnC/NnC/HnF/F/sT/24/32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp; 0x0380&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7
+<br>change&nbsp; nochg/zero/txtonly/type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp; 0x0c00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10
+<br>crush&nbsp;&nbsp; no/yes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp; 0x1000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12
+<p>DETH Nomenclature:
+<p>W1[m] C->HnC DnS [Cr] [c0t]
+<br>WR[m] C->LnC DnN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [c0n]
+<br>S1[m] C->NnC DnF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [cTt]
+<br>SR[m] C->HnF DnT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [cTn]
+<br>G1[m] C->F&nbsp;&nbsp; UpS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [cSt]
+<br>GR[m] CbysT&nbsp; UpN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [cSn]
+<br>D1[m] Cby24&nbsp; UpF
+<br>DR[m] Cby32&nbsp; UpT
+<p>Notes:
+<p>1) When change is nochg, model is 1 when monsters can activate trigger
+<br>&nbsp;&nbsp; otherwise monsters cannot activate it.
+<br>2) The change fields mean the following:
+<br>&nbsp;&nbsp; nochg&nbsp;&nbsp; - means no texture change or type change
+<br>&nbsp;&nbsp; zero&nbsp;&nbsp;&nbsp; - means sector type is zeroed,
+texture copied from model
+<br>&nbsp;&nbsp; txtonly - means sector type unchanged, texture copied
+from model
+<br>&nbsp;&nbsp; type&nbsp;&nbsp;&nbsp; - means sector type and ceiling
+texture are copied from model
+<br>3) down/up specifies the "normal" direction for moving. If the
+<br>&nbsp;&nbsp; target specifies motion in the opposite direction, motion
+is instant.
+<br>&nbsp;&nbsp; Otherwise it occurs at speed specified by speed field.
+<br>4) Speed is 1/2/4/8 units per tic
+<br>5) If change is nonzero then model determines which sector is copied.
+<br>&nbsp;&nbsp; If model is 0 its the sector on the first side of the
+trigger.
+<br>&nbsp;&nbsp; if model is 1 (numeric) then the model sector is the sector
+at
+<br>&nbsp;&nbsp; destination height on the opposite side of the lowest
+numbered
+<br>&nbsp;&nbsp; two sided linedef around the tagged sector. If it doesn't
+exist
+<br>&nbsp;&nbsp; no change occurs.
+<p>------------------------------------------------------------------
+<br>generalized doors (1024 types)
+<p>field&nbsp;&nbsp; description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NBits&nbsp;&nbsp;&nbsp; Mask&nbsp;&nbsp;&nbsp;&nbsp; Shift
+<br>------------------------------------------------------------------
+<p>trigger W1/WR/S1/SR/G1/GR/D1/DR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0007&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0
+<br>speed&nbsp;&nbsp; slow/normal/fast/turbo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3
+<br>kind&nbsp;&nbsp;&nbsp; odc/o/cdo/c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0060&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5
+<br>monster n/y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0080&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7
+<br>delay&nbsp;&nbsp; 1/4/9/30 (secs)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8
+<p>DETH Nomenclature:
+<p>W1[m] OpnD{1|4|9|30}Cls S
+<br>WR[m] Opn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+N
+<br>S1[m] ClsD{1|4|9|30}Opn F
+<br>SR[m] Cls&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+T
+<br>G1[m]
+<br>GR[m]
+<br>D1[m]
+<br>DR[m]
+<p>Notes:
+<p>1) The odc (Open, Delay, Close) and cdo (Close, Delay, Open) kinds use
+<br>&nbsp;&nbsp; the delay field. The o (Open and Stay) and c (Close and
+Stay) kinds
+<br>&nbsp;&nbsp; do not.
+<br>2) The precise delay timings in gametics are: 35/150/300/1050
+<br>3) Speed is 2/4/8/16 units per tic
+<p>------------------------------------------------------------------
+<br>generalized locked doors (1024 types)
+<p>field&nbsp;&nbsp; description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NBits&nbsp;&nbsp;&nbsp; Mask&nbsp;&nbsp;&nbsp;&nbsp; Shift
+<br>------------------------------------------------------------------
+<p>trigger W1/WR/S1/SR/G1/GR/D1/DR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0007&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0
+<br>speed&nbsp;&nbsp; slow/normal/fast/turbo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3
+<br>kind&nbsp;&nbsp;&nbsp; odc/o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5
+<br>lock&nbsp;&nbsp;&nbsp; any/rc/yc/bc/rs/bs/ys/all&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x01c0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+<br>sk=ck&nbsp;&nbsp; n/y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9
+<p>DETH Nomenclature:
+<p>W1[m] OpnD{1|4|9|30}Cls S Any
+<br>WR[m] Opn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+N R{C|S|K}
+<br>S1[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+F B{C|S|K}
+<br>SR[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+T Y{C|S|K}
+<br>G1[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+All{3|6}
+<br>GR[m]
+<br>D1[m]
+<br>DR[m]
+<p>Notes:
+<p>1) Delay for odc kind is constant at 150 gametics or about 4.333 secs
+<br>2) The lock field allows any key to open a door, or a specific key
+to
+<br>&nbsp;&nbsp; open a door, or all keys to open a door.
+<br>3) If the sk=ck field is 0 (n) skull and cards are different keys,
+<br>&nbsp;&nbsp; otherwise they are treated identically. Hence an "all"
+type door
+<br>&nbsp;&nbsp; requires 3 keys if sk=ck is 1, and 6 keys if sk=ck is
+0.
+<br>4) Speed is 2/4/8/16 units per tic
+<p>-------------------------------------------------------------------
+<br>generalized lifts (1024 types)
+<p>field&nbsp;&nbsp; description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NBits&nbsp;&nbsp;&nbsp; Mask&nbsp;&nbsp;&nbsp;&nbsp; Shift
+<br>-------------------------------------------------------------------
+<p>trigger W1/WR/S1/SR/G1/GR/D1/DR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0007&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0
+<br>speed&nbsp;&nbsp; slow/normal/fast/turbo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3
+<br>monster n/y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5
+<br>delay&nbsp;&nbsp; 1/3/5/10 (secs)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00c0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+<br>target&nbsp; LnF/NnF/LnC/LnF&lt;->HnF(perp.)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8
+<p>DETH Nomenclature:
+<p>W1[m] Lft&nbsp; F->LnFD{1|3|5|10}&nbsp;&nbsp;&nbsp; S
+<br>WR[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F->NnFD{1|3|5|10}&nbsp;&nbsp;&nbsp;
+N
+<br>S1[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F->LnCD{1|3|5|10}&nbsp;&nbsp;&nbsp;
+F
+<br>SR[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HnF&lt;->LnFD{1|3|5|10} T
+<br>G1[m]
+<br>GR[m]
+<br>D1[m]
+<br>DR[m]
+<p>Notes:
+<p>1) The precise delay timings in gametics are: 35/105/165/350
+<br>2) Speed is 1/2/4/8 units per tic
+<br>3) If the target specified is above starting floor height, or does
+not
+<br>&nbsp;&nbsp; exist the lift does not move when triggered. NnF is Next
+Lowest
+<br>&nbsp;&nbsp; Neighbor Floor.
+<br>4) Starting a perpetual lift between lowest and highest neighboring
+floors
+<br>&nbsp;&nbsp; locks out all other actions on the sector, even if it
+is stopped with
+<br>&nbsp;&nbsp; the non-extended stop perpetual floor function.
+<p>-------------------------------------------------------------------
+<br>generalized stairs (1024 types)
+<p>field&nbsp;&nbsp; description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NBits&nbsp;&nbsp;&nbsp; Mask&nbsp;&nbsp;&nbsp;&nbsp; Shift
+<br>-------------------------------------------------------------------
+<p>trigger W1/WR/S1/SR/G1/GR/D1/DR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0007&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0
+<br>speed&nbsp;&nbsp; slow/normal/fast/turbo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3
+<br>monster n/y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5
+<br>step&nbsp;&nbsp;&nbsp; 4/8/16/24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x00c0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+<br>dir&nbsp;&nbsp;&nbsp;&nbsp; dn/up&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8
+<br>igntxt&nbsp; n/y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9
+<p>DETH Nomenclature:
+<p>W1[m] Stair Dn s4&nbsp; S [Ign]
+<br>WR[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Up s8&nbsp; N
+<br>S1[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; s16 F
+<br>SR[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; s24 T
+<br>G1[m]
+<br>GR[m]
+<br>D1[m]
+<br>DR[m]
+<p>Notes:
+<p>1) Speed is .25/.5/2/4 units per tic
+<br>2) If igntxt is 1, then the staircase will not stop building when
+<br>&nbsp;&nbsp; a step does not have the same texture as the previous.
+<br>3) A retriggerable stairs builds up and down alternately on each
+<br>&nbsp;&nbsp; trigger.
+<p>-------------------------------------------------------------------
+<br>generalized crushers (128 types)
+<p>field&nbsp;&nbsp; description&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+NBits&nbsp;&nbsp;&nbsp; Mask&nbsp;&nbsp;&nbsp;&nbsp; Shift
+<br>-------------------------------------------------------------------
+<p>trigger W1/WR/S1/SR/G1/GR/D1/DR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0007&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0
+<br>speed&nbsp;&nbsp; slow/normal/fast/turbo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3
+<br>monster n/y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0020&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5
+<br>silent&nbsp; n/y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0x0040&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6
+<p>DETH Nomenclature:
+<p>W1[m] Crusher S [Silent]
+<br>WR[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; N
+<br>S1[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F
+<br>SR[m]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; T
+<br>G1[m]
+<br>GR[m]
+<br>D1[m]
+<br>DR[m]
+<p>Notes:
+<p>1) Speed is 1/2/4/8 units per second, faster means slower damage as
+usual.
+<br>2) If silent is 1, the crusher is totally quiet, no start/stop sounds
+<br>&nbsp;
+<p>======================================================================
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Part II Sector Types
+<br>======================================================================
+<p>BOOM is backward compatible with DOOM's sector types. All types 0-17
+<br>have the same meaning they did under DOOM. Types 18-31 are reserved
+<br>for extended sector types, that work like DOOM's and share the
+<br>limitation that only one type can be active in a sector at once. No
+<br>extended sector types are implemented at this time.
+<p>####################################
+<br>Section 14. Regular Sector types
+<br>####################################
+<p>From Matt Fell's Unofficial DOOM Spec the DOOM sector types are:
+<p>Dec Hex Class&nbsp;&nbsp; Description
+<br>-------------------------------------------------------------------
+<br>&nbsp;0&nbsp; 00&nbsp; -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Normal,
+no special characteristic.
+<br>&nbsp;1&nbsp; 01&nbsp; Light&nbsp;&nbsp; random off
+<br>&nbsp;2&nbsp; 02&nbsp; Light&nbsp;&nbsp; blink 0.5 second
+<br>&nbsp;3&nbsp; 03&nbsp; Light&nbsp;&nbsp; blink 1.0 second
+<br>&nbsp;4&nbsp; 04&nbsp; Both&nbsp;&nbsp;&nbsp; -10/20% health AND light
+blink 0.5 second
+<br>&nbsp;5&nbsp; 05&nbsp; Damage&nbsp; -5/10% health
+<br>&nbsp;7&nbsp; 07&nbsp; Damage&nbsp; -2/5% health
+<br>&nbsp;8&nbsp; 08&nbsp; Light&nbsp;&nbsp; oscillates
+<br>&nbsp;9&nbsp; 09&nbsp; Secret&nbsp; a player must stand in this sector
+to get credit for
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+finding this secret. This is for the SECRETS ratio
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+on inter-level screens.
+<br>10&nbsp; 0a&nbsp; Door&nbsp;&nbsp;&nbsp; 30 seconds after level start,
+ceiling closes like a door.
+<br>11&nbsp; 0b&nbsp; End&nbsp;&nbsp;&nbsp;&nbsp; -10/20% health. If a
+player's health is lowered to less
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+than 11% while standing here, then the level ends! Play
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+proceeds to the next level. If it is a final level
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(levels 8 in DOOM 1, level 30 in DOOM 2), the game ends!
+<br>12&nbsp; 0c&nbsp; Light&nbsp;&nbsp; blink 0.5 second, synchronized
+<br>13&nbsp; 0d&nbsp; Light&nbsp;&nbsp; blink 1.0 second, synchronized
+<br>14&nbsp; 0e&nbsp; Door&nbsp;&nbsp;&nbsp; 300 seconds after level start,
+ceiling opens like a door.
+<br>16&nbsp; 10&nbsp; Damage&nbsp; -10/20% health
+<p>17&nbsp; 11&nbsp; Light&nbsp;&nbsp; flickers on and off randomly
+<p>Note that BOOM will NEVER exit the game on an illegal sector type, as
+<br>was the case with DOOM. The sector type will merely be ignored.
+<p>####################################
+<br>Section 15. Generalized sector types
+<br>####################################
+<p>BOOM also provides generalized sector types, based on bit fields,
+<br>that allow several sector type properties to be independently
+<br>specified for a sector. Texture change linedefs can be used to switch
+<br>some or all of these properties dynamically, outside lighting.
+<p>Bits 0 thru 4 specify the lighting type in the sector, the same codes
+<br>that DOOM used are employed:
+<p>Dec Bits 4-0&nbsp;&nbsp; Description
+<br>-------------------------------------------------------------------
+<br>0&nbsp;&nbsp; 00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Normal lighting
+<br>1&nbsp;&nbsp; 00001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; random off
+<br>2&nbsp;&nbsp; 00010&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blink 0.5 second
+<br>3&nbsp;&nbsp; 00011&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blink 1.0 second
+<br>4&nbsp;&nbsp; 00100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -10/20% health AND
+light blink 0.5 second
+<br>8&nbsp;&nbsp; 01000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oscillates
+<br>12&nbsp; 01100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blink 0.5 second, synchronized
+<br>13&nbsp; 01101&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blink 1.0 second, synchronized
+<br>17&nbsp; 10001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; flickers on and off randomly
+<p>Bits 5 and 6 set the damage type of the sector, with the usual
+<br>5/10/20 damage units per second.
+<p>Dec Bits 6-5&nbsp;&nbsp; Description
+<br>-------------------------------------------------------------------
+<br>0&nbsp;&nbsp; 00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No
+damage
+<br>32&nbsp; 01&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5&nbsp;
+units damage per sec (halve damage in TYTD skill)
+<br>64&nbsp; 10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10 units
+damage per sec
+<br>96&nbsp; 11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20 units
+damage per sec
+<p>Bit 7 makes the sector count towards the secrets total at game end
+<p>Dec Bit 7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Description
+<br>-------------------------------------------------------------------
+<br>0&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Sector is not secret
+<br>128&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sector
+is secret
+<p>Bit 8 enables the ice/mud effect controlled by linedef 223
+<p>Dec Bit 8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Description
+<br>-------------------------------------------------------------------
+<br>0&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Sector friction disabled
+<br>256&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sector
+friction enabled
+<p>Bit 9 enables the wind effects controlled by linedefs 224-226
+<p>Dec Bit 9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Description
+<br>-------------------------------------------------------------------
+<br>0&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Sector wind disabled
+<br>512&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sector
+wind enabled
+<p>Bits 10 and 11 are not implemented yet, but are reserved for use in
+<br>sound control. Bit 10 will suppress all sounds within the sector,
+<br>while bit 11 will disable any sounds due to floor or ceiling motion
+<br>by the sector.
+<p>======================================================================
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Part III Linedef Flags
+<br>======================================================================
+<p>Only one new linedef flag is implemented, called PassThru, which
+<br>allows a push or switch linedef trigger to pass the push action thru
+<br>it to ones within range behind it. In this way BOOM is capable of
+<br>setting off many actions with a single push. Note that the limitation
+<br>of one floor action, one ceiling action, and one lighting action per
+<br>sector affect still applies however.
+<p>The new linedef flag is bit 9, value 512, in the linedef flags word.
+<p>======================================================================
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Part IV Thing Flags
+<br>======================================================================
+<p>BOOM has implemented two new thing flags, "not in DM" and "not in
+<br>COOP", which in combination with the existing "not in Single" flag,
+<br>usually called "Multiplayer", allow complete control over a level's
+<br>inventory and monsters, in any game mode.
+<p>If you want a thing to be only available in Single play, you set both
+<br>the "not in DM" and "not in COOP" flags. Other combinations are
+<br>similar.
+<p>"not in DM"&nbsp;&nbsp; is bit 5, value 32, in the thing flags word.
+<br>"not in COOP" is bit 6, value 64, in the thing flags word.
+<p>======================================================================
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Part V Thing Types
+<br>======================================================================
+<p>BOOM has implemented two new thing types as well, MT_PUSH (5001), and
+<br>MT_PULL(5002). These control the origin of the point source wind
+<br>effect controlled by linedef types 225 and 226, and set whether the
+<br>wind blows towards or away from the origin depending on which is
+<br>used.
+<p>======================================================================
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Part VI BOOM Predefined Lumps
+<br>======================================================================
+<p>BOOM supports resources embedded in the .EXE that are loaded before
+<br>all other resources. They can be replaced by resources of the same
+<br>name in the IWAD or add-on PWADs. These resources can be extracted
+<br>into a wad thru use of the command:
+<p>BOOM -dumplumps predef.wad
+<p>You can then extract the resources from predef.wad to alter them for
+<br>replacement purposes.
+<p>Menu text
+<br>---------
+<br>M_HORSEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mouse horizontal sensitivity
+menu
+<br>M_VERSEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mouse vertical sensitivity
+menu
+<br>M_SETUP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Setup menu entry
+in main menu
+<br>M_KEYBND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Key Bindings entry in
+setup menu
+<br>M_AUTO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Automap entry
+in setup menu
+<br>M_CHAT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Chat string
+entry in setup menu
+<br>M_ENEM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enemies options
+entry in setup menu
+<br>M_STAT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Status bar and
+Hud entry in setup menu
+<br>M_WEAP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Weapons entry
+in setup menu
+<br>M_MESS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Message option
+entry in setup menu
+<br>M_COLORS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Palette color picker diagram
+<br>M_PALNO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Xed-out symbol for
+unused automap features
+<br>M_BUTT1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Setup reset button
+off state
+<br>M_BUTT2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Setup reset button
+on state
+<p>Font chars
+<br>----------
+<br>STCFN096&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ` character for standard
+DOOM font
+<p>STBR123&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font bargraph
+char, full, 4 vertical bars
+<br>STBR124&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font bargraph
+char, partial, 3 vertical bars
+<br>STBR125&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font bargraph
+char, partial, 2 vertical bars
+<br>STBR126&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font bargraph
+char, partial, 1 vertical bars
+<br>STBR127&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font bargraph
+char, empty, 0 vertical bars
+<p>DIG0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 0 char
+<br>DIG1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 1 char
+<br>DIG2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 2 char
+<br>DIG3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 3 char
+<br>DIG4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 4 char
+<br>DIG5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 5 char
+<br>DIG6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 6 char
+<br>DIG7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 7 char
+<br>DIG8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 8 char
+<br>DIG9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font 9 char
+<br>DIGA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font A char
+<br>DIGB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font B char
+<br>DIGC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font C char
+<br>DIGD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font D char
+<br>DIGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font E char
+<br>DIGF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font F char
+<br>DIGG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font G char
+<br>DIGH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font H char
+<br>DIGI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font I char
+<br>DIGJ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font J char
+<br>DIGK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font K char
+<br>DIGL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font L char
+<br>DIGM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font M char
+<br>DIGN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font N char
+<br>DIGO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font O char
+<br>DIGP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font P char
+<br>DIGQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font Q char
+<br>DIGR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font R char
+<br>DIGS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font S char
+<br>DIGT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font T char
+<br>DIGU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font U char
+<br>DIGV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font V char
+<br>DIGW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font W char
+<br>DIGX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font X char
+<br>DIGY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font Y char
+<br>DIGZ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font Z char
+<br>DIG45&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font - char
+<br>DIG47&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font / char
+<br>DIG58&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font : char
+<br>DIG91&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font [ char
+<br>DIG93&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HUD font ] char
+<p>Status bar
+<br>----------
+<br>STKEYS6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Both blue keys graphic
+<br>STKEYS7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Both yellow keys
+graphic
+<br>STKEYS8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Both red keys graphic
+<p>Box chars
+<br>---------
+<br>BOXUL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upper left corner of
+box
+<br>BOXUC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Center of upper border
+of box
+<br>BOXUR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upper right corner
+of box
+<br>BOXCL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Center of left border
+of box
+<br>BOXCC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Center of box
+<br>BOXCR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Center of right border
+of box
+<br>BOXLL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lower left corner of
+box
+<br>BOXLC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Center of lower border
+of box
+<br>BOXLR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lower right corner
+of box
+<p>Lumps missing in v1.1
+<br>---------------------
+<br>STTMINUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; minus sign for neg frags
+in status bar
+<br>WIMINUS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; minus sign for neg
+frags on end screen
+<br>M_NMARE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nightmare skill menu
+string
+<br>STBAR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; status bar background
+<br>DSGETPOW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sound for obtaining power-up
+<p>Text end screen
+<br>---------------
+<br>ENDBOOM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Text displayed at
+end of game, 80X25 with attributes
+<p>Sprites
+<br>-------
+<br>TNT1A0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Invisible sprite
+for push/pull controller things
+<p>Switches and Animations
+<br>-----------------------
+<br>SWITCHES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Definition of switch textures
+recognized
+<br>ANIMATED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Definition of animated
+textures and flats recognized
+<p>SWITCHES format:
+<p>The SWITCHES lump makes the names of the switch textures used in the
+<br>game known to the engine. It consists of a list of records each 20
+<br>bytes long, terminated by an entry (not used) whose last 2 bytes are
+0.
+<p>9 bytes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Null terminated string
+naming "off" state texture for switch
+<br>9 bytes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Null terminated string
+naming "off" state texture for switch
+<br>2 bytes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Short integer for
+the IWADs switch will work in
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1=shareware
+<br>&nbsp;&nbsp;&nbsp; 2=registered/retail DOOM or shareware
+<br>&nbsp;&nbsp;&nbsp; 3=DOOM II, registered/retail DOOM, or shareware
+<br>&nbsp;&nbsp;&nbsp; 0=terminates list of known switches
+<p>ANIMATED format:
+<p>The ANIMATED lump makes the names of the animated flats and textures
+<br>known to the engine. It consists of a list of records, each 23 bytes
+<br>long, terminated by a record (not used) whose first byte is -1 (255).
+<p>1 byte&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -1 to terminate
+list, 0 if a flat, 1 if a texture
+<br>9 bytes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Null terminated string
+naming last texture/flat in animation
+<br>9 bytes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Null terminated string
+naming first texture/flat in animation
+<br>4 bytes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Animation speed,
+number of frames between animation changes
+<p>The utility package contains a program, SWANTBLS.EXE that will
+<br>generate both the SWITCHES and ANIMATED lumps from a text file. An
+<br>example is provided, DEFSWANI.DAT that generates the standard set of
+<br>switches and animations for DOOM.
+<p>Colormaps
+<br>---------
+<br>WATERMAP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Custom greenish colormap
+for underwater use
+<p>The WATERMAP lump has the same format as COLORMAP, 34 tables of 256
+<br>bytes each, see the UDS for details. Note that colormaps you add to
+<br>a PWAD must be between C_START and C_END markers.
+<p>The utility package contains a program, CMAPTOOL.EXE, that will
+<br>generate custom colormaps for use with BOOM. It also includes 7
+<br>premade colormaps, and an add-on wad containing them.
+<br>&nbsp;
+<p>Color translation tables
+<br>------------------------
+<br>CRBRICK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red range
+to brick red
+<br>CRTAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red range
+to tan
+<br>CRGRAY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red
+range to gray
+<br>CRGREEN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red range
+to green
+<br>CRBROWN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red range
+to brown
+<br>CRGOLD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red
+range to dark yellow
+<br>CRRED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red range
+to red range (no change)
+<br>CRBLUE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red
+range to light blue
+<br>CRBLUE2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red range
+to dark blue (status bar numerals)
+<br>CRORANGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red range to
+orange
+<br>CRYELLOW&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Translates red range to
+light yellow
+<p>These tables are used to translate the red font characters to other
+<br>colors. They are made replaceable in order to support custom palettes
+<br>in TC's better. Note however that the font character graphics must
+<br>be defined using the palette indices for the standard red range of
+the
+<br>palette 176-191.
+<p>-END OF DOCUMENT----------------------------------------------------------
+<br>&nbsp;</font>
+</tt>
+</body>
+</html>

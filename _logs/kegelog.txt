@@ -1,0 +1,11 @@
+- 5/30/2000
+  * Wall, floor and ceiling lighting is now done only by changing the RGB, and leave the alpha to full,
+    wich makes everything brighter. (looks pretty close to software now)
+
+- 5/13/2000
+  * Removed my chromakey code from ogl_win.c and changed hw_cache.c so sprites will use the chromakey flag (Thanks hurdler :)
+  * Added this log file to the VC++ project file
+  
+- 5/9/2000
+  * Sprites in OpenGL are drawn with PF_Environment, wich removes the black border pixels around them.
+  * OpenGL SetPalette function modified not to change the color of transparent pixels in sprites.

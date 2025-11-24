@@ -1,0 +1,371 @@
+
+- 
+
+- add additive support in mobjs : archvile fire, lost souls, ...
+
+- fix le sky overdraw : rempli polygones de sky (ceiling) à plat
+                        comme un motif, ne plus remplir le fond avec le sky
+						mais uniquement tracer le sky la ou R_SKY est utilise
+						aussi, si utilisé sur floor, inverser la texture ?
+						(avantage: on ne voit plus les trous ..)
+
+- fixedcolormap : use RGBA value
+- extralight    : use RGBA value, red glow for rocket, blue glow for plasma
+
+- support alpha maps uniquement, color can be set in Surface->FlatColor
+
+- remove limit POLYPOOLSIZE (alloc more when needed)
+
+- splash eau:
+   texture en forme de cercle smooth sur les bords,
+   size 128x128 ou plus,
+   a plat au sol, taille initial 16x16 doom units,
+   le splash d'eau dure pendant x frames,
+   
+   chaque frame le splash d'eau s'agrandit : scale augmente,
+	aussi, le alpha diminue, la 'vague' disparait
+
+   on multiplie 16 doom unit * scale pour la taille,
+
+   un splash d'eau est posé la ou marche le player, tous les 4 ou 5 frames
+   ainsi une traines de 'ronds grandissants' apparait
+
+   mode: PF_Modulated
+
+- blood splats:
+
+   mode: PF_Translucent    
+
+
+
+
+
+
+POUBELLE DE CODE
+*****************
+
+
+EXPORT void HWRAPI( SetState ) (hwdstate_t IdState, int Value)
+{
+    static GLenum   alpha_func;
+    static GLfloat  alpha_value;
+    static GLuint   pal_col=0;
+    static GLfloat  alpha=1.0f;
+    static GLfloat  alpha_source=1.0f;
+    static RGBA_t   const_pal_col;
+    RGBA_t col;
+
+// debug
+//    set_state_count[IdState] += 1;
+
+    // DBG_Printf ("SetState(): %d\n", Value);
+
+    switch (IdState)
+    {
+        case HWD_SET_CONSTANTCOLOR:
+
+            memcpy(&col, &Value, 4);
+            alpha = col.alpha/255.0f;
+            if (pal_col) {
+                cur_col.red   = ((const_pal_col.red/255.0f)+alpha)/2.0f;
+                cur_col.green = ((const_pal_col.green/255.0f)+alpha)/2.0f;
+                cur_col.blue  = ((const_pal_col.blue/255.0f)+alpha)/2.0f;
+            } else {
+                cur_col.red = cur_col.green = cur_col.blue = alpha;
+            }
+            cur_col.alpha = alpha_source;
+            //glColor4fv((float *)&cur_col); // certain drivers n'aiment pas?
+            glColor4f(cur_col.red, cur_col.green, cur_col.blue, cur_col.alpha);
+            break;
+
+        case HWD_SET_DEPTHMASK:
+            if (Value==1) {
+                glEnable(GL_DEPTH_TEST);
+                glDepthMask(1);
+            }
+            else {
+                glDisable(GL_DEPTH_TEST);
+                glDepthMask(0);
+            }
+            break;
+
+        case HWD_SET_ALPHASOURCE:
+            //OGL_Text(2, 20, 12, "HWD_SET_ALPHASOURCE, Value: %d", Value);
+            switch (Value) {
+                case HWD_ALPHASOURCE_CONSTANT:
+                    alpha_source = alpha;//0.7f; // gros hack pas beau du tout!!
+                    break;
+                case HWD_ALPHASOURCE_ITERATED:
+                    alpha_source = alpha;//0.7f; // gros hack pas beau du tout!!
+                    break;
+                case HWD_ALPHASOURCE_TEXTURE:
+                    alpha_source = 1.0f;
+                    break;
+            }
+            break;
+
+        case HWD_SET_ALPHATESTFUNC:
+            // DBG_Printf("HWD_SET_ALPHATESTFUNC, Value: %d\n", Value);
+
+            switch (Value) {
+                case GR_CMP_NEVER:    alpha_func = GL_NEVER;    break;
+                case GR_CMP_LESS:     alpha_func = GL_LESS;     break;
+                case GR_CMP_EQUAL:    alpha_func = GL_EQUAL;    break;
+                case GR_CMP_LEQUAL:   alpha_func = GL_LEQUAL;   break;
+                case GR_CMP_GREATER:  alpha_func = GL_GREATER;  break;
+                case GR_CMP_NOTEQUAL: alpha_func = GL_NOTEQUAL; break;
+                case GR_CMP_GEQUAL:   alpha_func = GL_GEQUAL;   break;
+                case GR_CMP_ALWAYS:   alpha_func = GL_ALWAYS;   break;
+            }
+             glAlphaFunc(alpha_func, alpha_value);
+
+            // DBG_Printf("alpha_func: %d  alpha_value: %d\n", alpha_func, alpha_value);
+            break;
+
+        case HWD_SET_ALPHABLEND:
+            // DBG_Printf("HWD_SET_ALPHABLEND, Value: %d\n", Value);
+            if( Value == HWD_ALPHABLEND_NONE )
+            {
+                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                //glDisable( GL_BLEND );
+                glEnable( GL_ALPHA_TEST );
+            }
+            else
+            if( Value == HWD_ALPHABLEND_TRANSLUCENT )
+            {
+                glDisable( GL_ALPHA_TEST );
+                
+                // faB: color add, woohoo!
+                //glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+                glBlendFunc( GL_ONE, GL_ONE_MINUS_SRC_COLOR );
+                
+                glEnable( GL_BLEND );
+            }
+            break;
+
+        case HWD_SET_ALPHATESTREFVALUE:
+            // DBG_Printf("HWD_SET_ALPHATESTREFVALUE, Value: %d\n", Value);
+            alpha_value = Value/255.0f;
+            glAlphaFunc(alpha_func, alpha_value);
+            // DBG_Printf("alpha_func: %d  alpha_value: %d\n", alpha_func, alpha_value);
+            break;
+
+        case HWD_SET_PALETTECOLOR:
+            pal_col = Value;
+            memcpy(&const_pal_col, &Value, 4);
+            /* ne sert à rien car fait plus tard dans HWD_SET_CONSTANTCOLOR
+            //DBG_Printf ("SetState(): %u (%u %u %u %u)\n", (unsigned)Value, (unsigned)col.red, (unsigned)col.green, (unsigned)col.blue, (unsigned)col.alpha);
+            cur_col.red = ((const_pal_col.red/255.0f)+alpha)/2.0f;
+            cur_col.green = ((const_pal_col.green/255.0f)+alpha)/2.0f;
+            cur_col.blue = ((const_pal_col.blue/255.0f)+alpha)/2.0f;
+            cur_col.alpha = alpha_source;
+            //glColor4fv((float*)&cur_col); // certains Mini driver n'aiment pas???
+            glColor4f(cur_col.red, cur_col.green, cur_col.blue, alpha_source); // hack
+            */
+            break;
+
+        case HWD_SET_COLORSOURCE:
+            switch (Value) {
+                case HWD_COLORSOURCE_CONSTANTALPHA_SCALE_TEXTURE:
+                    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+                    break;
+                //case HWD_COLORSOURCE_CONSTANT:
+                //    break;
+                default:
+                    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+            }
+            /*else if (Value == HWD_COLORSOURCE_CONSTANT)
+                glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+            else if (Value == HWD_COLORSOURCE_ITERATED)
+                glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+            else if (Value == HWD_COLORSOURCE_TEXTURE)
+                glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);*/
+            break;
+
+        
+        // Prepare to draw the disc shaped alpha map with blending
+        case HWD_SET_DYNLIGHT_ON:
+            memcpy(&col, &Value, 4);
+            glBindTexture(GL_TEXTURE_2D, DYNLIGHT_TEX_NUM);
+            //glGetFloatv(GL_CURRENT_COLOR, cur_col);
+            glColor4f(col.red/255.0f, col.green/255.0f, col.blue/255.0f, col.alpha/255.0f);
+            //glDisable(GL_DEPTH_TEST);
+            glDepthMask(0);
+            glDisable(GL_ALPHA_TEST);
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE ); //_MINUS_SRC_ALPHA);
+            glEnable(GL_BLEND);
+            break;
+        
+        case HWD_SET_DYNLIGHT_OFF:
+        // end dynamic lighting
+            glColor4f(cur_col.red, cur_col.green, cur_col.blue, cur_col.alpha);
+            //glColor4fv((float*)&cur_col); // probleme avec Mini drivers ???
+            glEnable( GL_DEPTH_TEST );
+            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            glDepthMask( 1 );
+            break;
+
+        case HWD_SET_FOG_MODE:
+            if (Value==1)
+                glEnable(GL_FOG);
+            else
+                glDisable(GL_FOG);
+            //OGL_Text(2, 20, 12, "HWD_SET_FOG_MODE, Value: %d", Value);
+            break;
+
+        case HWD_SET_FOG_COLOR:
+            GLfloat fogcolor[4];
+
+            fogcolor[0] = ((Value>>16)&0xff)/255.0f;
+            fogcolor[1] = ((Value>>8)&0xff)/255.0f;
+            fogcolor[2] = ((Value)&0xff)/255.0f;
+            fogcolor[3] = 0x0;
+            glFogfv(GL_FOG_COLOR, fogcolor);
+            //OGL_Text(2, 20, 12, "HWD_SET_FOG_COLOR, Value: %d", Value);
+            break;
+
+        case HWD_SET_FOG_DENSITY:
+            glFogf(GL_FOG_DENSITY, Value/1000000.0f);
+            break;
+
+        case HWD_SET_FOV:
+            fov = Value;
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(fov, 1, 0.9, 5000.0);  
+            glMatrixMode(GL_MODELVIEW);
+            break;
+
+        case HWD_SET_POLYGON_SMOOTH:
+            if (Value)
+                glEnable(GL_POLYGON_SMOOTH);
+            else
+                glDisable(GL_POLYGON_SMOOTH);
+            break;
+
+        case HWD_SET_CHROMAKEY_MODE:
+            if (Value == HWD_CHROMAKEY_ENABLE)
+                chromakey_enabled = 1;
+            else
+                chromakey_enabled = 0;
+            break;
+
+        case HWD_SET_CULLMODE:
+            switch (Value) {
+                case HWD_CULL_FRONT: 
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(GL_FRONT);
+                    break;
+                case HWD_CULL_BACK:
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(GL_BACK);
+                    break;
+                case HWD_CULL_FRONT_AND_BACK:
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(GL_FRONT_AND_BACK);
+                    break;
+                case HWD_CULL_DISABLE:
+                    glDisable(GL_CULL_FACE);
+                    break;
+            }
+            break;
+        /*
+        case HWD_SET_TEXTURECLAMP:
+            if (Value==HWD_TEXTURE_CLAMP_XY) {
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            } else {
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            }
+            break;
+        /*
+        case HWD_SET_FOG_TABLE:
+            //OGL_Text(2, 20, 12, "HWD_SET_FOG_TABLE, Value: %d", Value);
+            break;
+
+        case HWD_SET_COLORMASK:
+            //OGL_Text(2, 20, 12, "HWD_SET_COLORMASK, Value: %d", Value);
+            break;
+
+        case HWD_SET_TEXTURECOMBINE:
+            //OGL_Text(2, 20, 12, "HWD_SET_TEXTURECOMBINE, Value: %d", Value);
+            break;
+
+        case HWD_SET_TEXTUREFILTERMODE:
+            //OGL_Text(2, 20, 12, "HWD_SET_TEXTUREFILTERMODE, Value: %d", Value);
+            break;
+
+        case HWD_SET_MIPMAPMODE:
+            //OGL_Text(2, 20, 12, "HWD_SET_MIPMAPMODE, Value: %d", Value);
+            break;
+
+        case HWD_ENABLE:
+            //OGL_Text(2, 20, 12, "HWD_ENABLE, Value: %d", Value);
+            break;
+
+        case HWD_DISABLE:
+            //OGL_Text(2, 20, 12, "HWD_DISABLE, Value: %d", Value);
+            break;
+
+        case HWD_SET_CHROMAKEY_VALUE:
+            //OGL_Text(2, 20, 12, "HWD_SET_CHROMAKEY_VALUE, Value: %d", Value);
+            break;
+        */
+        default:
+            //DBG_Printf ("!!! SetState(): %d\n", IdState);
+            //OGL_Text(2, 20, 12, "Undefined: IdState: %d  Value: %d", IdState, Value);
+            break;
+    }
+}
+
+
+//****************************************************************************
+// OGL_Text                                                              *
+//****************************************************************************
+void OGL_Text(GLuint x, GLuint y, GLuint scale, char* format, ...)
+{
+    va_list args;
+    char buffer[1024], *p;
+    GLfloat font_scale = 119.05F + 33.33F;
+
+    va_start(args, format);
+    vsprintf(buffer, format, args);
+    va_end(args);
+
+    //glMatrixMode(GL_PROJECTION);
+    //glPushMatrix();
+    //glLoadIdentity();
+    //gluOrtho2D(0, 800, 0, 600);
+
+        glColor3f(1.0F, 1.0F, 1.0F);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glPushAttrib(GL_ENABLE_BIT);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
+
+//    glTranslatef((GLfloat) x, (GLfloat) y, 0.0F);
+//    glScalef(scale/font_scale, scale/font_scale, scale/font_scale);
+
+    glRasterPos2i(x,y);
+    for(p = buffer; *p; p++) {
+            //glutBitmapCharacter(GLUT_BITMAP_8_BY_13, *p);
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, *p);
+            //glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *p);
+            //glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *p);
+            //glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *p);
+            //glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *p);
+    }
+  
+    glPopAttrib();
+
+    glPopMatrix();
+    //glMatrixMode(GL_PROJECTION);
+    //glPopMatrix();
+    //glMatrixMode(GL_MODELVIEW);
+}

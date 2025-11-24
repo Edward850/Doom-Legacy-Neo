@@ -1,0 +1,71 @@
+<html>
+<body text="#70f070" bgcolor="#000000" link="#70f070" vlink="#70f070" alink="#70f070">
+<tt>
+This is a documentation of the new editing features in Doom Legacy. These features should be in version 1.32 beta3 and up.<br>
+<br>
+Please note that Boom support is not discussed in this document. If you would like documentation on on Boom, consult boomref.txt<br>
+<br><br>
+---------------------------------------------------------------------<br>
+Section 1: New linedef types.<br>
+---------------------------------------------------------------------<br>
+<br>
+New Vector types:<br>
+<br>
+280 -- Ext<br>
+This type works like Boom's 242 type but with major differences. 280's water is swimmable (using the Legacy swimming code), and it oporates more like water than 242 does.<br>
+With 280, water is only shown if it is above the target sector's floor; otherwise, the regular floor is rendered. When water is rendered, the proporties for top of the water "plane" and the bottom, are boath taken from the controll sector's floor.<br>
+The lightlevel of the water is controlled by the target sector's lightlevel unless the target sector has been also tagged to a "Transfer floor proporties" linedef, in which case, the water will have that lightlevel.<br>
+280 also puts colormaps in the targeted sectors, based on the upper/lower/middle textures.<br>
+NOTE: 280 will also create a fake ceiling if the controll ceiling is lower than the target ceiling (this is usually not desired).<br>
+<br>
+281 -- Ext<br>
+This linedef puts a solid block inside all tagged sectors. The block will conform to the shape of the target sector(s) thus creating a 3D floor. The ceilingheight and ceiling texture are used for the top of this block, the floorheight/texture are used for the bottom, and the middletexture of the line is used for the texture along the sides. The lightlevel and colormap under the 3D floor is changed to the lightlevel and colormap of the control sector.<br>
+<br>
+282 -- Ext<br>
+This type sets the colormap of all tagged sectors like described below, without changing the floor/ceiling or light values. This is nice for putting colored lighting in many different sectors of different floor/ceiling heights:<br><br>
+<table width="100%">
+<tr>
+<td><pre>uppertexture: #xxxxxxy</pre></td>
+<td><pre>xxxxxx = 6 hex chars giving the color value in RGB format of the colormap mask
+y = 1 alphanumeric char (a-z) denoting the amount of the colormap mask.</pre></td>
+</tr>
+<tr>
+<td><pre>midtexture: #abbcc<br>(not yet supported in hardware mode)</pre></td>
+<td><pre>a = boolean value (0 or 1) denoting if this particular colormap should be treated like fog (i.e. equal application of colormap to all walls, ect)
+bb = numerical value (0 through 32) of the colormap at which the fade begins
+cc = numerical value (1 through 33) of the colormap at which the destination color will be reached.</pre></td>
+</tr>
+<tr>
+<td><pre>lowertexture: #xxxxxx<br>(not yet supported in hardware mode)</pre></td>
+<td><pre>xxxxxx = 6 hex chars denoting the color the colormap will fade to.</pre></td>
+</tr>
+</table>
+
+<br>
+283 -- Ext<br>
+This type will render what is best discribed as a "sheet" over the linedef. This can be used to make a better fog effect by patching up the "holes" in fog sectors. Because you usually will not want this effect on boath sides of the line, this linedef will only effect sides with a middletexutre.<br>
+<br>
+289 -- Ext<br>
+This type is just like 281 except it does not affect the light below it.<br>
+<br>
+Translucent linedefs:<br>
+<br>
+The old linedef codes for line translucency have been taken by Boom support, so I have shifted the types.<br>
+284 -- Brightens everything behind the line. Turns things kinda green though<br>
+285 -- Less brightness with allot less green.<br>
+286 -- Darkens a little with no green tint.<br>
+287 -- Brightens but with no green tint.<br>
+288 -- Selective translucency. Only certain colors are translucent.<br>
+<br>
+<br>
+---------------------------------------------------------------------<br>
+Section 2: New linedef flags.<br>
+---------------------------------------------------------------------<br>
+<br>
+Alltrigger [0x400] (1024)<br>
+This flag, when set, will allow all things to activate a W* line, with the exception of flying blood. :) This includes all generalized types that are W*.<br>
+<br><br>
+More to come.
+</tt>
+</body>
+</html>

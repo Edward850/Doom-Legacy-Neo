@@ -1,0 +1,49 @@
+
+ DooM LEGACY for OS/2
+ Release v1.40, September 2002.
+
+ Last Updated: September 2002
+
+ Original game & sources by: Id Software.
+ Additions: (c)1998 by: Fabrice Denis & Boris Pereira
+            (c)1999 by: Fabrice Denis, Boris Pereira & Thierry Van Elsuwe
+            (c)2000 by: Boris Pereira & Thierry Van Elsuwe
+            (c)2001-2002 by: Doom Legacy Team
+            
+ Special thanks to Steven McGranahan, Robert Bäuml and Bell Kin for
+ their large contribution and to others Legacy Team members.
+
+ Web site: http://legacy.newdoom.com
+   e-mail: legacy@newdoom.com
+
+
+ -----------------------------------------------------------------------
+ MAIN DOCUMENTATION
+ -----------------------------------------------------------------------
+
+ ----------
+ WHAT'S NEW
+ ----------
+
+     Update v1.32  04-Mar-2001
+     -------------------------
+     - OS/2 public release.
+     - read /doomlegacy/os2/ChangeLog for specific changes.
+
+
+ ----------------
+ [1] INTRODUCTION
+ ----------------
+
+  Please read Legacy.txt (and other documents) for game setup.
+
+  Here are listed only OS/2 specific notes.
+
+  New keyboard shortcuts:
+  
+    SHIFT-F6   Switch DIVE to fullscreen mode
+    SHIFT-F7   Switch DIVE to desktop mode
+    SHIFT-F8   Switch DIVE to full desktop mode
+    SHIFT-F9   Set window size to 1X
+    SHIFT-F10  Set window size to 2X
+    SHIFT-F11  Set window size to largest size

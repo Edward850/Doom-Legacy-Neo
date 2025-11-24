@@ -1,0 +1,10 @@
++ enlever program exit code -1
++ rajouter additionnal option pour le client en reseau
++ rajouter support ipx
++ rajouter no map pour ne pas lancer de map.
+- option bandwidth (modem ...)
++ fixed problem NT
++ add server option meme si nombre d'ordi=1
+
+optionnel
+- rajouter help : "How to configure tcp/ip network ?"
