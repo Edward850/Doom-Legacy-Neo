@@ -339,6 +339,16 @@ msg_server_t *GetShortServersList(void)
 
     // Wait until timeout or data received.
     n = select(socket_fd, &fds, NULL, NULL, &tv);
+    if (n == 0)
+    {
+        CONS_Printf("Server timed out\n");
+        return server_list;
+    }
+    else if (n == -1)
+    {
+        CONS_Printf("Some kind of server error\n");
+        return server_list;
+    }
 
     recv_len = recvfrom(socket_fd, recv_data, sizeof(recv_data), 0, NULL, NULL);
     if (recv_len <= 0 || (recv_len % 6) != 0)
