@@ -314,7 +314,7 @@ void I_GetEvent(void)
                 {
                     event.data1 = KEY_MOUSEWHEELUP;
                 }
-                else
+                else if (inputEvent.wheel.integer_y < 0)
                 {
                     event.data1 = KEY_MOUSEWHEELDOWN;
                 }
