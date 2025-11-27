@@ -45,8 +45,7 @@ typedef enum
     ev_keydown,
     ev_keyup,
     ev_mouse,
-    ev_joystick,
-    ev_mouse2
+    ev_joystick
 } evtype_t;
 
 // Event structure.

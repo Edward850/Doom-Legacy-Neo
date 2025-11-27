@@ -144,28 +144,24 @@ void  G_MapEventsToControls (event_t *ev)
         break;
 
       case ev_mouse:           // buttons hare virtual keys
-        mousex = ev->data2*((cv_mousesens.value*cv_mousesens.value)/110.0f + 0.1);
-        mousey = ev->data3*((cv_mousesens.value*cv_mousesens.value)/110.0f + 0.1);
+      {
+          float fmousex = *(float*)((void*)&ev->data2);
+          float fmousey = -(*(float*)((void*)&ev->data3));
+          float fmouselook = -(*(float*)((void*)&ev->data3));
+          fmousex *= cv_mousesens.value;
+          fmousey *= cv_mousesens.value;
+          fmouselook *= cv_mlooksens.value;
+          fmouselook *= 65536.f;
 
-        //added:10-02-98:
-        // for now I use the mlook sensitivity just for mlook,
-        // instead of having a general mouse y sensitivity.
-        mlooky = ev->data3*((cv_mlooksens.value*cv_mlooksens.value)/110.0f + 0.1);
+          mousex += fmousex;
+          mousey += fmousey;
+          mlooky += fmouselook;
+      }
         break;
 
       case ev_joystick:        // buttons are virtual keys
         joyxmove = ev->data2;
         joyymove = ev->data3;
-        break;
-
-      case ev_mouse2:           // buttons hare virtual keys
-        mouse2x = ev->data2*((cv_mousesens2.value*cv_mousesens2.value)/110.0f + 0.1);
-        mouse2y = ev->data3*((cv_mousesens2.value*cv_mousesens2.value)/110.0f + 0.1);
-
-        //added:10-02-98:
-        // for now I use the mlook sensitivity just for mlook,
-        // instead of having a general mouse y sensitivity.
-        mlook2y = ev->data3*((cv_mlooksens.value*cv_mlooksens.value)/110.0f + 0.1);
         break;
 
       default:

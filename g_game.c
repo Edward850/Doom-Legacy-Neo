@@ -763,9 +763,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, int realtics)
 
         // looking up/down
         if (cv_invertmouse.value)
-            localaiming -= mlooky<<19;
+            localaiming -= mlooky;
         else
-            localaiming += mlooky<<19;
+            localaiming += mlooky;
     }
     if (cv_usejoystick.value && analogjoystickmove && cv_joystickfreelook.value)
         localaiming += joyymove<<16;
@@ -802,9 +802,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, int realtics)
         forward += mousey;
 
     if (strafe)
-        side += mousex*2;
+        side += mousex;
     else
-        cmd->angleturn -= mousex*8;
+        cmd->angleturn -= mousex;
 
     mousex = mousey = mlooky = 0;
 

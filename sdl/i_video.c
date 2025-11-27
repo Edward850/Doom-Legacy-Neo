@@ -298,13 +298,26 @@ void I_GetEvent(void)
         case SDL_EVENT_MOUSE_MOTION:
             if (cv_usemouse.value)
             {
-				float mouseXRel = inputEvent.motion.xrel * 8.f;
-				float mouseYRel = -inputEvent.motion.yrel;
-				event.data2 = mouseXRel;
-				event.data3 = mouseYRel;
+                event.data2 = *(int*)((void*)&inputEvent.motion.xrel);
+                event.data3 = *(int*)((void*)&inputEvent.motion.yrel);
                 event.type = ev_mouse;
                 event.data1 = 0;
 
+                D_PostEvent(&event);
+            }
+            break;
+        case SDL_EVENT_MOUSE_WHEEL:
+            if (cv_usemouse.value)
+            {
+                event.type = ev_keydown;
+                if (inputEvent.wheel.integer_y > 0)
+                {
+                    event.data1 = KEY_MOUSEWHEELUP;
+                }
+                else
+                {
+                    event.data1 = KEY_MOUSEWHEELDOWN;
+                }
                 D_PostEvent(&event);
             }
             break;
@@ -312,18 +325,7 @@ void I_GetEvent(void)
             if (cv_usemouse.value)
             {
                 event.type = ev_keydown;
-                if (inputEvent.button.button == 4)
-                {
-                    event.data1 = KEY_MOUSEWHEELUP;
-                }
-                else if (inputEvent.button.button == 5)
-                {
-                    event.data1 = KEY_MOUSEWHEELDOWN;
-                }
-                else
-                {
-                    event.data1 = KEY_MOUSE1 + inputEvent.button.button - 1; // FIXME!
-                }
+                event.data1 = KEY_MOUSE1 + inputEvent.button.button - 1; // FIXME!
                 D_PostEvent(&event);
             }
             break;
@@ -331,15 +333,8 @@ void I_GetEvent(void)
             if (cv_usemouse.value)
             {
                 event.type = ev_keyup;
-                if (inputEvent.button.button == 4 || inputEvent.button.button == 5)
-                {
-                    //ignore wheel
-                }
-                else
-                {
-                    event.data1 = KEY_MOUSE1 + inputEvent.button.button - 1; // FIXME!
-                    D_PostEvent(&event);
-                }
+                event.data1 = KEY_MOUSE1 + inputEvent.button.button - 1; // FIXME!
+                D_PostEvent(&event);
             }
             break;
 
