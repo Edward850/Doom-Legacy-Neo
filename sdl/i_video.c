@@ -604,11 +604,6 @@ int VID_SetMode(int modeNum)
         vid.modenum = modeNum;
     }
 
-    // Adjust aspect ratio of the view to match 4:3
-    double origAspect = 1.3333333333333333;
-    double newWidth = origAspect * (double)vid.height;
-    //vid.width = (int)newWidth;
-
     if(vid.width < 320)
 		vid.width = 320;
 	if (vid.height < 200)

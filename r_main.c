@@ -904,10 +904,10 @@ void R_ExecuteSetViewSize (void)
     // psprite scales
     centerypsp = viewheight/2;  //added:06-02-98:psprite pos for freelook
 
-    pspritescale  = (viewwidth<<FRACBITS)/BASEVIDWIDTH;
-    pspriteiscale = (BASEVIDWIDTH<<FRACBITS)/viewwidth;   // x axis scale
+    pspritescale = ((int)scaledWidth << FRACBITS) / BASEVIDWIDTH;
+    pspriteiscale = (BASEVIDWIDTH << FRACBITS) / (int)scaledWidth;   // x axis scale
     //added:02-02-98:now aspect ratio correct for psprites
-    pspriteyscale = (((vid.height*viewwidth)/(int)scaledWidth)<<FRACBITS)/BASEVIDHEIGHT;
+    pspriteyscale = (((vid.height * (int)scaledWidth) / (int)scaledWidth) << FRACBITS) / BASEVIDHEIGHT;
 
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)
