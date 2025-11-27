@@ -71,7 +71,7 @@
 #endif
 
 //added:26-01-98: quickhack for V_Init()... to be cleaned up
-#define NUMSCREENS    4
+#define NUMSCREENS    5
 
 // Size of statusbar.
 #define ST_HEIGHT    32

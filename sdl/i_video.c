@@ -612,7 +612,7 @@ int VID_SetMode(int modeNum)
     // Adjust aspect ratio of the view to match 4:3
     double origAspect = 1.3333333333333333;
     double newWidth = origAspect * (double)vid.height;
-    vid.width = (int)newWidth;
+    //vid.width = (int)newWidth;
 
     if(vid.width < 320)
 		vid.width = 320;
@@ -633,7 +633,13 @@ int VID_SetMode(int modeNum)
     vid.bpp = 1;
     vid.rowbytes = vid.width * vid.bpp;
     vid.recalc = true;
-    vid.buffer = malloc(vid.width * vid.height * vid.bpp * NUMSCREENS);
+    vid.buffer = malloc(((vid.width * vid.height) * vid.bpp) * NUMSCREENS);
+    int screensize = vid.width * vid.height * vid.bpp;
+    for (int i = 0; i < NUMSCREENS; i++)
+        screens[i] = vid.buffer + i * screensize;
+
+    //added:26-01-98: statusbar buffer
+    screens[4] = vid.buffer + NUMSCREENS * screensize;
     SDL_PixelFormat format = SDL_GetWindowPixelFormat(sdlWindow);
     sdlSurface[0] = SDL_CreateSurface(vid.width, vid.height, SDL_PIXELFORMAT_INDEX8);
     sdlSurface[1] = SDL_CreateSurface(vid.width, vid.height, format);

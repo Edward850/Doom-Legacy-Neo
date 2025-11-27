@@ -609,8 +609,8 @@ fixed_t R_ScaleFromGlobalAngle (angle_t visangle)
 
 #else
     fixed_t             scale;
-    int                 anglea;
-    int                 angleb;
+    angle_t             anglea;
+    angle_t             angleb;
     int                 sinea;
     int                 sineb;
     fixed_t             num;
@@ -877,10 +877,14 @@ void R_ExecuteSetViewSize (void)
     centerxfrac = centerx<<FRACBITS;
     centeryfrac = centery<<FRACBITS;
 
+    // Adjust aspect ratio of the view to match 4:3
+    double origAspect = 1.3333333333333333;
+    double scaledWidth = origAspect * (double)vid.height;
+
     //added:01-02-98:aspect ratio is now correct, added an 'projectiony'
     //      since the scale is not always the same between horiz. & vert.
     projection  = centerxfrac;
-    projectiony = (((vid.height*centerx*BASEVIDWIDTH)/BASEVIDHEIGHT)/vid.width)<<FRACBITS;
+    projectiony = (((vid.height*centerx*BASEVIDWIDTH)/BASEVIDHEIGHT)/(int)scaledWidth)<<FRACBITS;
 
     //
     // no more low detail mode, it used to setup the right drawer routines
@@ -903,7 +907,7 @@ void R_ExecuteSetViewSize (void)
     pspritescale  = (viewwidth<<FRACBITS)/BASEVIDWIDTH;
     pspriteiscale = (BASEVIDWIDTH<<FRACBITS)/viewwidth;   // x axis scale
     //added:02-02-98:now aspect ratio correct for psprites
-    pspriteyscale = (((vid.height*viewwidth)/vid.width)<<FRACBITS)/BASEVIDHEIGHT;
+    pspriteyscale = (((vid.height*viewwidth)/(int)scaledWidth)<<FRACBITS)/BASEVIDHEIGHT;
 
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)
@@ -914,7 +918,7 @@ void R_ExecuteSetViewSize (void)
 
     // planes
     //added:02-02-98:now correct aspect ratio!
-    aspectx = (((vid.height*centerx*BASEVIDWIDTH)/BASEVIDHEIGHT)/vid.width);
+    aspectx = (((vid.height*centerx*BASEVIDWIDTH)/BASEVIDHEIGHT)/(int)scaledWidth);
 
     if ( rendermode == render_soft ) {
         // this is only used for planes rendering in software mode
