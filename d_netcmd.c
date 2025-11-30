@@ -187,6 +187,7 @@ void Command_Stopdemo_f(void);
 void Command_Map_f(void);
 void Command_Restart_f(void);
 
+void Command_ChangeGame(void);
 void Command_Addfile(void);
 void Command_Pause(void);
 
@@ -328,6 +329,7 @@ void D_RegisterClientCommands(void)
     COM_AddCommand("exitgame", Command_ExitGame_f);
     COM_AddCommand("exitlevel", Command_ExitLevel_f);
 
+	COM_AddCommand("changegame", Command_ChangeGame);
     COM_AddCommand("addfile", Command_Addfile);
     COM_AddCommand("pause", Command_Pause);
 
@@ -851,6 +853,13 @@ void Command_Addfile(void)
     }
 
     P_AddWadFile(COM_Argv(1), NULL);
+}
+
+//  Change game (iwad) at run-time
+//
+void Command_ChangeGame(void)
+{
+
 }
 
 // =========================================================================

@@ -450,6 +450,27 @@ int W_InitMultipleFiles (char** filenames)
     return rc;
 }
 
+//
+// W_ReloadWithIwad
+//
+int W_ReloadWithIwad(char* filename)
+{
+	// Close all current wad files
+    while (numwadfiles--)
+    {
+        if (stricmp(&wadfiles[numwadfiles]->filename[strlen(wadfiles[numwadfiles]->filename) - 3], "dat") == 0)
+        {
+			continue; // keep legacy.dat open
+        }
+        close(wadfiles[numwadfiles]->handle);
+	}
+
+	W_LoadWadFile(filename);
+    numwadfiles++;
+
+    return 0;
+}
+
 
 // !!!NOT CHECKED WITH NEW WAD SYSTEM
 //

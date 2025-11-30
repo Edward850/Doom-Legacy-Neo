@@ -162,6 +162,7 @@ int                     centerypsp;     //added:06-02-98:cf R_DrawPSprite
 
 fixed_t                 centerxfrac;
 fixed_t                 centeryfrac;
+fixed_t                 centerxfrac_nonwide;
 fixed_t                 projection;
 //added:02-02-98:fixing the aspect ration stuff...
 fixed_t                 projectiony;
@@ -686,10 +687,10 @@ void R_InitTables (void)
 //
 void R_InitTextureMapping (void)
 {
-    int                 i;
-    int                 x;
-    int                 t;
-    fixed_t             focallength;
+    int     i;
+    int     x;
+    int     t;
+    fixed_t focallength;
 
     // Use tangent table to generate viewangletox:
     //  viewangletox will give the next greatest x
@@ -699,6 +700,7 @@ void R_InitTextureMapping (void)
     //  so FIELDOFVIEW angles covers SCREENWIDTH.
     focallength = FixedDiv (centerxfrac,
                             finetangent[FINEANGLES/4+/*cv_fov.value*/ FIELDOFVIEW/2] );
+
 
     for (i=0 ; i<FINEANGLES/2 ; i++)
     {
@@ -872,19 +874,21 @@ void R_ExecuteSetViewSize (void)
     detailshift = setdetail;
     viewwidth = scaledviewwidth>>detailshift;
 
+    // Adjust aspect ratio of the view to match 4:3
+    double origAspect = 1.3333333333333333;
+    double scaledWidth = origAspect * (double)vid.height;
+    int viewwidth_nonwide = (int)scaledWidth;
+
     centery = viewheight/2;
     centerx = viewwidth/2;
     centerxfrac = centerx<<FRACBITS;
     centeryfrac = centery<<FRACBITS;
-
-    // Adjust aspect ratio of the view to match 4:3
-    double origAspect = 1.3333333333333333;
-    double scaledWidth = origAspect * (double)vid.height;
+    centerxfrac_nonwide = (viewwidth_nonwide << FRACBITS) / 2;
 
     //added:01-02-98:aspect ratio is now correct, added an 'projectiony'
     //      since the scale is not always the same between horiz. & vert.
     projection  = centerxfrac;
-    projectiony = (((vid.height*centerx*BASEVIDWIDTH)/BASEVIDHEIGHT)/(int)scaledWidth)<<FRACBITS;
+    projectiony = (((vid.height*centerx*BASEVIDWIDTH)/BASEVIDHEIGHT)/viewwidth_nonwide)<<FRACBITS;
 
     //
     // no more low detail mode, it used to setup the right drawer routines
@@ -904,10 +908,10 @@ void R_ExecuteSetViewSize (void)
     // psprite scales
     centerypsp = viewheight/2;  //added:06-02-98:psprite pos for freelook
 
-    pspritescale = ((int)scaledWidth << FRACBITS) / BASEVIDWIDTH;
-    pspriteiscale = (BASEVIDWIDTH << FRACBITS) / (int)scaledWidth;   // x axis scale
+    pspritescale = (viewwidth_nonwide << FRACBITS) / BASEVIDWIDTH;
+    pspriteiscale = (BASEVIDWIDTH << FRACBITS) / viewwidth_nonwide;   // x axis scale
     //added:02-02-98:now aspect ratio correct for psprites
-    pspriteyscale = (((vid.height * (int)scaledWidth) / (int)scaledWidth) << FRACBITS) / BASEVIDHEIGHT;
+    pspriteyscale = (((vid.height * viewwidth_nonwide) / viewwidth_nonwide) << FRACBITS) / BASEVIDHEIGHT;
 
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)
@@ -918,7 +922,7 @@ void R_ExecuteSetViewSize (void)
 
     // planes
     //added:02-02-98:now correct aspect ratio!
-    aspectx = (((vid.height*centerx*BASEVIDWIDTH)/BASEVIDHEIGHT)/(int)scaledWidth);
+    aspectx = (((vid.height * centerx * BASEVIDWIDTH) / BASEVIDHEIGHT) / viewwidth_nonwide);
 
     if ( rendermode == render_soft ) {
         // this is only used for planes rendering in software mode

@@ -228,6 +228,7 @@ static int addsfx(int sfxid, int volume, void* origin_p)
     }
 
 	alSourceStop(channel->source);
+    alGetError(); // Clear error
 	alSourcei(channel->source, AL_BUFFER, sndBuffers[sfxid]);
     ALenum error = alGetError();
     if (error != AL_NO_ERROR)
@@ -419,18 +420,24 @@ static void I_UpdateMusic()
 		return;
 
     ALint processed = 0;
+	int ready = YMFMIDI_SamplesReady();
     alGetSourcei(musicSid, AL_BUFFERS_PROCESSED, &processed);
     for (ALint i = 0; i < processed; i++)
     {
-        ALuint bid = 0;
-        alSourceUnqueueBuffers(musicSid, 1, &bid);
-		I_QueueBuffer(bid, (char*)soundData[GetMusicBuffer(bid)], buflen);
-
-        ALint state = AL_PLAYING;
-        alGetSourcei(musicSid, AL_SOURCE_STATE, &state);
-        if (state == AL_STOPPED)
+        YMFMIDI_SamplesCountAdd();
+        if (ready)
         {
-            alSourcePlay(musicSid);
+            ready--;
+            ALuint bid = 0;
+            alSourceUnqueueBuffers(musicSid, 1, &bid);
+            I_QueueBuffer(bid, (char*)soundData[GetMusicBuffer(bid)], buflen);
+
+            ALint state = AL_PLAYING;
+            alGetSourcei(musicSid, AL_SOURCE_STATE, &state);
+            if (state == AL_STOPPED)
+            {
+                alSourcePlay(musicSid);
+            }
         }
     }
 }
@@ -579,25 +586,15 @@ void I_StartupSound()
 // MUSIC API.
 //
 
-/* FIXME: Make this file instance-specific */
-#define MIDI_TMPFILE    "/tmp/.lsdlmidi"
-
-//static Mix_Music *music[2] = { NULL, NULL };
-
 void I_ShutdownMusic(void)
 {
-
-    /*
-       Should this be exposed in mixer.h?
-     */
-    //extern void close_music(void);
     if (nomusic)
         return;
 
     if (!musicStarted)
         return;
 
-    //close_music();
+	YMFMIDI_Shutdown();
 
     CONS_Printf("I_ShutdownMusic: shut down\n");
     musicStarted = false;

@@ -324,6 +324,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/wd4996 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>../SDL3/include/;../openal/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

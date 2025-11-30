@@ -15,6 +15,8 @@ extern "C" {
 	void YMFMIDI_Reset(void);
 	int YMFMIDI_AtEnd(void);
 	unsigned int YMFMIDI_SampleRate(void);
+	int YMFMIDI_SamplesReady(void);
+	void YMFMIDI_SamplesCountAdd(void);
 	void YMFMIDI_Generatef(float* data, unsigned int numSamples);
 	void YMFMIDI_Generate16(signed short* data, unsigned int numSamples);
 #ifdef __cplusplus
