@@ -621,7 +621,7 @@ CV_PossibleValue_t serversearch_cons_t[] = {{0,"Local Lan"}
                                            ,{0,NULL}};
 
 
-consvar_t cv_serversearch = {"serversearch"    ,"0",CV_HIDEN,serversearch_cons_t};
+consvar_t cv_serversearch = {"serversearch"    ,"1",CV_HIDEN,serversearch_cons_t};
 
 #define FIRSTSERVERLINE 3
 
