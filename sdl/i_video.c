@@ -95,11 +95,6 @@
 #include "hwsym_sdl.h" // For dynamic referencing of HW rendering functions
 //#include "ogl_sdl.h"
 
-void VID_PrepareModeList(void);
-
-// maximum number of windowed modes (see windowedModes[][])
-#define MAXWINMODES (6) 
-
 //Hudler: 16/10/99: added for OpenGL gamma correction
 RGBA_t  gamma_correction = { 0x7F7F7F7F };
 extern consvar_t cv_grgammared;
@@ -109,8 +104,7 @@ extern consvar_t cv_grgammablue;
 extern consvar_t cv_fullscreen; // for fullscreen support 
 
 static int numVidModes = 0;
-
-static char vidModeName[33][32]; // allow 33 different modes
+static char** vidModeName;
 
 rendermode_t    rendermode = render_soft;
 boolean highcolor = false;
@@ -135,20 +129,7 @@ static SDL_Surface* sdlSurface[2] = { NULL, NULL };
 static       SDL_Color    localPalette[256];
 static       SDL_Rect** modeList = NULL;
 static       Uint8        BitsPerPixel;
-//const static Uint32       surfaceFlags = SDL_HWSURFACE | SDL_HWPALETTE | SDL_DOUBLEBUF;
 
-// first entry in the modelist which is not bigger than 1024x768
-static int firstEntry = 0;
-
-// windowed video modes from which to choose from.
-
-static int windowedModes[MAXWINMODES][2] = {
-    {1024, 768},
-    {800, 600},
-    {640, 480},
-    {512, 384},
-    {400, 300},
-    {320, 200} };
 //
 //  Translates the SDL key into Doom key
 //
@@ -484,104 +465,47 @@ void I_SetPalette(RGBA_t* palette)
 
 
 // return number of fullscreen + X11 modes
-int   VID_NumModes(void)
+int VID_NumModes(void)
 {
-    if (cv_fullscreen.value)
-        return numVidModes - firstEntry;
-    else
-        return MAXWINMODES;
+    return numVidModes;
 }
 
 char* VID_GetModeName(int modeNum)
 {
-    if (cv_fullscreen.value) { // fullscreen modes
-        modeNum += firstEntry;
-        if (modeNum >= numVidModes)
-            return NULL;
+    if (modeNum >= numVidModes)
+        return NULL;
 
+    if (vidModeName[modeNum] == NULL)
+    {
+		vidModeName[modeNum] = malloc(16 * sizeof(char));
         sprintf(&vidModeName[modeNum][0], "%dx%d",
             modeList[modeNum]->w,
             modeList[modeNum]->h);
     }
-    else { // windowed modes
-        if (modeNum >= MAXWINMODES)
-            return NULL;
 
-        sprintf(&vidModeName[modeNum][0], "win %dx%d",
-            windowedModes[modeNum][0],
-            windowedModes[modeNum][1]);
-    }
     return &vidModeName[modeNum][0];
 }
 
-int VID_GetModeForSize(int w, int h) {
-    int matchMode, i;
+int VID_GetModeForSize(int w, int h) 
+{
+    int matchMode = -1;
+    int i;
 
-    if (cv_fullscreen.value)
+    for (i = 0; i < numVidModes; i++)
     {
-        matchMode = -1;
-
-        for (i = firstEntry; i < numVidModes; i++)
+        if (modeList[i]->w == w &&
+            modeList[i]->h == h)
         {
-            if (modeList[i]->w == w &&
-                modeList[i]->h == h)
-            {
-                matchMode = i;
-                break;
-            }
+            matchMode = i;
+            break;
         }
-        if (-1 == matchMode) // use smallest mode
-        {
-            matchMode = numVidModes - 1;
-        }
-        matchMode -= firstEntry;
     }
-    else
+    if (-1 == matchMode) // use smallest mode
     {
-        matchMode = -1;
-
-        for (i = 0; i < MAXWINMODES; i++)
-        {
-            if (windowedModes[i][0] == w &&
-                windowedModes[i][1] == h)
-            {
-                matchMode = i;
-                break;
-            }
-        }
-
-        if (-1 == matchMode) // use smallest mode
-        {
-            matchMode = MAXWINMODES - 1;
-        }
+        matchMode = numVidModes - 1;
     }
 
     return matchMode;
-}
-
-
-void VID_PrepareModeList(void)
-{
-    int i;
-
-    if (cv_fullscreen.value) // only fullscreen needs preparation
-    {
-        if (-1 != numVidModes)
-        {
-            for (i = 0; i < numVidModes; i++)
-            {
-                if (modeList[i]->w <= MAXVIDWIDTH &&
-                    modeList[i]->h <= MAXVIDHEIGHT)
-                {
-                    firstEntry = i;
-                    break;
-                }
-            }
-        }
-    }
-
-    allow_fullscreen = true;
-    return;
 }
 
 int VID_SetMode(int modeNum) 
@@ -590,19 +514,9 @@ int VID_SetMode(int modeNum)
 
     SDL_SetWindowFullscreen(sdlWindow, cv_fullscreen.value);
 
-    if (cv_fullscreen.value)
-    {
-        modeNum += firstEntry;
-        vid.width = modeList[modeNum]->w;
-        vid.height = modeList[modeNum]->h;
-        vid.modenum = modeNum - firstEntry;
-    }
-    else //(cv_fullscreen.value)
-    {
-        vid.width = windowedModes[modeNum][0];
-        vid.height = windowedModes[modeNum][1];
-        vid.modenum = modeNum;
-    }
+    vid.width = modeList[modeNum]->w;
+    vid.height = modeList[modeNum]->h;
+    vid.modenum = modeNum;
 
     if(vid.width < 320)
 		vid.width = 320;
@@ -610,6 +524,7 @@ int VID_SetMode(int modeNum)
 		vid.height = 200;
 
     SDL_SetWindowSize(sdlWindow, vid.width, vid.height);
+    SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
     if (sdlSurface[0])
     {
@@ -698,6 +613,9 @@ void I_StartupGraphics(void)
 		modeList[numVidModes]->h = displayModes[i]->h;
 		numVidModes++;
     }
+
+	vidModeName = malloc(sizeof(char*) * numVidModes);
+	memset(vidModeName, 0, sizeof(char*) * numVidModes);
 
     BitsPerPixel = 8;
 

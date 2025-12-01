@@ -222,6 +222,8 @@ int wipe_doMelt ( int   width,
     int         j;
     int         dy;
     int         idx;
+    double      speed = (double)height / 200.0;
+    static double ispeed = 0.0;
 
     short*      s;
     short*      d;
@@ -231,38 +233,43 @@ int wipe_doMelt ( int   width,
 
     while (ticks--)
     {
-        for (i=0;i<width;i++)
+        for (; ispeed + 1.0 < speed; ispeed+=1.0)
         {
-            if (y[i]<0)
+            for (i = 0; i < width; i++)
             {
-                y[i]++; done = false;
-            }
-            else if (y[i] < height)
-            {
-                dy = (y[i] < 16) ? y[i]+1 : 8;
-                dy *= vid.dupy;
-                if (y[i]+dy >= height) dy = height - y[i];
-                s = &((short *)wipe_scr_end)[i*height+y[i]];
-                d = &((short *)wipe_scr)[y[i]*width+i];
-                idx = 0;
-                for (j=dy;j;j--)
+                if (y[i] < 0)
                 {
-                    d[idx] = *(s++);
-                    idx += width;
+                    y[i]++; done = false;
                 }
-                y[i] += dy;
-                s = &((short *)wipe_scr_start)[i*height];
-                d = &((short *)wipe_scr)[y[i]*width+i];
-                idx = 0;
-                for (j=height-y[i];j;j--)
+                else if (y[i] < height)
                 {
-                    d[idx] = *(s++);
-                    idx += width;
+                    dy = (y[i] < 16) ? y[i] + 1 : 8;
+                    dy *= vid.dupy;
+                    if (y[i] + dy >= height) dy = height - y[i];
+                    s = &((short*)wipe_scr_end)[i * height + y[i]];
+                    d = &((short*)wipe_scr)[y[i] * width + i];
+                    idx = 0;
+                    for (j = dy; j; j--)
+                    {
+                        d[idx] = *(s++);
+                        idx += width;
+                    }
+                    y[i] += dy;
+                    s = &((short*)wipe_scr_start)[i * height];
+                    d = &((short*)wipe_scr)[y[i] * width + i];
+                    idx = 0;
+                    for (j = height - y[i]; j; j--)
+                    {
+                        d[idx] = *(s++);
+                        idx += width;
+                    }
+                    done = false;
                 }
-                done = false;
             }
         }
     }
+
+	ispeed -= speed - 1.0;
 
     return done;
 

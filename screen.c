@@ -78,8 +78,6 @@
 #include "z_zone.h"
 #include "d_main.h"
 
-void VID_PrepareModeList(void); // from i_video_xshm.c
-
 #ifdef DIRECTFULLSCREEN
 // allow_fullscreen is set in VID_PrepareModeList
 extern boolean allow_fullscreen;
@@ -368,18 +366,11 @@ void SCR_SetDefaultMode (void)
 
 void SCR_ChangeFullscreen (void)
 {
-#ifdef DIRECTFULLSCREEN
     int modenum;
-
-    // allow_fullscreen is set by VID_PrepareModeList
-    // it is used to prevent switching to fullscreen during startup
-    if(!allow_fullscreen) return;
-
-    if(graphics_started) {
-        VID_PrepareModeList();
+    if(graphics_started) 
+    {
         modenum = VID_GetModeForSize(cv_scr_width.value,cv_scr_height.value);
         setmodeneeded = ++modenum;
     }
     return;
-#endif
 }

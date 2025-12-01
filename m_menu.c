@@ -2049,21 +2049,15 @@ void M_DrawVideoMode(void)
     vidm_nummodes = 0;
     nummodes = VID_NumModes ();
 
-#ifdef __WIN32__
-    //faB: clean that later : skip windowed mode 0, video modes menu only shows
-    //     FULL SCREEN modes
-    if (nummodes<1) {
+    if (nummodes<1) 
+    {
         // put the windowed mode so that there is at least one mode
         modedescs[0].modenum = 0;
         modedescs[0].desc = VID_GetModeName (0);
         modedescs[0].iscur = 1;
         vidm_nummodes = 1;
     }
-    for (i=1 ; i<=nummodes && vidm_nummodes<MAXMODEDESCS ; i++)
-#else
-    // DOS does not skip mode 0, because mode 0 is ALWAYS present
     for (i=0 ; i<nummodes && vidm_nummodes<MAXMODEDESCS ; i++)
-#endif
     {
         desc = VID_GetModeName (i);
         if (desc)
