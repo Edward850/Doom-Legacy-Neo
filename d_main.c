@@ -1075,50 +1075,22 @@ void IdentifyVersion(void)
      */
 
     // will be overwrite in case of -cdrom or linux home
-    sprintf(configfile, "%s/" CONFIGFILENAME, doomwaddir);
+    {
+        strConfigfile = NULL;
+        const char* getuserdir = doomwaddir;
+        const char* configDir = I_GetConfigDir();
+        if (configDir)
+        {
+			getuserdir = configDir;
+        }
+        size_t strConfigfileSize = strlen(getuserdir) + 1 + strlen(CONFIGFILENAME) + 1;
+        strConfigfile = malloc(strConfigfileSize);
+        memset(strConfigfile, 0, strConfigfileSize);
+        sprintf(strConfigfile, "%s/" CONFIGFILENAME, getuserdir);
+    }
 
-    if (M_CheckParm("-shdev"))
-    {
-        gamemode = shareware;
-        devparm = true;
-        D_AddFile(DEVDATA "doom1.wad");
-        D_AddFile(DEVMAPS "data_se/texture1.lmp");
-        D_AddFile(DEVMAPS "data_se/pnames.lmp");
-        strcpy(configfile, DEVDATA CONFIGFILENAME);
-    }
-    else if (M_CheckParm("-regdev"))
-    {
-        gamemode = registered;
-        devparm = true;
-        D_AddFile(DEVDATA "doom.wad");
-        D_AddFile(DEVMAPS "data_se/texture1.lmp");
-        D_AddFile(DEVMAPS "data_se/texture2.lmp");
-        D_AddFile(DEVMAPS "data_se/pnames.lmp");
-        strcpy(configfile, DEVDATA CONFIGFILENAME);
-        return;
-    }
-    else if (M_CheckParm("-comdev"))
-    {
-        gamemode = commercial;
-        devparm = true;
-        /*
-           I don't bother
-           if(plutonia)
-           D_AddFile (DEVDATA"plutonia.wad");
-           else if(tnt)
-           D_AddFile (DEVDATA"tnt.wad");
-           else
-         */
-        D_AddFile(DEVDATA "doom2.wad");
-
-        D_AddFile(DEVMAPS "cdata/texture1.lmp");
-        D_AddFile(DEVMAPS "cdata/pnames.lmp");
-        strcpy(configfile, DEVDATA CONFIGFILENAME);
-        return;
-    }
-    else
-        // specify the name of the IWAD file to use, so we can have several IWAD's
-        // in the same directory, and/or have legacy.exe only once in a different location
+    // specify the name of the IWAD file to use, so we can have several IWAD's
+    // in the same directory, and/or have legacy.exe only once in a different location
     if (M_CheckParm("-iwad"))
     {
         // BP: big hack for fullpath wad, we shoudl use wadpath instead in d_addfile
@@ -1402,7 +1374,7 @@ void D_DoomMain(void)
     // default savegame
     strcpy(savegamename, text[NORM_SAVEI_NUM]);
 
-    {
+    /*{
         char *userhome, legacyhome[256];
         if (M_CheckParm("-home") && M_IsNextParm())
             userhome = M_GetNextParm();
@@ -1431,13 +1403,21 @@ void D_DoomMain(void)
             strcatbf(savegamename, legacyhome, "/");
             I_mkdir(legacyhome, 0700);
         }
-    }
+    }*/
 
     if (M_CheckParm("-cdrom"))
     {
         CONS_Printf(D_CDROM);
         I_mkdir("c:\\doomdata", 700);
-        strcpy(configfile, "c:/doomdata/" CONFIGFILENAME);
+
+        size_t strConfigfileSize = strlen("c:/doomdata/" CONFIGFILENAME) + 1;
+        if (strConfigfile)
+        {
+            free(strConfigfile);
+        }
+        strConfigfile = malloc(strConfigfileSize);
+        memset(strConfigfile, 0, strConfigfileSize);
+        strcpy(strConfigfile, "c:/doomdata/" CONFIGFILENAME);
         strcpy(savegamename, text[CDROM_SAVEI_NUM]);
     }
 

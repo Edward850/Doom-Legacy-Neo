@@ -73,7 +73,7 @@ void M_ScreenShot (void);
 
 //===========================================================================
 
-extern char   configfile[MAX_WADPATH];
+extern char*   strConfigfile;
 
 void Command_SaveConfig_f (void);
 void Command_LoadConfig_f (void);

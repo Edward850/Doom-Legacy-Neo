@@ -309,6 +309,10 @@ int             numdmstarts;
 //mapthing_t**    deathmatch_p;
 mapthing_t      *playerstarts[MAXPLAYERS];
 
+void P_HashLevelInit(void);
+void P_HashLevelData(void* data, size_t len);
+void P_HashLevelFinalize(void);
+
 
 //
 // P_LoadVertexes
@@ -329,6 +333,7 @@ void P_LoadVertexes (int lump)
 
     // Load data into cache.
     data = W_CacheLumpNum (lump,PU_STATIC);
+    P_HashLevelData(data, W_LumpLength(lump));
 
     ml = (mapvertex_t *)data;
     li = vertexes;
@@ -380,6 +385,7 @@ void P_LoadSegs (int lump)
     segs = Z_Malloc (numsegs*sizeof(seg_t),PU_LEVEL,0);
     memset (segs, 0, numsegs*sizeof(seg_t));
     data = W_CacheLumpNum (lump,PU_STATIC);
+    P_HashLevelData(data, W_LumpLength(lump));
 
     ml = (mapseg_t *)data;
     li = segs;
@@ -432,6 +438,7 @@ void P_LoadSubsectors (int lump)
     numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_t);
     subsectors = Z_Malloc (numsubsectors*sizeof(subsector_t),PU_LEVEL,0);
     data = W_CacheLumpNum (lump,PU_STATIC);
+    P_HashLevelData(data, W_LumpLength(lump));
 
     ms = (mapsubsector_t *)data;
     memset (subsectors,0, numsubsectors*sizeof(subsector_t));
@@ -566,6 +573,7 @@ void P_LoadSectors (int lump)
     sectors = Z_Malloc (numsectors*sizeof(sector_t),PU_LEVEL,0);
     memset (sectors, 0, numsectors*sizeof(sector_t));
     data = W_CacheLumpNum (lump,PU_STATIC);
+    P_HashLevelData(data, W_LumpLength(lump));
 
     //Fab:FIXME: allocate for whatever number of flats
     //           512 different flats per level should be plenty
@@ -674,6 +682,7 @@ void P_LoadNodes (int lump)
     numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
     nodes = Z_Malloc (numnodes*sizeof(node_t),PU_LEVEL,0);
     data = W_CacheLumpNum (lump,PU_STATIC);
+    P_HashLevelData(data, W_LumpLength(lump));
 
     mn = (mapnode_t *)data;
     no = nodes;
@@ -708,6 +717,7 @@ void P_LoadThings (int lump)
     data = datastart = W_CacheLumpNum (lump,PU_LEVEL);
     nummapthings     = W_LumpLength (lump) / (5 * sizeof(short));
     mapthings        = Z_Malloc(nummapthings * sizeof(mapthing_t), PU_LEVEL, NULL);
+	P_HashLevelData(data, W_LumpLength(lump));
 
     //SoM: Because I put a new member into the mapthing_t for use with
     //fragglescript, the format has changed and things won't load correctly
@@ -751,6 +761,7 @@ void P_LoadLineDefs (int lump)
     lines = Z_Malloc (numlines*sizeof(line_t),PU_LEVEL,0);
     memset (lines, 0, numlines*sizeof(line_t));
     data = W_CacheLumpNum (lump,PU_STATIC);
+    P_HashLevelData(data, W_LumpLength(lump));
 
     mld = (maplinedef_t *)data;
     ld = lines;
@@ -875,6 +886,7 @@ int R_ColormapNumForName(char *name);
 void P_LoadSideDefs2(int lump)
 {
   byte *data = W_CacheLumpNum(lump,PU_STATIC);
+  P_HashLevelData(data, W_LumpLength(lump));
   int  i;
   int  num;
   int  mapnum;
@@ -1092,6 +1104,7 @@ void P_LoadBlockMap (int lump)
     {
       long i;
       short *wadblockmaplump = W_CacheLumpNum (lump, PU_LEVEL);
+	  P_HashLevelData(wadblockmaplump, W_LumpLength(lump));
       blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
 
       // killough 3/1/98: Expand wad blockmap into larger internal one,
@@ -1334,8 +1347,8 @@ void P_SetupLevelSky (void)
 // added comment : load the level from a lump file or from a external wad !
 extern int numtextures;
 char       *maplumpname;
-
 int        lastloadedmaplumpnum; // for comparative savegame
+
 boolean P_SetupLevel (int           episode,
                       int           map,
                       skill_t       skill,
@@ -1450,6 +1463,8 @@ boolean P_SetupLevel (int           episode,
     // SoM: DOH!
     //R_InitPortals ();
 
+    P_HashLevelInit();
+
     // note: most of this ordering is important
     P_LoadBlockMap (lastloadedmaplumpnum+ML_BLOCKMAP);
     P_LoadVertexes (lastloadedmaplumpnum+ML_VERTEXES);
@@ -1463,6 +1478,7 @@ boolean P_SetupLevel (int           episode,
     P_LoadNodes (lastloadedmaplumpnum+ML_NODES);
     P_LoadSegs (lastloadedmaplumpnum+ML_SEGS);
     rejectmatrix = W_CacheLumpNum (lastloadedmaplumpnum+ML_REJECT,PU_LEVEL);
+	P_HashLevelData(rejectmatrix, W_LumpLength(lastloadedmaplumpnum + ML_REJECT));
     P_GroupLines ();
 
 #ifdef HWRENDER // not win32 only 19990829 by Kin
@@ -1543,6 +1559,8 @@ boolean P_SetupLevel (int           episode,
     script_camera_on = false;
 
     B_InitNodes();		//added by AC for acbot
+
+    P_HashLevelFinalize();
 
     //CONS_Printf("%d vertexs %d segs %d subsector\n",numvertexes,numsegs,numsubsectors);
     return true;

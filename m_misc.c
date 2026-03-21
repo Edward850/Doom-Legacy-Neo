@@ -217,7 +217,7 @@ boolean FIL_CheckExtension (char *in)
 // DEFAULTS
 //
 
-char   configfile[MAX_WADPATH];
+char*   strConfigfile;
 
 // ==========================================================================
 //                          CONFIGURATION
@@ -239,7 +239,7 @@ void Command_SaveConfig_f (void)
     FIL_DefaultExtension (tmpstr,".cfg");
 
     M_SaveConfig(tmpstr);
-    CONS_Printf("config saved as %s\n",configfile);
+    CONS_Printf("config saved as %s\n", strConfigfile);
 }
 
 void Command_LoadConfig_f (void)
@@ -250,8 +250,15 @@ void Command_LoadConfig_f (void)
         return;
     }
 
-    strcpy(configfile,COM_Argv(1));
-    FIL_DefaultExtension (configfile,".cfg");
+	size_t strConfigfileSize = strlen(COM_Argv(1)) + 1;
+    if (strConfigfile)
+    {
+        free(strConfigfile);
+	}
+	strConfigfile = malloc(strConfigfileSize);
+	memset(strConfigfile, 0, strConfigfileSize);
+    strcpy(strConfigfile,COM_Argv(1));
+    FIL_DefaultExtension (strConfigfile,".cfg");
 /*  for create, don't check
 
     if ( access (tmpstr,F_OK) )
@@ -260,7 +267,7 @@ void Command_LoadConfig_f (void)
         return;
     }
 */
-    COM_BufInsertText (va("exec \"%s\"\n",configfile));
+    COM_BufInsertText (va("exec \"%s\"\n", strConfigfile));
 
 }
 
@@ -272,7 +279,7 @@ void Command_ChangeConfig_f (void)
         return;
     }
 
-    COM_BufAddText (va("saveconfig \"%s\"\n",configfile));
+    COM_BufAddText (va("saveconfig \"%s\"\n", strConfigfile));
     COM_BufAddText (va("loadconfig \"%s\"\n",COM_Argv(1)));
 }
 
@@ -289,8 +296,15 @@ void M_FirstLoadConfig(void)
     p = M_CheckParm ("-config");
     if (p && p<myargc-1)
     {
-        strcpy (configfile, myargv[p+1]);
-        CONS_Printf ("config file: %s\n",configfile);
+        size_t strConfigfileSize = strlen(myargv[p + 1]) + 1;
+        if (strConfigfile)
+        {
+            free(strConfigfile);
+        }
+        strConfigfile = malloc(strConfigfileSize);
+        memset(strConfigfile, 0, strConfigfileSize);
+        strcpy (strConfigfile, myargv[p+1]);
+        CONS_Printf ("config file: %s\n", strConfigfile);
     }
 
     // load default control
@@ -298,7 +312,7 @@ void M_FirstLoadConfig(void)
 
     // load config, make sure those commands doesnt require the screen..
     CONS_Printf("\n");
-    COM_BufInsertText (va("exec \"%s\"\n",configfile));
+    COM_BufInsertText (va("exec \"%s\"\n", strConfigfile));
     COM_BufExecute ();       // make sure initial settings are done
 
     // make sure I_Quit() will write back the correct config
@@ -322,8 +336,18 @@ void M_SaveConfig (char *filename)
     {
         f = fopen (filename, "w");
         // change it only if valide
-        if(f)
-            strcpy(configfile,filename);
+        if (f)
+        {
+            size_t strConfigfileSize = strlen(filename) + 1;
+            if (strConfigfile)
+            {
+                free(strConfigfile);
+            }
+            strConfigfile = malloc(strConfigfileSize);
+            memset(strConfigfile, 0, strConfigfileSize);
+            strcpy(strConfigfile,filename);
+        }
+            
         else
         {
             CONS_Printf ("Couldn't save game config file %s\n",filename);
@@ -332,10 +356,10 @@ void M_SaveConfig (char *filename)
     }
     else
     {
-        f = fopen (configfile, "w");
+        f = fopen (strConfigfile, "w");
         if (!f)
         {
-            CONS_Printf ("Couldn't save game config file %s\n",configfile);
+            CONS_Printf ("Couldn't save game config file %s\n", strConfigfile);
             return;
         }
     }

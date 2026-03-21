@@ -65,6 +65,9 @@
 //
 //-----------------------------------------------------------------------------
 
+#ifdef __WIN32__
+#include "win32/i_win32.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -701,6 +704,15 @@ char *I_GetUserName(void)
 #endif
 }
 
+const char* I_GetConfigDir(void)
+{
+#ifdef __WIN32__
+	return I_CPPGetConfigDir();
+#else
+    return NULL;
+#endif
+}
+
 int  I_mkdir(const char *dirname, int unixright)
 {
 #ifdef LINUX
@@ -810,6 +822,6 @@ ULONG I_GetFreeMem(ULONG *total)
 #else
     /*  Not Linux.
      */
-    return 16<<20;
+    return 128<<20;
 #endif /* LINUX */
 }

@@ -620,7 +620,7 @@ void I_StartupGraphics(void)
     BitsPerPixel = 8;
 
     SDL_CreateWindowAndRenderer("Doom Legacy Neo", 0, 0, cv_fullscreen.value ? SDL_WINDOW_FULLSCREEN : 0, &sdlWindow, &sdlRenderer);
-    VID_SetMode(0);
+    VID_SetMode(numVidModes-1);
 
     sdlPalette = SDL_CreatePalette(256);
 

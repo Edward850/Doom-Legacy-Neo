@@ -154,6 +154,7 @@ void I_ShutdownSystem (void);
 void I_GetDiskFreeSpace(INT64 *freespace);
 char *I_GetUserName(void);
 int  I_mkdir(const char *dirname, int unixright);
+const char* I_GetConfigDir(void);
 
 #ifdef LINUX
 void I_LocateWad(void);
