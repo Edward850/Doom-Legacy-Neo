@@ -70,6 +70,7 @@
 #include "i_video.h"
 #include "d_main.h"
 #include "m_argv.h"
+#include "i_system.h"
 
 #ifdef HWRENDER
 #include "hardware/hw_main.h"
@@ -94,7 +95,7 @@ boolean FIL_WriteFile ( char const*   name,
     int         handle;
     int         count;
 
-    handle = open ( name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666);
+    handle = open (name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666);
 
     if (handle == -1)
         return false;

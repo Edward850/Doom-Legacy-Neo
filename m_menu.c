@@ -2311,13 +2311,18 @@ void M_ReadSaveStrings(void)
     int     handle;
     int     count;
     int     i;
-    char    name[256];
+    char* finalPath = NULL;
+    const char* initalPath = I_GetSaveGameDir();
+    if (!initalPath)
+    {
+        initalPath = "";
+    }
+    finalPath = Z_Malloc(strlen(initalPath) + 20, PU_STATIC, 0);
 
     for (i = 0;i < load_end;i++)
     {
-        sprintf(name,savegamename,i);
-
-        handle = open (name, O_RDONLY | 0, 0666);
+        sprintf(finalPath, "%s/doomsav%d.dsg", initalPath, i);
+        handle = open (finalPath, O_RDONLY | 0, 0666);
         if (handle == -1)
         {
             strcpy(&savegamestrings[i][0],EMPTYSTRING);
@@ -2328,6 +2333,8 @@ void M_ReadSaveStrings(void)
         close (handle);
         LoadGameMenu[i].status = 1;
     }
+
+    Z_Free(finalPath);
 }
 
 //

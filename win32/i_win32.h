@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 	const char* I_CPPGetConfigDir(void);
+	const char* I_CPPGetSaveGameDir(void);
 #ifdef __cplusplus
 }
 #endif

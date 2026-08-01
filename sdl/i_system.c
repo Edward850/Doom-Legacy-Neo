@@ -713,6 +713,15 @@ const char* I_GetConfigDir(void)
 #endif
 }
 
+const char* I_GetSaveGameDir(void)
+{
+#ifdef __WIN32__
+    return I_CPPGetSaveGameDir();
+#else
+    return NULL;
+#endif
+}
+
 int  I_mkdir(const char *dirname, int unixright)
 {
 #ifdef LINUX

@@ -1989,16 +1989,24 @@ void G_DoLoadGame (int slot)
 {
     int         length;
     char        vcheck[VERSIONSIZE];
-    char        savename[255];
+    char* finalPath = NULL;
 
-    sprintf(savename, savegamename, slot);
+    const char* initalPath = I_GetSaveGameDir();
+    if (!initalPath)
+    {
+        initalPath = "";
+    }
+    finalPath = Z_Malloc(strlen(initalPath) + 20, PU_STATIC, 0);
+    sprintf(finalPath, "%s/doomsav%d.dsg", initalPath, slot);
 
-    length = FIL_ReadFile (savename, &savebuffer);
+    length = FIL_ReadFile (finalPath, &savebuffer);
     if (!length)
     {
-        CONS_Printf ("Couldn't read file %s", savename);
+        CONS_Printf ("Couldn't read file %s", finalPath);
+        Z_Free(finalPath);
         return;
     }
+    Z_Free(finalPath);
 
     // skip the description field
     save_p = savebuffer + SAVESTRINGSIZE;
@@ -2065,11 +2073,15 @@ void G_DoSaveGame (int   savegameslot, char* savedescription)
     char        name2[VERSIONSIZE];
     char        description[SAVESTRINGSIZE + 1];
     int         length;
-    char        name[256];
+    char* finalPath = NULL;
 
-    gameaction = ga_nothing;
-
-    sprintf(name, savegamename, savegameslot);
+    const char* initalPath = I_GetSaveGameDir();
+    if (!initalPath)
+    {
+        initalPath = "";
+    }
+    finalPath = Z_Malloc(strlen(initalPath) + 20, PU_STATIC, 0);
+    sprintf(finalPath, "%s/doomsav%d.dsg", initalPath, savegameslot);
 
     gameaction = ga_nothing;
 
@@ -2077,6 +2089,7 @@ void G_DoSaveGame (int   savegameslot, char* savedescription)
     if(!save_p)
     {
         CONS_Printf ("No More free memory for savegame\n");
+        Z_Free(finalPath);
         return;
     }
 
@@ -2092,8 +2105,9 @@ void G_DoSaveGame (int   savegameslot, char* savedescription)
     length = save_p - savebuffer;
     if (length > SAVEGAMESIZE)
         I_Error ("Savegame buffer overrun");
-    FIL_WriteFile (name, savebuffer, length);
+    FIL_WriteFile (finalPath, savebuffer, length);
     free(savebuffer);
+    Z_Free(finalPath);
 
     gameaction = ga_nothing;
 

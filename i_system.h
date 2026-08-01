@@ -155,6 +155,7 @@ void I_GetDiskFreeSpace(INT64 *freespace);
 char *I_GetUserName(void);
 int  I_mkdir(const char *dirname, int unixright);
 const char* I_GetConfigDir(void);
+const char* I_GetSaveGameDir(void);
 
 #ifdef LINUX
 void I_LocateWad(void);

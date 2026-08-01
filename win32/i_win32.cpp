@@ -2,6 +2,10 @@
 #include "i_win32.h"
 #include <ShlObj.h>
 #include <KnownFolders.h>
+#include <string>
+#include <filesystem>
+
+#define GAMEDIR L"\\Doom Legacy Neo"
 
 const char* I_CPPGetConfigDir(void)
 {
@@ -15,26 +19,62 @@ const char* I_CPPGetConfigDir(void)
     {
         return NULL;
     }
+    std::wstring testPath = std::wstring(pwszPath) + GAMEDIR;
+    CoTaskMemFree(pwszPath);
 
-	// Convert the wide-character string to a narrow-character string.
-    size_t pathSize = wcstombs(NULL, pwszPath, 0) + strlen("\\Doom Legacy Neo") + 1; // Get the required size for the narrow string
-    pszPath = (char*)malloc(pathSize);
-    if (pszPath)
+    if (GetFileAttributesW(testPath.c_str()) == INVALID_FILE_ATTRIBUTES)
     {
-        wcstombs(pszPath, pwszPath, pathSize); // Convert the wide string to a narrow string
-		strcat(pszPath, "\\Doom Legacy Neo");
-
-		// Make sure the directory exists, create it if it doesn't
-        if (GetFileAttributesA(pszPath) == INVALID_FILE_ATTRIBUTES)
+        if(!std::filesystem::create_directories(testPath))  // Create the directory if it doesn't exist
         {
-            if (!CreateDirectoryA(pszPath, NULL))
-            {
-                free(pszPath);
-                pszPath = NULL;
-            }
+            return NULL;
         }
     }
-    CoTaskMemFree(pwszPath); // Free the memory allocated by SHGetKnownFolderPath
+
+    // Convert the wide-character string to a narrow-character string.
+    size_t pathSize = wcstombs(NULL, testPath.c_str(), 0) + 1; // Get the required size for the narrow string
+    pszPath = (char*)malloc(pathSize);
+    if (!pszPath)
+    {
+        return NULL;
+    }
+    wcstombs(pszPath, testPath.c_str(), pathSize); // Convert the wide string to a narrow string
 	return pszPath;
+}
+
+const char* I_CPPGetSaveGameDir(void)
+{
+    static char* pszPath = NULL;
+    if (pszPath != NULL)
+    {
+        return pszPath;
+    }
+
+    // Try to check OneDrive first
+    PWSTR pwszPath = NULL;
+    if (!SUCCEEDED(SHGetKnownFolderPath(FOLDERID_OneDrive, 0, NULL, &pwszPath)))
+    {
+        return I_CPPGetConfigDir();
+    }
+    std::wstring testPath = std::wstring(pwszPath) + L"\\Saved Games" GAMEDIR;
+    CoTaskMemFree(pwszPath);
+
+    if (GetFileAttributesW(testPath.c_str()) == INVALID_FILE_ATTRIBUTES)
+    {
+        if (!std::filesystem::create_directories(testPath))  // Create the directory if it doesn't exist
+        {
+            return I_CPPGetConfigDir();
+        }
+    }
+
+    // Convert the wide-character string to a narrow-character string.
+    size_t pathSize = wcstombs(NULL, testPath.c_str(), 0) + 1; // Get the required size for the narrow string
+    pszPath = (char*)malloc(pathSize);
+    if (!pszPath)
+    {
+        return I_CPPGetConfigDir();
+    }
+
+    wcstombs(pszPath, testPath.c_str(), pathSize); // Convert the wide string to a narrow string
+    return pszPath;
 }
 #endif
