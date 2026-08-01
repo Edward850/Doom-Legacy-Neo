@@ -735,7 +735,7 @@ void I_LocateWad(void) {
 #endif
 
 // quick fix for compil
-ULONG I_GetFreeMem(ULONG *total)
+size_t I_GetFreeMem(size_t* total)
 {
 #ifdef LINUX
     /* LINUX covers all the unix OS's.
@@ -822,6 +822,9 @@ ULONG I_GetFreeMem(ULONG *total)
 #else
     /*  Not Linux.
      */
-    return 128<<20;
+    // SDL_GetSystemRAM returns MiB; I_GetFreeMem expects bytes.
+    Uint64 totalBytes64 = (Uint64)SDL_GetSystemRAM() * 1024ULL * 1024ULL;
+    *total = (size_t)totalBytes64;
+    return 0;
 #endif /* LINUX */
 }

@@ -368,6 +368,17 @@ void I_StopSound(int handle)
     }
 }
 
+void I_StopAllSounds(void)
+{
+    int i;
+    for (i = 0; i < NUM_CHANNELS; i++)
+    {
+        alSourceStop(channels[i].source);
+        channels[i].gametic = 0;
+        channels[i].origin_p = NULL;
+    }
+}
+
 int I_SoundIsPlaying(int handle)
 {
     int i;

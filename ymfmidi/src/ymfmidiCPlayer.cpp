@@ -10,6 +10,10 @@ static int m_threadSampleIndex = 0;
 static std::atomic<int> m_sampleCountNeeded;
 static std::atomic<int> m_sampleCountReady;
 static std::atomic<bool> m_threadTerminate;
+static int m_underrun;
+static int m_samplePosition;
+static int m_numChips;
+static int m_chipType;
 
 // ---------------------------------------------------------------------------------
 //
@@ -26,10 +30,14 @@ void YMFMIDI_Init(int numChips, int chipType)
 		m_pPlayer = nullptr;
     }
 
+	m_numChips = numChips;
+    m_chipType = chipType;
 	m_threadSamples.clear();
     m_sampleCountNeeded = 0;
 	m_sampleCountReady = 0;
     m_threadSampleIndex = 0;
+    m_underrun = -1;
+    m_samplePosition = 0;
 
     OPLPlayer::ChipType ymfmChipType;
     if(chipType == 1)
@@ -234,10 +242,28 @@ void YMFMIDI_Generate16(signed short* data, unsigned int numSamples)
 		memcpy(data, m_threadSamples[m_threadSampleIndex].data(), m_threadSamples[m_threadSampleIndex].size() * 2);
         m_sampleCountReady--;
         m_threadSampleIndex++;
+		m_samplePosition += numSamples;
 		if (m_threadSampleIndex >= m_threadSamples.size())
         {
             m_threadSampleIndex = 0;
         }
+        m_underrun--;
+        if (m_underrun < 0)
+        {
+            m_underrun = 0;
+        }
+    }
+	else if (m_underrun >= 0)
+    {
+        m_underrun++;
+        if(m_underrun > 10)
+        {
+            m_threadTerminate = true;
+            m_thread->join();
+            m_threadTerminate = false;
+			delete m_thread;
+            m_thread = nullptr;
+		}
     }
 
     if (m_pPlayer)
@@ -245,6 +271,7 @@ void YMFMIDI_Generate16(signed short* data, unsigned int numSamples)
         if(!m_thread)
         {
             m_sampleCountNeeded = 10;
+            m_underrun = -1;
 			m_thread = new std::thread(YMFMIDI_Generate16Thread, numSamples);
 		}
     }

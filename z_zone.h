@@ -114,7 +114,7 @@ char *Z_Strdup(const char *s, int tag, void **user);
 
 typedef struct memblock_s
 {
-    int                 size;   // including the header and possibly tiny fragments
+    size_t              size;   // including the header and possibly tiny fragments
     void**              user;   // NULL if a free block
     int                 tag;    // purgelevel
     int                 id;     // should be ZONEID

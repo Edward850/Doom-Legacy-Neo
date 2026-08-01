@@ -1185,10 +1185,16 @@ void P_GroupLines (void)
         ss->sector = seg->sidedef->sector;
     }
 
+    // defensive: ensure clean counts before accumulating
+    for (i = 0, sector = sectors; i < numsectors; i++, sector++)
+    {
+        sector->linecount = 0;
+    }
+
     // count number of lines in each sector
     li = lines;
     total = 0;
-    for (i=0 ; i<numlines ; i++, li++)
+    for (i = 0; i < numlines; i++, li++)
     {
         total++;
         li->frontsector->linecount++;
@@ -1201,7 +1207,8 @@ void P_GroupLines (void)
     }
 
     // build line tables for each sector
-    linebuffer = Z_Malloc (total*4, PU_LEVEL, 0);
+    // [Edward] More 64bit fixes.
+    linebuffer = Z_Malloc((int)((size_t)total * sizeof(*linebuffer)), PU_LEVEL, 0);
     sector = sectors;
     for (i=0 ; i<numsectors ; i++, sector++)
     {
@@ -1381,17 +1388,7 @@ boolean P_SetupLevel (int           episode,
 
     // Make sure all sounds are stopped before Z_FreeTags.
     S_StopSounds();
-
-
-#if 0 // UNUSED
-    if (debugfile)
-    {
-        Z_FreeTags (PU_LEVEL, MAXINT);
-        Z_FileDumpHeap (debugfile);
-    }
-    else
-#endif
-        Z_FreeTags (PU_LEVEL, PU_PURGELEVEL-1);
+    Z_FreeTags (PU_LEVEL, PU_PURGELEVEL-1);
 
 #ifdef WALLSPLATS
     // clear the splats from previous level

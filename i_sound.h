@@ -90,6 +90,9 @@ int I_StartSound ( int           id,
 // Stops a sound channel.
 void I_StopSound(int handle);
 
+// Stop and release all sound channels.
+void I_StopAllSounds(void);
+
 // Called by S_*() functions
 //  to see if a channel is still playing.
 // Returns 0 if no longer playing, 1 if playing.

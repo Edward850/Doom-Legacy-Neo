@@ -460,7 +460,6 @@ void R_Render2sidedMultiPatchColumn(column_t* column)
     }
 }
 
-
 void R_RenderMaskedSegRange(drawseg_t* ds,
     int        x1,
     int        x2)

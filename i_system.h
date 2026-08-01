@@ -78,7 +78,7 @@ extern BOOL   bDX0300;
 void I_InitJoystick (void);
 
 // return free and total physical memory in the system
-ULONG I_GetFreeMem(ULONG *total);
+size_t I_GetFreeMem(size_t* total);
 
 // Called by D_DoomLoop,
 // returns current time in tics.

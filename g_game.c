@@ -2063,7 +2063,7 @@ void G_SaveGame ( int   slot, char* description )
 void G_DoSaveGame (int   savegameslot, char* savedescription)
 {
     char        name2[VERSIONSIZE];
-    char        description[SAVESTRINGSIZE];
+    char        description[SAVESTRINGSIZE + 1];
     int         length;
     char        name[256];
 
@@ -2081,7 +2081,7 @@ void G_DoSaveGame (int   savegameslot, char* savedescription)
     }
 
     strcpy(description,savedescription);
-    description[SAVESTRINGSIZE]=0;
+    description[SAVESTRINGSIZE] = 0;
     WRITEMEM(save_p, description, SAVESTRINGSIZE);
     memset (name2,0,sizeof(name2));
     sprintf (name2,"version %i",VERSION);

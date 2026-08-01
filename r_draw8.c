@@ -174,7 +174,7 @@ void R_DrawColumn_8(void)
 // SoM: Experiment to make software go faster. Taken from the Boom source
 void R_DrawColumn_8(void)
 {
-    int count, ccount;
+    int count;
     register byte *dest;
     register fixed_t frac;
     fixed_t fracstep;
@@ -183,8 +183,6 @@ void R_DrawColumn_8(void)
 
     if (count <= 0)     // Zero length, column does not exceed a pixel.
         return;
-
-    ccount = count;
 
 #ifdef RANGECHECK
     if ((unsigned) dc_x >= vid.width || dc_yl < 0 || dc_yh >= vid.height)

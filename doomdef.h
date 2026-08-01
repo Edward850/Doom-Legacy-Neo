@@ -158,8 +158,6 @@
 
 #ifdef __WIN32__
 #define HWRENDER
-// judgecutor: 3D sound support
-#define HW3SOUND
 #define ASMCALL __cdecl
 #pragma warning (disable :  4244 4146 4761 4152 4115 4100 4201 4200) // 4244 4146 4761 4018
 // warning C4146: unary minus operator applied to unsigned type, result still unsigned

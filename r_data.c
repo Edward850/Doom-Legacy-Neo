@@ -479,6 +479,7 @@ void R_LoadTextures (void)
 
     int                 i;
     int                 j;
+    int                 patchnum;
 
     int*                maptex;
     int*                maptex2;
@@ -497,6 +498,8 @@ void R_LoadTextures (void)
     int                 numtextures2;
 
     int*                directory;
+    size_t              tablebytes;
+    byte*               tablebase;
 
 
     // free previous memory before numtextures change
@@ -551,12 +554,21 @@ void R_LoadTextures (void)
     if (textures)
         Z_Free (textures);
 
-    textures         = Z_Malloc (numtextures*4*5, PU_STATIC, 0);
+    // [Edward] 64 bit fixes.
+    tablebytes =
+        (size_t)numtextures * sizeof(*textures) +
+        (size_t)numtextures * sizeof(*texturecolumnofs) +
+        (size_t)numtextures * sizeof(*texturecache) +
+        (size_t)numtextures * sizeof(*texturewidthmask) +
+        (size_t)numtextures * sizeof(*textureheight);
 
-    texturecolumnofs = (void*)((int*)textures + numtextures);
-    texturecache     = (void*)((int*)textures + numtextures*2);
-    texturewidthmask = (void*)((int*)textures + numtextures*3);
-    textureheight    = (void*)((int*)textures + numtextures*4);
+    textures = Z_Malloc((int)tablebytes, PU_STATIC, 0);
+
+    tablebase = (byte*)textures;
+    texturecolumnofs = (unsigned int**)(tablebase + (size_t)numtextures * sizeof(*textures));
+    texturecache     = (byte**)((byte*)texturecolumnofs + (size_t)numtextures * sizeof(*texturecolumnofs));
+    texturewidthmask = (int*)((byte*)texturecache + (size_t)numtextures * sizeof(*texturecache));
+    textureheight    = (fixed_t*)((byte*)texturewidthmask + (size_t)numtextures * sizeof(*texturewidthmask));
 
     for (i=0 ; i<numtextures ; i++, directory++)
     {
@@ -597,16 +609,18 @@ void R_LoadTextures (void)
         mpatch = &mtexture->patches[0];
         patch = &texture->patches[0];
 
-        for (j=0 ; j<texture->patchcount ; j++, mpatch++, patch++)
+        for (j = 0; j < texture->patchcount; j++, mpatch++, patch++)
         {
             patch->originx = SHORT(mpatch->originx);
             patch->originy = SHORT(mpatch->originy);
-            patch->patch = patchlookup[SHORT(mpatch->patch)];
+
+            patchnum = SHORT(mpatch->patch);
+            if ((unsigned)patchnum >= (unsigned)nummappatches)
+                I_Error("R_LoadTextures: bad patch index %d in texture %.8s", patchnum, texture->name);
+
+            patch->patch = patchlookup[patchnum];
             if (patch->patch == -1)
-            {
-                I_Error ("R_InitTextures: Missing patch in texture %s",
-                         texture->name);
-            }
+                I_Error("R_InitTextures: Missing patch in texture %s", texture->name);
         }
 
         j = 1;
@@ -624,16 +638,16 @@ void R_LoadTextures (void)
 
     //added:01-04-98: this takes 90% of texture loading time..
     // Precalculate whatever possible.
-    for (i=0 ; i<numtextures ; i++)
+    for (i = 0; i < numtextures; i++)
         texturecache[i] = NULL;
 
     // Create translation table for global animation.
     if (texturetranslation)
-        Z_Free (texturetranslation);
+        Z_Free(texturetranslation);
 
-    texturetranslation = Z_Malloc ((numtextures+1)*4, PU_STATIC, 0);
+    texturetranslation = Z_Malloc((numtextures + 1) * sizeof(*texturetranslation), PU_STATIC, 0);
 
-    for (i=0 ; i<numtextures ; i++)
+    for (i = 0; i < numtextures; i++)
         texturetranslation[i] = i;
 }
 

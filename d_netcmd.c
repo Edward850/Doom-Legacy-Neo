@@ -1051,7 +1051,7 @@ void Command_Save_f(void)
 void Got_SaveGamecmd(char **cp, int playernum)
 {
     byte slot;
-    char description[SAVESTRINGSIZE];
+    char description[SAVESTRINGSIZE + 1];
 
     slot = *(*cp)++;
     strcpy(description, *cp);

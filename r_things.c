@@ -646,8 +646,14 @@ void R_DrawMaskedColumn(column_t* column)
     int         topscreen;
     int         bottomscreen;
     fixed_t     basetexturemid;
+    int         saved_texheight;
 
     basetexturemid = dc_texturemid;
+
+    // Packed post renderer: source is a post, not a full texture column.
+    // Disable texture-height wrapping logic in R_DrawColumn_8 for this path.
+    saved_texheight = dc_texheight;
+    dc_texheight = 0;
 
     for (; column->topdelta != 0xff; )
     {
@@ -677,11 +683,7 @@ void R_DrawMaskedColumn(column_t* column)
         {
             dc_source = (byte*)column + 3;
             dc_texturemid = basetexturemid - (column->topdelta << FRACBITS);
-            // dc_source = (byte *)column + 3 - column->topdelta;
 
-            // Drawn by either R_DrawColumn
-            //  or (SHADOW) R_DrawFuzzColumn.
-            //Hurdler: quick fix... something more proper should be done!!!
             if (!ylookup[dc_yl] && colfunc == R_DrawColumn_8)
             {
                 static int first = 1;
@@ -698,6 +700,7 @@ void R_DrawMaskedColumn(column_t* column)
     }
 
     dc_texturemid = basetexturemid;
+    dc_texheight = saved_texheight;
 }
 
 

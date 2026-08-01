@@ -82,12 +82,12 @@ typedef struct
 //
 typedef struct
 {
-    char                name[8];
-    boolean             masked;
-    short               width;
-    short               height;
-    void                **columndirectory;      // OBSOLETE
-    short               patchcount;
+    char        name[8];
+    boolean     masked;
+    short       width;
+    short       height;
+    int         columndirectory;  // on-disk 4-byte obsolete field (NOT a pointer)
+    short       patchcount;
     mappatch_t  patches[1];
 } maptexture_t;
 

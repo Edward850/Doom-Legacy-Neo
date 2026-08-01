@@ -1,5 +1,4 @@
-#ifndef YMFMIDICPLAYER_H
-#define YMFMIDICPLAYER_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,5 +20,4 @@ extern "C" {
 	void YMFMIDI_Generate16(signed short* data, unsigned int numSamples);
 #ifdef __cplusplus
 }
-#endif
 #endif
