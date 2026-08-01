@@ -29,6 +29,7 @@
     <ClInclude Include="..\command.h" />
     <ClInclude Include="..\console.h" />
     <ClInclude Include="..\crtfunc.h" />
+    <ClInclude Include="..\crypto-algorithms\sha256.h" />
     <ClInclude Include="..\dehacked.h" />
     <ClInclude Include="..\doomdata.h" />
     <ClInclude Include="..\doomdef.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="..\t_spec.h" />
     <ClInclude Include="..\t_vari.h" />
     <ClInclude Include="..\v_video.h" />
+    <ClInclude Include="..\win32\i_win32.h" />
     <ClInclude Include="..\wi_stuff.h" />
     <ClInclude Include="..\w_wad.h" />
     <ClInclude Include="..\z_zone.h" />
@@ -142,6 +144,7 @@
     <ClCompile Include="..\command.c" />
     <ClCompile Include="..\console.c" />
     <ClCompile Include="..\crtfunc.c" />
+    <ClCompile Include="..\crypto-algorithms\sha256.c" />
     <ClCompile Include="..\dehacked.c" />
     <ClCompile Include="..\dstrings.c" />
     <ClCompile Include="..\d_clisrv.c" />
@@ -197,6 +200,7 @@
     <ClCompile Include="..\p_pspr.c" />
     <ClCompile Include="..\p_saveg.c" />
     <ClCompile Include="..\p_setup.c" />
+    <ClCompile Include="..\p_setuphash.c" />
     <ClCompile Include="..\p_sight.c" />
     <ClCompile Include="..\p_spec.c" />
     <ClCompile Include="..\p_switch.c" />
@@ -243,6 +247,7 @@
     <ClCompile Include="..\t_spec.c" />
     <ClCompile Include="..\t_vari.c" />
     <ClCompile Include="..\v_video.c" />
+    <ClCompile Include="..\win32\i_win32.cpp" />
     <ClCompile Include="..\wi_stuff.c" />
     <ClCompile Include="..\w_wad.c" />
     <ClCompile Include="..\z_zone.c" />

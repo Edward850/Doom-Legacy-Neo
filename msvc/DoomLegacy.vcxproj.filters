@@ -19,6 +19,9 @@
     <Filter Include="SDL">
       <UniqueIdentifier>{21720700-7fdd-4dbf-85ac-3919a582d6bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Hash">
+      <UniqueIdentifier>{d230ef06-ec09-433f-bbf5-1adb793b3734}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\t_vari.h">
@@ -360,6 +363,12 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\crypto-algorithms\sha256.h">
+      <Filter>Hash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\win32\i_win32.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\tables.c">
@@ -697,6 +706,15 @@
     </ClCompile>
     <ClCompile Include="..\sdl\searchp.c">
       <Filter>SDL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\crypto-algorithms\sha256.c">
+      <Filter>Hash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\p_setuphash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\win32\i_win32.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
