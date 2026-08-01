@@ -256,19 +256,18 @@ void R_DrawColumnInCache ( column_t*     patch,
 //   This is not optimised, but it's supposed to be executed only once
 //   per level, when enough memory is available.
 //
-byte* R_GenerateTexture (int texnum)
+byte* R_GenerateTexture(int texnum)
 {
-    byte*               block;
-    byte*               blocktex;
-    texture_t*          texture;
-    texpatch_t*         patch;
-    patch_t*            realpatch;
+    byte* block;
+    texture_t* texture;
+    texpatch_t* patch;
+    patch_t* realpatch;
     int                 x;
     int                 x1;
     int                 x2;
     int                 i;
-    column_t*           patchcol;
-    unsigned int*       colofs;
+    column_t* patchcol;
+    unsigned int* colofs;
     int                 blocksize;
 
     texture = textures[texnum];
@@ -277,31 +276,29 @@ byte* R_GenerateTexture (int texnum)
 
     // single-patch textures can have holes in it and may be used on
     // 2sided lines so they need to be kept in 'packed' format
-    if (texture->patchcount==1)
+    if (texture->patchcount == 1)
     {
         patch = texture->patches;
-        blocksize = W_LumpLength (patch->patch);
-#if 1
-        realpatch = W_CacheLumpNum (patch->patch, PU_CACHE);
+        blocksize = W_LumpLength(patch->patch);
+        realpatch = W_CacheLumpNum(patch->patch, PU_CACHE);
 
-        block = Z_Malloc (blocksize,
-                          PU_STATIC,         // will change tag at end of this function
-                          &texturecache[texnum]);
-        memcpy (block, realpatch, blocksize);
-#else
-        // FIXME: this version don't put the user z_block
-        texturecache[texnum] = block = W_CacheLumpNum (patch->patch, PU_STATIC);
-#endif
+        block = Z_Malloc(blocksize,
+            PU_STATIC,         // will change tag at end of this function
+            &texturecache[texnum]);
+        memcpy(block, realpatch, blocksize);
+
         //CONS_Printf ("R_GenTex SINGLE %.8s size: %d\n",texture->name,blocksize);
-        texturememory+=blocksize;
+        texturememory += blocksize;
 
         // use the patch's column lookup
         colofs = (unsigned int*)(block + 8);
         texturecolumnofs[texnum] = colofs;
-                blocktex = block;
-        for (i=0; i<texture->width; i++)
-             colofs[i] = LONG(colofs[i]) + 3;
-        goto done;
+        for (i = 0; i < texture->width; i++)
+            colofs[i] = LONG(colofs[i]) + 3;
+
+        // IMPORTANT: keep cache base consistent with texturecolumnofs[] offsets
+        Z_ChangeTag(block, PU_CACHE);
+        return block;
     }
 
     //
@@ -310,31 +307,33 @@ byte* R_GenerateTexture (int texnum)
     blocksize = (texture->width * 4) + (texture->width * texture->height);
 
     //CONS_Printf ("R_GenTex MULTI  %.8s size: %d\n",texture->name,blocksize);
-    texturememory+=blocksize;
+    texturememory += blocksize;
 
-    block = Z_Malloc (blocksize,
-                      PU_STATIC,
-                      &texturecache[texnum]);
+    block = Z_Malloc(blocksize,
+        PU_STATIC,
+        &texturecache[texnum]);
 
     // columns lookup table
     colofs = (unsigned int*)block;
     texturecolumnofs[texnum] = colofs;
 
-    // texture data before the lookup table
-    blocktex = block + (texture->width*4);
+    // initialize each column offset to its linear cache column
+    for (x = 0; x < texture->width; x++)
+        colofs[x] = (x * texture->height) + (texture->width * 4);
+
+    // texture data after the lookup table
+    memset(block + (texture->width * 4), 0, texture->width * texture->height);
 
     // Composite the columns together.
-    patch = texture->patches;
-
-    for (i=0 , patch = texture->patches;
-         i<texture->patchcount;
-         i++, patch++)
+    for (i = 0, patch = texture->patches;
+        i < texture->patchcount;
+        i++, patch++)
     {
-        realpatch = W_CacheLumpNum (patch->patch, PU_CACHE);
+        realpatch = W_CacheLumpNum(patch->patch, PU_CACHE);
         x1 = patch->originx;
         x2 = x1 + SHORT(realpatch->width);
 
-        if (x1<0)
+        if (x1 < 0)
             x = 0;
         else
             x = x1;
@@ -342,27 +341,24 @@ byte* R_GenerateTexture (int texnum)
         if (x2 > texture->width)
             x2 = texture->width;
 
-        for ( ; x<x2 ; x++)
+        for (; x < x2; x++)
         {
-            patchcol = (column_t *)((byte *)realpatch
-                                    + LONG(realpatch->columnofs[x-x1]));
+            patchcol = (column_t*)((byte*)realpatch
+                + LONG(realpatch->columnofs[x - x1]));
 
-            // generate column ofset lookup
-            colofs[x] = (x * texture->height) + (texture->width*4);
-
-            R_DrawColumnInCache (patchcol,
-                                 block + colofs[x],
-                                 patch->originy,
-                                 texture->height);
+            R_DrawColumnInCache(patchcol,
+                block + colofs[x],
+                patch->originy,
+                texture->height);
         }
     }
 
-done:
     // Now that the texture has been built in column cache,
     //  it is purgable from zone memory.
-    Z_ChangeTag (block, PU_CACHE);
+    Z_ChangeTag(block, PU_CACHE);
 
-    return blocktex;
+    // IMPORTANT: keep cache base consistent with texturecolumnofs[] offsets
+    return block;
 }
 
 
