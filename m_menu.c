@@ -3279,7 +3279,7 @@ boolean M_Responder (event_t* ev)
         return false;
     }
 
-    routine = currentMenu->menuitems[itemOn].itemaction;
+    routine = (void (*)(int))currentMenu->menuitems[itemOn].itemaction;
 
     //added:30-01-98:
     // Handle menuitems which need a specific key handling
@@ -3295,7 +3295,8 @@ boolean M_Responder (event_t* ev)
         {
             if(ch == ' ' || ch == 'n' || ch == 'y' || ch == KEY_ESCAPE)
             {
-                if(routine) routine(ch);
+                if(routine)
+                    routine(ch);
                 M_StopMessage(0);
                 return true;
             }
@@ -3307,13 +3308,14 @@ boolean M_Responder (event_t* ev)
             //      buttons/keys, not moves
             if (ev->type==ev_mouse || ev->type==ev_joystick )
                 return true;
-            if(routine) routine((int)ev);
+            if(routine == M_ChangecontrolResponse)
+                M_ChangecontrolResponse(ev);
             return true;
         }
     }
 
     // BP: one of the more big hack i have never made
-    if( routine && (currentMenu->menuitems[itemOn].status & IT_TYPE) == IT_CVAR )
+    if(routine && (currentMenu->menuitems[itemOn].status & IT_TYPE) == IT_CVAR )
     {
         if( (currentMenu->menuitems[itemOn].status & IT_CVARTYPE) == IT_CV_STRING )
         {
@@ -3323,7 +3325,7 @@ boolean M_Responder (event_t* ev)
                 routine = NULL;
         }
         else
-            routine=M_ChangeCvar;
+            routine = M_ChangeCvar;
     }
     // Keys usable within menu
     switch (ch)
@@ -3349,7 +3351,7 @@ boolean M_Responder (event_t* ev)
         return true;
 
       case KEY_LEFTARROW:
-        if (  routine &&
+        if (routine &&
             ( (currentMenu->menuitems[itemOn].status & IT_TYPE) == IT_ARROWS
             ||(currentMenu->menuitems[itemOn].status & IT_TYPE) == IT_CVAR   ))
         {
