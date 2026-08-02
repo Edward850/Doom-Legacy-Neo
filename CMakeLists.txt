@@ -16,6 +16,15 @@ find_package(SDL3 CONFIG REQUIRED)
 find_package(OpenAL CONFIG REQUIRED)
 find_package(Threads REQUIRED)
 
+# --- Windows-specific resource files ---
+set(WIN_RESOURCE_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.ico"
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets/default.manifest"
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets/resources.rc"
+)
+
+# --- doomlegacy source files ---
+
 file(GLOB DOOM_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
@@ -54,7 +63,7 @@ target_compile_features(ymfmidi PUBLIC cxx_std_14)
 
 # --- doomlegacy includes and linking ---
 
-add_executable(doomlegacy ${DOOM_SOURCES})
+add_executable(doomlegacy ${DOOM_SOURCES} ${WIN_RESOURCE_FILES})
 
 target_include_directories(doomlegacy PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
