@@ -18,7 +18,7 @@ jobs:
   build-and-release:
     name: Build (${{ matrix.os_name }})
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       fail-fast: false
       matrix:
@@ -27,7 +27,7 @@ jobs:
             os_name: Windows
             triplet: x64-windows
             archive_name: doom-legacy-neo-windows-x64.zip
-            binary_dir: build/Release/*
+            runtime_dir: build/bin/Release
           #- os: ubuntu-latest
           #  os_name: Linux
           #  triplet: x64-linux
@@ -66,14 +66,18 @@ jobs:
       shell: bash
 
     - name: Build Project
-      run: |
-        cmake --build build --config Release
+      run: cmake --build build --config Release
 
     - name: Package Windows Artifacts
       if: matrix.os == 'windows-latest'
       shell: powershell
       run: |
-        Compress-Archive -Path ${{ matrix.binary_dir }} -DestinationPath ${{ matrix.archive_name }}
+        New-Item -ItemType Directory -Force staging | Out-Null
+        Copy-Item "${{ matrix.runtime_dir }}\doomlegacy.exe" staging\
+        Copy-Item "${{ matrix.runtime_dir }}\*.dll" staging\
+        Copy-Item "${{ matrix.runtime_dir }}\legacy.wad" staging\
+        Copy-Item "${{ matrix.runtime_dir }}\legacy.dat" staging\
+        Compress-Archive -Path staging\* -DestinationPath ${{ matrix.archive_name }}
 
     - name: Package Linux Artifacts
       if: matrix.os == 'ubuntu-latest'
