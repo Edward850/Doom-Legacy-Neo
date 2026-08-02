@@ -4,7 +4,12 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch: # Test workflows
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag to publish (e.g. v1.2.3)'
+        required: false
+        type: string
 
 jobs:
   build-and-release:
@@ -28,6 +33,7 @@ jobs:
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
+      VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg_cache,readwrite'
 
     steps:
     - name: Checkout Code
@@ -44,12 +50,10 @@ jobs:
     - name: Set up GitHub Actions Cache for vcpkg
       uses: actions/cache@v5
       with:
-        path: |
-          ~/.cache/vcpkg
-          ${{ github.workspace }}/build/vcpkg_installed
-        key: ${{ matrix.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+        path: ${{ github.workspace }}/vcpkg_cache
+        key: ${{ matrix.os }}-vcpkg-binaries-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
         restore-keys: |
-          ${{ matrix.os }}-vcpkg-
+          ${{ matrix.os }}-vcpkg-binaries-
 
     - name: Configure CMake
       run: |
@@ -75,8 +79,10 @@ jobs:
         tar -czvf ${{ matrix.archive_name }} -C build .
 
     - name: Upload Binary to GitHub Release
+      if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.release_tag != ''
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ github.event.inputs.release_tag || github.ref_name }}
         files: ${{ matrix.archive_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
