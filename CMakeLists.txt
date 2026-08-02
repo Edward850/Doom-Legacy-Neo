@@ -65,6 +65,14 @@ target_compile_features(ymfmidi PUBLIC cxx_std_14)
 
 add_executable(doomlegacy ${DOOM_SOURCES} ${WIN_RESOURCE_FILES})
 
+add_custom_command(TARGET doomlegacy POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets/legacy.dat"
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets/legacy.wad"
+        "$<TARGET_FILE_DIR:doomlegacy>"
+    COMMENT "Copying core game assets to build directory..."
+)
+
 target_include_directories(doomlegacy PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/sdl"
