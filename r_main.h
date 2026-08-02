@@ -73,6 +73,7 @@ extern int      centerypsp;
 
 extern fixed_t          centerxfrac;
 extern fixed_t          centeryfrac;
+extern fixed_t          centerxfrac_nonwide;
 extern fixed_t          projection;
 extern fixed_t          projectiony;    //added:02-02-98:aspect ratio test...
 

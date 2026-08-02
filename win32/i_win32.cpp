@@ -5,7 +5,7 @@
 #include <string>
 #include <filesystem>
 
-#define GAMEDIR L"\\Doom Legacy Neo"
+constexpr wchar_t GAMEDIR[] = L"\\Doom Legacy Neo";
 
 const char* I_CPPGetConfigDir(void)
 {
@@ -55,7 +55,7 @@ const char* I_CPPGetSaveGameDir(void)
     {
         return I_CPPGetConfigDir();
     }
-    std::wstring testPath = std::wstring(pwszPath) + L"\\Saved Games" GAMEDIR;
+    std::wstring testPath = std::wstring(pwszPath) + L"\\Saved Games" + GAMEDIR;
     CoTaskMemFree(pwszPath);
 
     if (GetFileAttributesW(testPath.c_str()) == INVALID_FILE_ATTRIBUTES)

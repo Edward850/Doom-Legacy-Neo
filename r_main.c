@@ -698,8 +698,9 @@ void R_InitTextureMapping (void)
     //
     // Calc focallength
     //  so FIELDOFVIEW angles covers SCREENWIDTH.
-    focallength = FixedDiv (centerxfrac,
-                            finetangent[FINEANGLES/4+/*cv_fov.value*/ FIELDOFVIEW/2] );
+    // Use non-wide center so widescreen expands horizontally (Hor+)
+    focallength = FixedDiv(centerxfrac_nonwide,
+        finetangent[FINEANGLES / 4 + FIELDOFVIEW / 2]);
 
 
     for (i=0 ; i<FINEANGLES/2 ; i++)
@@ -874,21 +875,21 @@ void R_ExecuteSetViewSize (void)
     detailshift = setdetail;
     viewwidth = scaledviewwidth>>detailshift;
 
-    // Adjust aspect ratio of the view to match 4:3
+    // Adjust aspect ratio of the view to match 4:3. Doom's original aspect ratio was 16:10, but the pixels were 20% taller (not square), so this is necesseary to maintain the arts intended look.
     double origAspect = 1.3333333333333333;
     double scaledWidth = origAspect * (double)vid.height;
     int viewwidth_nonwide = (int)scaledWidth;
+    int centerx_nonwide = viewwidth_nonwide / 2;
 
-    centery = viewheight/2;
-    centerx = viewwidth/2;
-    centerxfrac = centerx<<FRACBITS;
-    centeryfrac = centery<<FRACBITS;
-    centerxfrac_nonwide = (viewwidth_nonwide << FRACBITS) / 2;
+    centery = viewheight / 2;
+    centerx = viewwidth / 2;
+    centerxfrac = centerx << FRACBITS;
+    centeryfrac = centery << FRACBITS;
+    centerxfrac_nonwide = centerx_nonwide << FRACBITS;
 
-    //added:01-02-98:aspect ratio is now correct, added an 'projectiony'
-    //      since the scale is not always the same between horiz. & vert.
-    projection  = centerxfrac;
-    projectiony = (((vid.height*centerx*BASEVIDWIDTH)/BASEVIDHEIGHT)/viewwidth_nonwide)<<FRACBITS;
+    // Keep projection based on 4:3-equivalent width for Hor+ behavior
+    projection = centerxfrac_nonwide;
+    projectiony = (((vid.height * centerx_nonwide * BASEVIDWIDTH) / BASEVIDHEIGHT) / viewwidth_nonwide) << FRACBITS;
 
     //
     // no more low detail mode, it used to setup the right drawer routines
@@ -922,7 +923,7 @@ void R_ExecuteSetViewSize (void)
 
     // planes
     //added:02-02-98:now correct aspect ratio!
-    aspectx = (((vid.height * centerx * BASEVIDWIDTH) / BASEVIDHEIGHT) / viewwidth_nonwide);
+    aspectx = (((vid.height * centerx_nonwide * BASEVIDWIDTH) / BASEVIDHEIGHT) / viewwidth_nonwide);
 
     if ( rendermode == render_soft ) {
         // this is only used for planes rendering in software mode

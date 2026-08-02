@@ -391,9 +391,9 @@ void R_ClearPlanes (player_t *player)
     // left to right mapping
     angle = (viewangle-ANG90)>>ANGLETOFINESHIFT;
 
-    // scale will be unit scale at SCREENWIDTH/2 distance
-    basexscale = FixedDiv (finecosine[angle],centerxfrac);
-    baseyscale = -FixedDiv (finesine[angle],centerxfrac);
+    // Use non-wide center for Hor+ consistency with wall projection
+    basexscale = FixedDiv(finecosine[angle], centerxfrac_nonwide);
+    baseyscale = -FixedDiv(finesine[angle], centerxfrac_nonwide);
 }
 
 
@@ -927,15 +927,16 @@ void R_DrawSinglePlane(visplane_t* pl, boolean handlesource)
       light = (pl->lightlevel >> LIGHTSEGSHIFT)+extralight;
   }
 
-  if(viewangle != pl->viewangle)
+  if (viewangle != pl->viewangle)
   {
-    memset (cachedheight, 0, sizeof(cachedheight));
+      memset(cachedheight, 0, sizeof(cachedheight));
 
-    angle = (pl->viewangle-ANG90)>>ANGLETOFINESHIFT;
+      angle = (pl->viewangle - ANG90) >> ANGLETOFINESHIFT;
 
-    basexscale = FixedDiv (finecosine[angle],centerxfrac);
-    baseyscale = -FixedDiv (finesine[angle],centerxfrac);
-    viewangle = pl->viewangle;
+      // Use non-wide center for Hor+ consistency with wall projection
+      basexscale = FixedDiv(finecosine[angle], centerxfrac_nonwide);
+      baseyscale = -FixedDiv(finesine[angle], centerxfrac_nonwide);
+      viewangle = pl->viewangle;
   }
 
   currentplane = pl;
