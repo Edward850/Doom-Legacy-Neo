@@ -3,8 +3,8 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*' # Triggers the workflow only when you push a tag starting with 'v' (e.g., v1.0.0)
-  workflow_dispatch: # Testing workflow
+      - 'v*'
+  workflow_dispatch: # Test workflows
 
 jobs:
   build-and-release:
@@ -33,7 +33,6 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # Setup essential C++ compilation dependencies on the Linux runner
     - name: Install Linux Build Tools
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -50,23 +49,17 @@ jobs:
         restore-keys: |
           ${{ matrix.os }}-vcpkg-
 
-    - name: Setup vcpkg
-      uses: microsoft/run-vcpkg@v11
-      with:
-        vcpkgDirectory: ${{ github.workspace }}/vcpkg
-
     - name: Configure CMake
       run: |
         cmake -B build -S . \
           -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
-      shell: bash # Explicitly use bash so the toolchain path slashes work across both systems
+          -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+      shell: bash
 
     - name: Build Project
       run: |
         cmake --build build --config Release
 
-    # Package files using native runners (PowerShell on Windows, Bash on Linux)
     - name: Package Windows Artifacts
       if: matrix.os == 'windows-latest'
       shell: powershell
@@ -79,7 +72,6 @@ jobs:
       run: |
         tar -czvf ${{ matrix.archive_name }} -C build .
 
-    # Both runners safely upload to the same release concurrently
     - name: Upload Binary to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
