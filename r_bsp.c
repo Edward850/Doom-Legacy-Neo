@@ -653,11 +653,11 @@ void R_AddLine (seg_t*  line)
 
 
   clippass:
-    R_ClipPassWallSegment (x1, x2-1);
+    R_ClipPassWallSegment (x1, x2);
     return;
 
   clipsolid:
-    R_ClipSolidWallSegment (x1, x2-1);
+    R_ClipSolidWallSegment (x1, x2);
 }
 
 

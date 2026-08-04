@@ -719,6 +719,8 @@ void R_InitTextureMapping (void)
             else if (t>viewwidth+1)
                 t = viewwidth+1;
         }
+
+        // viewangletox maps an angle to the screen columns.
         viewangletox[i] = t;
     }
 
