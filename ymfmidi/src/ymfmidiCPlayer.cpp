@@ -22,12 +22,15 @@ void YMFMIDI_Init(int numChips, int chipType)
     if (m_pPlayer)
     {
         m_threadTerminate = true;
-        m_thread->join();
+        if (m_thread)
+        {
+            m_thread->join();
+            delete m_thread;
+            m_thread = nullptr;
+        }
         m_threadTerminate = false;
-        delete m_thread;
-        m_thread = nullptr;
         delete m_pPlayer;
-		m_pPlayer = nullptr;
+        m_pPlayer = nullptr;
     }
 
 	m_numChips = numChips;
@@ -63,10 +66,13 @@ void YMFMIDI_Shutdown()
     if(m_pPlayer != nullptr)
     {
         m_threadTerminate = true;
-        m_thread->join();
+        if (m_thread)
+        {
+            m_thread->join();
+            delete m_thread;
+            m_thread = nullptr;
+        }
         m_threadTerminate = false;
-        delete m_thread;
-        m_thread = nullptr;
         delete m_pPlayer;
         m_pPlayer = nullptr;
     }
@@ -151,7 +157,12 @@ void YMFMIDI_Reset()
     if (m_pPlayer)
     {
         m_threadTerminate = true;
-        m_thread->join();
+        if (m_thread)
+        {
+            m_thread->join();
+            delete m_thread;
+            m_thread = nullptr;
+        }
         m_threadTerminate = false;
         delete m_thread;
         m_thread = nullptr;
@@ -259,10 +270,13 @@ void YMFMIDI_Generate16(signed short* data, unsigned int numSamples)
         if(m_underrun > 10)
         {
             m_threadTerminate = true;
-            m_thread->join();
+            if (m_thread)
+            {
+                m_thread->join();
+                delete m_thread;
+                m_thread = nullptr;
+            }
             m_threadTerminate = false;
-			delete m_thread;
-            m_thread = nullptr;
 		}
     }
 
