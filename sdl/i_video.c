@@ -121,14 +121,13 @@ boolean allow_fullscreen = false;
 event_t event;
 
 // SDL vars
-static SDL_Window* sdlWindow = NULL;
-static SDL_Texture* sdlTexture = NULL;
+static SDL_Window*   sdlWindow = NULL;
+static SDL_Texture*  sdlTexture = NULL;
 static SDL_Renderer* sdlRenderer = NULL;
-static SDL_Palette* sdlPalette = NULL;
-static SDL_Surface* sdlSurface[2] = { NULL, NULL };
-static       SDL_Color    localPalette[256];
-static       SDL_Rect** modeList = NULL;
-static       Uint8        BitsPerPixel;
+static SDL_Palette*  sdlPalette = NULL;
+static SDL_Color     localPalette[256];
+static SDL_Rect**    modeList = NULL;
+static Uint8         BitsPerPixel;
 
 //
 //  Translates the SDL key into Doom key
@@ -392,14 +391,15 @@ void I_FinishUpdate(void)
 {
     if (render_soft == rendermode)
     {
-        if (screens[0] != vid.direct)
+        byte* dest = screens[0];
+        if (dest != vid.direct)
         {
-            memcpy(vid.direct, screens[0], vid.width * vid.height * vid.bpp);
+            //memcpy(vid.direct, screens[0], vid.width * vid.height * vid.bpp);
             //screens[0] = vid.direct;
+            dest = vid.direct;
         }
         SDL_RenderClear(sdlRenderer);
-        SDL_BlitSurface(sdlSurface[0], NULL, sdlSurface[1], NULL);
-        SDL_UpdateTexture(sdlTexture, NULL, sdlSurface[1]->pixels, sdlSurface[1]->pitch);
+        SDL_UpdateTexture(sdlTexture, NULL, dest, vid.width);
 
 		int screenW, screenH;
         SDL_GetWindowSize(sdlWindow, &screenW, &screenH);
@@ -455,9 +455,9 @@ void I_SetPalette(RGBA_t* palette)
     }
 
     SDL_SetPaletteColors(sdlPalette, localPalette, 0, 256);
-    if (!SDL_SetSurfacePalette(sdlSurface[0], sdlPalette))
+    if (!SDL_SetTexturePalette(sdlTexture, sdlPalette))
     {
-        CONS_Printf("SDL_SetSurfacePalette failed: %s\n", SDL_GetError());
+        CONS_Printf("SDL_SetTexturePalette failed: %s\n", SDL_GetError());
     }
 
     return;
@@ -526,10 +526,8 @@ int VID_SetMode(int modeNum)
     SDL_SetWindowSize(sdlWindow, vid.width, vid.height);
     SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
-    if (sdlSurface[0])
+    if (sdlTexture)
     {
-        SDL_DestroySurface(sdlSurface[0]);
-        SDL_DestroySurface(sdlSurface[1]);
         SDL_DestroyTexture(sdlTexture);
         free(vid.buffer);
     }
@@ -545,11 +543,8 @@ int VID_SetMode(int modeNum)
 
     //added:26-01-98: statusbar buffer
     screens[4] = vid.buffer + NUMSCREENS * screensize;
-    SDL_PixelFormat format = SDL_GetWindowPixelFormat(sdlWindow);
-    sdlSurface[0] = SDL_CreateSurface(vid.width, vid.height, SDL_PIXELFORMAT_INDEX8);
-    sdlSurface[1] = SDL_CreateSurface(vid.width, vid.height, format);
-    vid.direct = sdlSurface[0]->pixels;
-    sdlTexture = SDL_CreateTexture(sdlRenderer, format, SDL_TEXTUREACCESS_STREAMING, vid.width, vid.height);
+    vid.direct = screens[0];
+    sdlTexture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_INDEX8, SDL_TEXTUREACCESS_STREAMING, vid.width, vid.height);
 
     I_StartupMouse();
     return 1;
