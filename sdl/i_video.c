@@ -612,51 +612,7 @@ void I_StartupGraphics(void)
 	vidModeName = malloc(sizeof(char*) * numVidModes);
 	memset(vidModeName, 0, sizeof(char*) * numVidModes);
 
-    BitsPerPixel = 8;
-
-    SDL_CreateWindowAndRenderer("Doom Legacy Neo", 0, 0, cv_fullscreen.value ? SDL_WINDOW_FULLSCREEN : 0, &sdlWindow, &sdlRenderer);
-    VID_SetMode(numVidModes-1);
-
-    sdlPalette = SDL_CreatePalette(256);
-
 #if 0
-    // Get video info for screen resolutions
-    //videoInfo = SDL_GetVideoInfo();
-    // even if I set vid.bpp and highscreen properly it does seem to
-    // support only 8 bit  ...  strange
-    // so lets force 8 bit
-    BitsPerPixel = 8;
-
-    // Set color depth; either 1=256pseudocolor or 2=hicolor
-    vid.bpp = 1 /*videoInfo->vfmt->BytesPerPixel*/;
-    highcolor = (vid.bpp == 2) ? true : false;
-
-    modeList = SDL_ListModes(NULL, SDL_FULLSCREEN | surfaceFlags);
-
-    if (NULL == modeList)
-    {
-        CONS_Printf("No video modes present\n");
-        return;
-    }
-
-    numVidModes = 0;
-    if (NULL != modeList)
-    {
-        while (NULL != modeList[numVidModes])
-            numVidModes++;
-    }
-    else
-        // should not happen with fullscreen modes
-        numVidModes = -1;
-
-    //CONS_Printf("Found %d Video Modes\n", numVidModes);
-
-    // default size for startup
-
-
-    // Window title
-    SDL_WM_SetCaption("Legacy", "Legacy");
-
     if (M_CheckParm("-opengl"))
     {
         rendermode = render_opengl;
@@ -684,29 +640,25 @@ void I_StartupGraphics(void)
             I_Error("The version of the renderer doesn't match the version of the executable\nBe sure you have installed Doom Legacy properly.\n");
         }
 
-        vid.width = 640; // hack to make voodoo cards work in 640x480
-        vid.height = 480;
-
-        if (!OglSdlSurface(vid.width, vid.height, cv_fullscreen.value))
-            rendermode = render_soft;
+        rendermode = render_opengl;
     }
-
-    if (render_soft == rendermode)
-    {
-        vidSurface = SDL_SetVideoMode(vid.width, vid.height, BitsPerPixel, surfaceFlags);
-
-        if (NULL == vidSurface)
-        {
-            CONS_Printf("Could not set vidmode\n");
-            return;
-        }
-        vid.buffer = malloc(vid.width * vid.height * vid.bpp * NUMSCREENS);
-        vid.direct = vidSurface->pixels; // FIXME
-    }
-
-    SDL_ShowCursor(0);
-    doUngrabMouse();
 #endif
+
+    if(rendermode == render_soft)
+        BitsPerPixel = 8;
+    else
+        BitsPerPixel = 32;
+
+    SDL_WindowFlags window_flags = 0;
+    if (cv_fullscreen.value)
+        window_flags |= SDL_WINDOW_FULLSCREEN;
+    if(rendermode == render_opengl)
+        window_flags |= SDL_WINDOW_OPENGL;
+
+    SDL_CreateWindowAndRenderer("Doom Legacy Neo", 0, 0, window_flags, &sdlWindow, &sdlRenderer);
+    VID_SetMode(numVidModes-1);
+
+    sdlPalette = SDL_CreatePalette(256);
 
     graphics_started = 1;
 

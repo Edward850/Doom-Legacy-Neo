@@ -248,6 +248,8 @@ void* Z_MallocAlign(int size, int tag, void* user, int alignbits)
     block->ownerline = line;
 #endif
 
+    memset(userptr, 0, size);
+
     return (void*)userptr;
 }
 

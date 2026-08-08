@@ -280,11 +280,12 @@ byte* R_GenerateTexture(int texnum)
     {
         patch = texture->patches;
         blocksize = W_LumpLength(patch->patch);
-        realpatch = W_CacheLumpNum(patch->patch, PU_CACHE);
 
+        // Allocate the destination first, then cache the texture to avoid the former evicting the latter
         block = Z_Malloc(blocksize,
             PU_STATIC,         // will change tag at end of this function
             &texturecache[texnum]);
+        realpatch = W_CacheLumpNum(patch->patch, PU_CACHE);
         memcpy(block, realpatch, blocksize);
 
         //CONS_Printf ("R_GenTex SINGLE %.8s size: %d\n",texture->name,blocksize);
