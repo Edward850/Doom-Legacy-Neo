@@ -1,4 +1,4 @@
-#include "crypto-algorithms/sha256.h"
+#include "../crypto-algorithms/sha256.h"
 
 static SHA256_CTX levelhash;
 BYTE levelhashsum[SHA256_BLOCK_SIZE];

@@ -11,9 +11,8 @@ option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-find_package(SDL3 CONFIG REQUIRED)
-
-find_package(OpenAL CONFIG REQUIRED)
+find_package(SDL3 REQUIRED)
+find_package(OpenAL REQUIRED)
 find_package(Threads REQUIRED)
 
 # --- Windows-specific resource files ---
@@ -26,12 +25,12 @@ set(WIN_RESOURCE_FILES
 # --- doomlegacy source files ---
 
 file(GLOB DOOM_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/sdl/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/win32/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/hardware/hw_*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/hardware/r_opengl/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/hardware/hw_*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/hardware/r_opengl/*.c"
 )
 
 file(GLOB CRYPTO_SOURCES CONFIGURE_DEPENDS
@@ -74,10 +73,10 @@ add_custom_command(TARGET doomlegacy POST_BUILD
 )
 
 target_include_directories(doomlegacy PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${CMAKE_CURRENT_SOURCE_DIR}/sdl"
     "${CMAKE_CURRENT_SOURCE_DIR}/win32"
-    "${CMAKE_CURRENT_SOURCE_DIR}/hardware"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/hardware"
     "${CMAKE_CURRENT_SOURCE_DIR}/ymfmidi/src"
     "${CMAKE_CURRENT_SOURCE_DIR}/ymfmidi/include"
 )

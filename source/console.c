@@ -110,7 +110,7 @@
 #include "d_main.h"
 
 #ifdef __WIN32__
-#include "win32/win_main.h"
+#include "../win32/win_main.h"
 void     I_LoadingScreen ( LPCSTR msg );
 #else
 #include <unistd.h>

@@ -156,6 +156,7 @@ char *I_GetUserName(void);
 int  I_mkdir(const char *dirname, int unixright);
 const char* I_GetConfigDir(void);
 const char* I_GetSaveGameDir(void);
+const char* I_GetExecutablePath(void);
 
 #ifdef LINUX
 void I_LocateWad(void);

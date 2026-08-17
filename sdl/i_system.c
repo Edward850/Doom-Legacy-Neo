@@ -66,7 +66,7 @@
 //-----------------------------------------------------------------------------
 
 #ifdef __WIN32__
-#include "win32/i_win32.h"
+#include "../win32/i_win32.h"
 #endif
 
 #include <stdio.h>
@@ -719,6 +719,36 @@ const char* I_GetSaveGameDir(void)
     return I_CPPGetSaveGameDir();
 #else
     return NULL;
+#endif
+}
+
+const char* I_GetExecutablePath(void)
+{
+    static char path[MAX_PATH];
+#ifdef __WIN32__
+    if (GetModuleFileNameA(NULL, path, MAX_PATH) == 0)
+    {
+        return NULL;
+    }
+    // Find the last backslash to remove the filename
+    char* last_backslash = strrchr(path, '\\');
+    if (last_backslash != NULL) 
+    {
+        *last_backslash = '\0'; // Terminate the string at the backslash
+    }
+    return path;
+#else
+    // Read the symbolic link to get the full absolute path
+    ssize_t count = readlink("/proc/self/exe", path, PATH_MAX);
+    if (count == -1)
+    {
+        return NULL;
+    }
+    path[count] = '\0'; // readlink does not null-terminate
+    // dirname() extracts the directory component
+    char* dir = dirname(path);
+    return dir;
+    }
 #endif
 }
 
