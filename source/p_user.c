@@ -170,7 +170,7 @@ void P_CalcHeight (player_t* player)
 #endif
 
     player->bob = ((FixedMul (mo->momx,mo->momx)
-                   +FixedMul (mo->momy,mo->momy))*NEWTICRATERATIO)>>2;
+                   +FixedMul (mo->momy,mo->momy)))>>2;
 
     if (player->bob>MAXBOB)
         player->bob = MAXBOB;
@@ -189,7 +189,7 @@ void P_CalcHeight (player_t* player)
         return;
     }
 
-    angle = (FINEANGLES/20*localgametic/NEWTICRATERATIO)&FINEMASK;
+    angle = (FINEANGLES/20*localgametic)&FINEMASK;
     bob = FixedMul ( player->bob/2, finesine[angle]);
 
 
@@ -1060,7 +1060,7 @@ void P_PlayerThink (player_t* player)
              player->mo->momy >  (2*FRACUNIT) ||
              player->mo->momy < (-2*FRACUNIT) ||
              player->mo->momz >  (2*FRACUNIT)) &&  // jump out of water
-             !(gametic % (32 * NEWTICRATERATIO)) )
+             !(gametic % 32) )
         {
             //
             // make sur we disturb the surface of water (we touch it)

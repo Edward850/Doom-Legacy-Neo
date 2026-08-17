@@ -519,7 +519,7 @@ void M_DrawGenericMenu(void)
                           W_CachePatchName(skullName[whichSkull],PU_CACHE) );
     }
     else
-    if (skullAnimCounter<4 * NEWTICRATERATIO)  //blink cursor
+    if (skullAnimCounter<4)  //blink cursor
     {
         V_DrawCharacter(currentMenu->x - 10,
                         cursory,
@@ -3563,7 +3563,7 @@ void M_Ticker (void)
     if (--skullAnimCounter <= 0)
     {
         whichSkull ^= 1;
-        skullAnimCounter = 8 * NEWTICRATERATIO;
+        skullAnimCounter = 8;
     }
 
     //added:30-01-98:test mode for five seconds

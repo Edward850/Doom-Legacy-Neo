@@ -249,9 +249,7 @@ extern byte     demoversion;
 
 // State updates, number of tics / second.
 // NOTE: used to setup the timer rate, see I_StartupTimer().
-#define OLDTICRATE       35
-#define NEWTICRATERATIO   1  // try 4 for 140 fps :)
-#define TICRATE         (OLDTICRATE*NEWTICRATERATIO)
+#define TICRATE         35
 
 
 // Name of local directory for config files and savegames

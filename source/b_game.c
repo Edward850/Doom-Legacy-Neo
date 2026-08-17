@@ -57,8 +57,8 @@
 boolean B_FindNextNode(player_t* p);
 
 BOTINFOTYPE botinfo[MAXPLAYERS];
-fixed_t botforwardmove[2] = {25/NEWTICRATERATIO, 50/NEWTICRATERATIO};
-fixed_t botsidemove[2]    = {24/NEWTICRATERATIO, 40/NEWTICRATERATIO};
+fixed_t botforwardmove[2] = {25, 50};
+fixed_t botsidemove[2]    = {24, 40};
 fixed_t botangleturn[4]   = {500, 1000, 2000, 4000};
 extern consvar_t cv_skill;
 extern thinker_t thinkercap;

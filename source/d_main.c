@@ -1512,9 +1512,6 @@ void D_DoomMain(void)
     CONS_Printf(text[Z_INIT_NUM]);
     Z_Init();
 
-    // adapt tables to legacy needs
-    P_PatchInfoTables();
-
     if (gamemode == heretic)
         HereticPatchEngine();
 

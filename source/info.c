@@ -10995,20 +10995,3 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      }
 
 };
-
-// patch the info mobjinfo table and state table for new legacy needs
-// actualy only time is recomputed for newticrate
-void P_PatchInfoTables( void )
-{
-    int i;
-
-    for (i=0;i<NUMMOBJTYPES;i++)
-    {
-        mobjinfo[i].reactiontime *= NEWTICRATERATIO;
-        //mobjinfo[i].speed        /= NEWTICRATERATIO;
-    }
-    for (i=0;i<NUMSTATES;i++)
-    {
-        states[i].tics *= NEWTICRATERATIO;
-    }
-}

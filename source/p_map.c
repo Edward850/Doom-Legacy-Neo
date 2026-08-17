@@ -2142,11 +2142,11 @@ boolean PIT_ChangeSector (mobj_t*       thing)
 
     nofit = true;
 
-    if (crushchange && !(leveltime % (4*NEWTICRATERATIO)) )
+    if (crushchange && !(leveltime % 4) )
     {
         P_DamageMobj(thing,NULL,NULL,10);
 
-        if( demoversion<132 || (!(leveltime % (16*NEWTICRATERATIO)) && 
+        if( demoversion<132 || (!(leveltime % 16) && 
                                 !(thing->flags&MF_NOBLOOD)) )
         {
             // spray blood in a random direction

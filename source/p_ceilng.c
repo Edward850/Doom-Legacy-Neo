@@ -88,7 +88,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
                           ceiling->topheight,
                           false,1,ceiling->direction);
 
-        if (!(leveltime % (8*NEWTICRATERATIO)))
+        if (!(leveltime % 8))
         {
             switch(ceiling->type)
             {
@@ -146,7 +146,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
                           ceiling->bottomheight,
                           ceiling->crush,1,ceiling->direction);
 
-        if (!(leveltime % (8*NEWTICRATERATIO)))
+        if (!(leveltime % 8))
         {
             switch(ceiling->type)
             {

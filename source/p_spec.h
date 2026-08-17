@@ -434,7 +434,7 @@ typedef struct platlist {
 void P_RemoveAllActivePlats(void); //SoM: 3/9/2000
 
 #define PLATWAIT                3
-#define PLATSPEED               (FRACUNIT/NEWTICRATERATIO)
+#define PLATSPEED               FRACUNIT
 #define MAXPLATS                30
 
 
@@ -504,7 +504,7 @@ typedef struct
 
 
 
-#define VDOORSPEED              (FRACUNIT*2/NEWTICRATERATIO)
+#define VDOORSPEED              (FRACUNIT*2)
 #define VDOORWAIT               150
 
 int //SoM: 3/6/2000: boom support
@@ -690,7 +690,7 @@ typedef struct ceilinglist {
 void P_RemoveAllActiveCeilings(void); //SoM: 3/9/2000
 
 
-#define CEILSPEED               (FRACUNIT/NEWTICRATERATIO)
+#define CEILSPEED               FRACUNIT
 #define CEILWAIT                150
 #define MAXCEILINGS             30
 
@@ -816,8 +816,8 @@ typedef struct //SoM: 3/6/2000: Elevator struct.
 } elevator_t;
 
 
-#define ELEVATORSPEED (FRACUNIT*4/NEWTICRATERATIO) //SoM: 3/6/2000
-#define FLOORSPEED    (FRACUNIT/NEWTICRATERATIO)
+#define ELEVATORSPEED (FRACUNIT*4) //SoM: 3/6/2000
+#define FLOORSPEED    (FRACUNIT)
 
 typedef enum
 {

@@ -2894,6 +2894,4 @@ typedef struct
 
 extern mobjinfo_t mobjinfo[NUMMOBJTYPES];
 
-void P_PatchInfoTables( void );
-
 #endif

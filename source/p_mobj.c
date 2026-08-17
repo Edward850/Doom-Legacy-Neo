@@ -348,7 +348,7 @@ void P_ThrustMobj(mobj_t * mo, angle_t angle, fixed_t move)
 //
 // P_XYMovement
 //
-#define STOPSPEED               (0x1000/NEWTICRATERATIO)
+#define STOPSPEED               0x1000
 #define FRICTION                0xe800  //0.90625
 #define FRICTION_LOW            0xf900
 #define FRICTION_FLY            0xeb00
@@ -788,7 +788,7 @@ void P_ZMovement(mobj_t * mo)
         //     (this is done in P_Mobjthinker below normally)
         mo->eflags &= ~MF_JUSTHITFLOOR;
 
-        gravityadd = -cv_gravity.value / NEWTICRATERATIO;
+        gravityadd = -cv_gravity.value;
 
         // if waist under water, slow down the fall
         if (mo->eflags & MF_UNDERWATER)
@@ -1183,7 +1183,7 @@ void P_MobjThinker(mobj_t * mobj)
         if (mobj->movecount < cv_respawnmonsterstime.value * TICRATE)
             return;
 
-        if (leveltime % (32 * NEWTICRATERATIO))
+        if (leveltime % 32)
             return;
 
         if (P_Random() > 4)

@@ -136,14 +136,14 @@ extern consvar_t cv_viewheight; // p_mobj.c
 // but we do not have any moving sectors nearby
 #define MAXRADIUS       (32*FRACUNIT)
 
-#define MAXMOVE         (30*FRACUNIT/NEWTICRATERATIO)
+#define MAXMOVE         (30*FRACUNIT)
 
 //added:26-02-98: max Z move up or down without jumping
 //      above this, a heigth difference is considered as a 'dropoff'
 #define MAXSTEPMOVE     (24*FRACUNIT)
 
 //added:22-02-98: initial momz when player jumps (moves up)
-#define JUMPGRAVITY     (6*FRACUNIT/NEWTICRATERATIO)
+#define JUMPGRAVITY     (6*FRACUNIT)
 
 #define USERANGE        (64*FRACUNIT)
 #define MELEERANGE      (64*FRACUNIT)

@@ -67,14 +67,14 @@ void T_PlatRaise(plat_t* plat)
                           plat->high,
                           plat->crush,0,1);
 
-        if ( gamemode == heretic && !(leveltime % (32*NEWTICRATERATIO)))
+        if ( gamemode == heretic && !(leveltime % 32))
             S_StartSound ((mobj_t *) & plat->sector->soundorg,
                           sfx_stnmov);
 
         if (plat->type == raiseAndChange
             || plat->type == raiseToNearestAndChange)
         {
-            if (!(leveltime % (8*NEWTICRATERATIO)))
+            if (!(leveltime % 8))
                 S_StartSound((mobj_t *)&plat->sector->soundorg,
                              sfx_stnmov);
         }

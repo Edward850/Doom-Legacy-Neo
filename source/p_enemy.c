@@ -1136,7 +1136,7 @@ void A_Tracer (mobj_t* actor)
     mobj_t*     dest;
     mobj_t*     th;
 
-    if (gametic % (4 * NEWTICRATERATIO))
+    if (gametic % 4)
         return;
 
     // spawn a puff of smoke behind the rocket
