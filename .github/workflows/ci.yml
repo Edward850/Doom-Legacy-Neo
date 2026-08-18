@@ -3,14 +3,14 @@ name: Build Preview Release
 on:
   push:
     branches:
-      - main # Change to 'master' if your default branch is named master
+      - main
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  build:
     name: Build (${{ matrix.os_name }})
     runs-on: ${{ matrix.os }}
 
@@ -79,17 +79,38 @@ jobs:
       shell: bash
       run: |
         tar -czvf ${{ matrix.archive_name }} -C build .
+        
+    - name: Upload Build Artifact to Workflow
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-files-${{ matrix.os_name }}
+        path: ${{ matrix.archive_name }}
+        if-no-files-found: error
+        
+  release:
+    name: Publish Release
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download All Build Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: release-files-*
+        merge-multiple: true
+        path: dist
 
-    - name: Upload Binary to GitHub Release
+    - name: Upload Binaries to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: preview
+        target_commitish: ${{ github.sha }}
         name: 'Continuous Preview Build'
         generate_release_notes: true
         body: |
           Automated continuous integration build generated from the latest push.
           Commit SHA: ${{ github.sha }}
         prerelease: true
-        files: ${{ matrix.archive_name }}
+        files: dist/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
