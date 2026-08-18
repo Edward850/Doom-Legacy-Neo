@@ -1465,8 +1465,8 @@ boolean SV_SpawnServer( void )
         if( netgame )
         {
             I_NetOpenSocket();
-            if( cv_internetserver.value )
-                RegisterServer(0, 0);
+            //if( cv_internetserver.value )
+            //    RegisterServer(0, 0);
         }
 
         // server just connect to itself

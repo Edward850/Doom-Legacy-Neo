@@ -13,6 +13,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 find_package(SDL3 REQUIRED)
 find_package(OpenAL REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(CURL REQUIRED)
 find_package(Threads REQUIRED)
 
 # --- Windows-specific resource files ---
@@ -110,6 +112,9 @@ target_compile_definitions(doomlegacy PRIVATE
 target_link_libraries(doomlegacy PRIVATE
     SDL3::SDL3
     OpenAL::OpenAL
+	OpenSSL::SSL
+    OpenSSL::Crypto
+	CURL::libcurl
     Threads::Threads
     shell32
     shlwapi

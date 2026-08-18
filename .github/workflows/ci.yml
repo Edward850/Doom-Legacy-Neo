@@ -85,6 +85,7 @@ jobs:
       with:
         tag_name: preview
         name: 'Continuous Preview Build'
+        generate_release_notes: true
         body: |
           Automated continuous integration build generated from the latest push.
           Commit SHA: ${{ github.sha }}

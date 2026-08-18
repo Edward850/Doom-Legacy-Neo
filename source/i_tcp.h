@@ -35,7 +35,7 @@
 //
 //-----------------------------------------------------------------------------
 
-extern int sock_port;
+extern int sock_port; // Current port number of the server
 
 
 int I_InitTcpNetwork(void);

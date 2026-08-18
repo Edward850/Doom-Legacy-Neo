@@ -3,11 +3,11 @@
 //
 // $Id: mserv.c,v 1.33 2003/06/05 20:34:48 hurdler Exp $
 //
-// Copyright (C) 1998-2000 by DooM Legacy Team.
+// Copyright (C) 2026 Edward Richardson
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
+// as published by the Free Software Foundation; either version 3
 // of the License, or (at your option) any later version.
 //
 // This program is distributed in the hope that it will be useful,
@@ -15,141 +15,41 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-//
-// $Log: mserv.c,v $
-// Revision 1.33  2003/06/05 20:34:48  hurdler
-// new master server host
-//
-// Revision 1.32  2003/05/04 02:34:17  sburke
-// Define inet_aton() for Solaris, and make hostname arg const char *.
-//
-// Revision 1.31  2001/05/14 19:02:58  metzgermeister
-//   * Fixed floor not moving up with player on E3M1
-//   * Fixed crash due to oversized string in screen message ... bad bug!
-//   * Corrected some typos
-//   * fixed sound bug in SDL
-//
-// Revision 1.30  2001/05/12 16:33:08  hurdler
-// fix master server registration problem under some OS
-//
-// Revision 1.29  2001/03/03 19:44:50  ydario
-// Added OS/2 headers
-//
-// Revision 1.28  2001/02/24 13:35:20  bpereira
-// no message
-//
-// Revision 1.27  2001/02/16 01:17:55  hurdler
-// No need to convert msg->id
-//
-// Revision 1.26  2001/02/16 00:45:07  hurdler
-// Better solution
-//
-// Revision 1.25  2001/01/11 01:15:57  hurdler
-// Fix Little/Big Endian issue
-//
-// Revision 1.24  2001/01/05 18:17:43  hurdler
-// fix master server bug
-//
-// Revision 1.23  2000/11/26 00:46:31  hurdler
-// small bug fixes
-//
-// Revision 1.22  2000/10/22 00:38:22  hurdler
-// Fix %s to %d in version string
-//
-// Revision 1.21  2000/10/22 00:20:53  hurdler
-// Updated for the latest master server code
-//
-// Revision 1.20  2000/10/21 23:21:56  hurdler
-// Minor updates
-//
-// Revision 1.19  2000/10/21 08:43:29  bpereira
-// no message
-//
-// Revision 1.18  2000/10/17 10:09:27  hurdler
-// Update master server code for easy connect from menu
-//
-// Revision 1.17  2000/10/16 20:02:29  bpereira
-// no message
-//
-// Revision 1.16  2000/10/08 13:30:01  bpereira
-// no message
-//
-// Revision 1.15  2000/10/07 18:36:50  hurdler
-// fix a bug with Win2k
-//
-// Revision 1.14  2000/10/01 15:20:23  hurdler
-// Add private server
-//
-// Revision 1.13  2000/09/14 10:39:59  hurdler
-// Fix compiling problem under win32
-//
-// Revision 1.12  2000/09/10 10:45:14  metzgermeister
-// *** empty log message ***
-//
-// Revision 1.11  2000/09/08 22:28:30  hurdler
-// merge masterserver_ip/port in one cvar, add -private
-//
-// Revision 1.10  2000/09/02 15:38:24  hurdler
-// Add master server to menus (temporaray)
-//
-// Revision 1.9  2000/09/01 18:23:42  hurdler
-// fix some issues with latest network code changes
-//
-// Revision 1.8  2000/08/29 15:53:47  hurdler
-// Remove master server connect timeout on LAN (not connected to Internet)
-//
-// Revision 1.7  2000/08/21 12:44:45  hurdler
-// fix SOCKET not defined under some OS
-//
-// Revision 1.6  2000/08/21 11:06:44  hurdler
-// Add ping and some fixes
-//
-// Revision 1.5  2000/08/16 23:39:41  hurdler
-// fix a bug with windows sockets
-//
-// Revision 1.4  2000/08/16 17:21:50  hurdler
-// update master server code (bis)
-//
-// Revision 1.3  2000/08/16 16:24:45  ydario
-// OS/2 also needs inet_aton
-//
-// Revision 1.2  2000/08/16 15:44:18  hurdler
-// update master server code
-//
-// Revision 1.1  2000/08/16 14:04:57  hurdler
-// add master server code
-//
-//
-//
 // DESCRIPTION:
 //      Commands used for communicate with the master server
+//      Completely rewritten to use DTLS for secure communication and IPv6 support.
 //
 //-----------------------------------------------------------------------------
 
 
-#ifdef WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/x509.h>
+#include <curl/curl.h>
+
+#ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <windows.h>
+// ws2_32 is already linked, but if there's a compile error uncomment the following line
+//#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "libssl.lib")
+#pragma comment(lib, "libcrypto.lib")
+#define CLOSE_SOCKET closesocket
+#define SET_NONBLOCKING(s) { u_long mode = 1; ioctlsocket(s, FIONBIO, &mode); }
 #else
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
-#ifdef __OS2__
-#include <sys/types.h>
+#ifndef SOCKET
+#define SOCKET int
 #endif
-#include <sys/socket.h>  // socket(),...
-#include <sys/time.h>    // timeval,... (TIMEOUT)
-#include <netinet/in.h>  // sockaddr_in
-#include <arpa/inet.h>   // inet_addr(),...
-#include <netdb.h>       // gethostbyname(),...
-#include <sys/ioctl.h>
-#include <errno.h>
-/*
-#include <string.h>      // memset(),...
-#include <sys/types.h>   // socket(),...
-*/
+#define INVALID_SOCKET -1
+#define CLOSE_SOCKET close
+#define SET_NONBLOCKING(s) { fcntl(s, F_SETFL, O_NONBLOCK); }
 #endif
 
 #ifdef __OS2__
@@ -164,6 +64,8 @@
 #include "i_net.h"
 #include "i_system.h"
 #include "d_clisrv.h"
+#include "z_zone.h"
+#include "uuid.h"
 
 // ================================ DEFINITIONS ===============================
 
@@ -179,96 +81,489 @@
 #define  MS_GETHOSTNAME_ERROR       -221
 #define  MS_TIMEOUT_ERROR           -231
 
-// see master server code for the values
-#define ADD_SERVER_MSG               101
-#define REMOVE_SERVER_MSG            103
-#define GET_SERVER_MSG               200
-#define GET_SHORT_SERVER_MSG         205
+#define MS_TOKEN 0
+#define MS_PING 1
+#define MS_DELETE 2
+#define MS_LISTSERVERS 3
+#define MS_RES_TOKEN 4
+#define MS_RES_BADTOKEN 5
+#define MS_RES_PONG 6
 
-#define HEADER_SIZE ((long)sizeof(long)*3)
+#define DTLS_PACKET_WAITING -2
 
-#define HEADER_MSG_POS      0
-#define IP_MSG_POS         16
-#define PORT_MSG_POS       32
-#define HOSTNAME_MSG_POS   40
-
-#ifndef SOCKET
-#define SOCKET int
-#endif
-
-typedef struct {
-    long    id;
-    long    type;
-    long    length;
-    char    buffer[PACKET_SIZE];
-} msg_t;
-
-struct Copy_CVarMS_t
+struct socketaddrm_s
 {
-    char ip[64];
-    char port[8];
-    char name[64];
-} registered_server;
-
-// win32 or djgpp
-#if defined( WIN32) || defined( __DJGPP__ ) 
-#define ioctl ioctlsocket
-#define close closesocket
-#endif
-
-#if defined( WIN32) || defined( __OS2__) || defined( SOLARIS)
-// it seems windows doesn't define that... maybe some other OS? OS/2
-int inet_aton(const char *hostname, struct in_addr *addr)
-{
-    return ( (addr->s_addr=inet_addr(hostname)) != INADDR_NONE );
-}   
-#endif
+    union
+    {
+        struct sockaddr_in ipv4;
+        struct sockaddr_in6 ipv6;
+    };
+    int i_family; // AF_INET or AF_INET6
+} typedef socketaddrms_t;
 
 static void Command_Listserv_f(void);
 //TODO: when we change the port or ip, unregister to the old master server, register to the new one
 
 #define DEF_PORT "28910"
-consvar_t cv_internetserver= {"internetserver",                 "No", CV_SAVE, CV_YesNo };
-consvar_t cv_masterserver  = {"masterserver",   "crantime.org:28910", CV_SAVE, NULL };
-consvar_t cv_servername    = {"servername",     "DooM Legacy server", CV_SAVE, NULL };
+consvar_t cv_internetserver = { "internetserver", "Yes", CV_SAVE, CV_YesNo };
+consvar_t cv_masterserver = { "masterserver", "master.crantime.org:28910", CV_SAVE, NULL };
+consvar_t cv_masterservercert = { "masterservercert", "https://crantime.org/content/legacyneo", CV_SAVE, NULL };
+consvar_t cv_servername = { "servername", "DooM Legacy server", CV_SAVE, NULL };
+consvar_t cv_defaultipv6 = { "defaultipv6", "No", CV_SAVE, CV_YesNo };
 
 enum { MSCS_NONE, MSCS_WAITING, MSCS_REGISTERED, MSCS_FAILED } con_state = MSCS_NONE;
 
-#define NEWCODE
-#ifndef NEWCODE
-static SOCKET               mysocket;        // UDP socket
-static int                  current_port;
-static struct sockaddr_in   udp_addr;
-#else
-static int msnode=-1;
-#define current_port sock_port
-#endif
+struct socket_s
+{
+    SOCKET sock; // The underlying socket
+    SSL* ssl; // The SSL object for DTLS
+    uint64_t lastActive; // Timestamp of the last activity on the socket
+} typedef socket_t;
 
-static SOCKET               socket_fd = -1;  // TCP/IP socket
-static struct sockaddr_in   addr;
-static struct timeval       select_timeout;
-static fd_set               wset;
+static socket_t msSocket[2]; // Master server sockets
+static SSL_CTX* sslCtx = NULL; // OpenSSL context for DTLS
+static byte msToken[16]; // Token received from the master server for registration
+static BOOL bNetworkInit = FALSE;
+static BOOL bDTLSMSConfigured = FALSE; // Is the master server certificate configured for DTLS?
+static BOOL bHaveToken = FALSE; // Do we have a valid token from the master server?
 
-static int  MS_Connect(char *ip_addr, char *str_port, int async);
-static int  MS_Read(msg_t *msg);
-static int  MS_Write(msg_t *msg);
-static int  MS_GetIP(char *);
+static int  MS_Connect(char* ip_addr, int async);
 
+// Register the console variables and commands related to the master server
 void AddMServCommands(void)
 {
     CV_RegisterVar(&cv_internetserver);
     CV_RegisterVar(&cv_masterserver);
+    CV_RegisterVar(&cv_masterservercert);
     CV_RegisterVar(&cv_servername);
+    CV_RegisterVar(&cv_defaultipv6);
     COM_AddCommand("listserv", Command_Listserv_f);
 }
 
-static void CloseConnection(void)
+// Global Networking Initialisation 
+static void InitNetworking(void)
 {
-    if (socket_fd > 0)
-        close(socket_fd);
-    socket_fd = -1;
+    if (bNetworkInit)
+    {
+        return;
+    }
+    bNetworkInit = TRUE;
+
+    I_InitTcpDriver();
+
+    SSL_library_init();
+    OpenSSL_add_all_algorithms();
+    SSL_load_error_strings();
+
+    memset(msSocket, 0, sizeof(msSocket));
 }
 
+// Callback function for CURL to write received data into a BIO memory buffer
+static size_t curl_to_bio_callback(void* contents, size_t size, size_t nmemb, void* userp) 
+{
+    BIO* mem_bio = (BIO*)userp;
+    size_t total_bytes = size * nmemb;
+    BIO_write(mem_bio, contents, (int)total_bytes);
+    return total_bytes;
+}
+
+// Grab the master server certificate from a remote URL and parse it into an X509 object
+static X509* CURLFetchCertificate(const char* url)
+{
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    CURL* curl = curl_easy_init();
+    if (!curl)
+    {
+        return NULL;
+    }
+
+    BIO* mem_bio = BIO_new(BIO_s_mem());
+    X509* cert = NULL;
+
+    // Configure libcurl target and callbacks
+    curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Safely follow any HTTP redirects automatically
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_to_bio_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)mem_bio);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L); 
+
+    CONS_Printf("[HTTP Sync] Fetching master asset via libcurl from: %s\n", url);
+
+    // Synchronous download
+    CURLcode res = curl_easy_perform(curl);
+
+    if (res == CURLE_OK)
+    {
+        cert = PEM_read_bio_X509(mem_bio, NULL, NULL, NULL);
+        if (cert) 
+        {
+            CONS_Printf("[HTTP Sync] Certificate successfully parsed from network memory stream!\n");
+        }
+        else 
+        {
+            CONS_Printf("[HTTP Error] Failed to decode raw PEM.\n");
+        }
+    }
+    else 
+    {
+        CONS_Printf("[HTTP Error] libcurl network transport request failed: %s\n", curl_easy_strerror(res));
+    }
+
+    // Cleanup
+    BIO_free(mem_bio);
+    curl_easy_cleanup(curl);
+    return cert;
+}
+
+// Returns 1 if the certificate is expired, or 0 if it is still valid
+static int DTLSIsCertExpired(X509* cert)
+{
+    if (!cert)
+    {
+        return 1;
+    }
+
+    // Extract the expiration timestamp from the certificate
+    const ASN1_TIME* not_after = X509_get0_notAfter(cert);
+    if (!not_after) 
+    {
+        CONS_Printf("[Crypto Warning] Certificate is missing an expiration timestamp!\n");
+        return 1; // Treat as invalid if it has no time data
+    }
+
+    // Compare the certificate's expiration timestamp against current system time
+    int time_check = X509_cmp_time(not_after, NULL);
+    if (time_check < 0) 
+    {
+        CONS_Printf("[Crypto Check] Certificate has EXPIRED!\n");
+        return 1;
+    }
+
+    CONS_Printf("[Crypto Check] Certificate is valid and active.\n");
+    return 0;
+}
+
+// Attempt to load the master server certificate from a local cache, and if that fails, fetch it from a remote URL
+static X509* DTLSGetMasterCertificate(const char* cache_path, const char* fallback_url)
+{
+    X509* cert = NULL;
+
+    // Attempt to read the certificate from the local disk cache
+    BIO* file_in = BIO_new_file(cache_path, "r");
+    if (file_in)
+    {
+        cert = PEM_read_bio_X509(file_in, NULL, NULL, NULL); // Reads standard ASCII PEM out of file
+        BIO_free(file_in);
+    }
+
+    if (cert && !DTLSIsCertExpired(cert))
+    {
+        CONS_Printf("[Cache Hit] Loaded master certificate successfully from local disk: %s\n", cache_path);
+        return cert;
+    }
+
+    CONS_Printf("[Cache Miss] No local copy found available. Fetching remote copy...\n");
+    cert = CURLFetchCertificate(fallback_url);
+    if (!cert)
+    {
+        CONS_Printf("[CRITICAL] Could not resolve master certificate via local cache OR remote fallback server!\n");
+        return NULL;
+    }
+
+    // Save the downloaded object to local disk for future sessions
+    BIO* file_out = BIO_new_file(cache_path, "w");
+    if (file_out)
+    {
+        if (PEM_write_bio_X509(file_out, cert) == 1)
+        {
+            CONS_Printf("[Cache Saved] Successfully cached public verification copy to disk: %s\n", cache_path);
+        }
+        else
+        {
+            CONS_Printf("[Cache Warning] Failed to parse and write memory object to file path storage.\n");
+        }
+        BIO_free(file_out);
+    }
+
+    return cert;
+}
+
+// Get or create the SSL_CTX for DTLS connections
+static SSL_CTX* GetDTLSContext()
+{
+    if (sslCtx)
+    {
+        return sslCtx;
+    }
+
+    const SSL_METHOD* method = DTLSv1_2_client_method();
+    sslCtx = SSL_CTX_new(method);
+    if (!sslCtx)
+    {
+        CONS_Printf("Unable to create SSL context\n");
+        return NULL;
+    }
+
+    return sslCtx;
+}
+
+// Cleanup the SSL_CTX and reset the DTLS configuration state
+static void CleanupDTLSContext()
+{
+    if (sslCtx)
+    {
+        SSL_CTX_free(sslCtx);
+        sslCtx = NULL;
+    }
+
+    bDTLSMSConfigured = FALSE;
+}
+
+// Cleanup the DTLS socket and free associated resources
+static void CleanupSocket(socket_t* dtls_socket)
+{
+    if (dtls_socket->ssl)
+    {
+        SSL_shutdown(dtls_socket->ssl);
+        SSL_free(dtls_socket->ssl);
+        dtls_socket->ssl = NULL;
+    }
+    if (dtls_socket->sock != INVALID_SOCKET)
+    {
+        CLOSE_SOCKET(dtls_socket->sock);
+        dtls_socket->sock = INVALID_SOCKET;
+    }
+}
+
+// Read a packet from the DTLS socket
+static int DTLSReadPacket(socket_t* dtls_socket, char* buffer, size_t buffer_size)
+{
+    int bytes_read, ssl_error;
+
+    if (!dtls_socket || !dtls_socket->ssl)
+    {
+        CONS_Printf("[DTLS Error] Attempted to read packet on uninitialized DTLS socket.\n");
+        return -1;
+    }
+    bytes_read = SSL_read(dtls_socket->ssl, buffer, (int)buffer_size);
+    if (bytes_read <= 0)
+    {
+        ssl_error = SSL_get_error(dtls_socket->ssl, bytes_read);
+        if (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)
+        {
+            // Non-blocking operation
+            return DTLS_PACKET_WAITING;
+        }
+        CONS_Printf("[DTLS Error] Failed to read packet. SSL_read returned %d, SSL_get_error code: %d\n", bytes_read, ssl_error);
+        CleanupSocket(dtls_socket);
+        return -1;
+    }
+    dtls_socket->lastActive = I_GetTime();
+    return bytes_read;
+}
+
+// Send a packet over the DTLS socket
+static void DTLSSendPacket(socket_t* dtls_socket, const char* data, size_t length)
+{
+    int bytes_sent, ssl_error;
+    while (true)
+    {
+        if (!dtls_socket || !dtls_socket->ssl)
+        {
+            CONS_Printf("[DTLS Error] Attempted to send packet on uninitialized DTLS socket.\n");
+            return;
+        }
+
+        bytes_sent = SSL_write(dtls_socket->ssl, data, (int)length);
+        if (bytes_sent <= 0)
+        {
+            ssl_error = SSL_get_error(dtls_socket->ssl, bytes_sent);
+            if (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)
+            {
+                // Non-blocking operation, retry
+                continue;
+            }
+
+            CONS_Printf("[DTLS Error] Failed to send packet. SSL_write returned %d, SSL_get_error code: %d\n", bytes_sent, ssl_error);
+            CleanupSocket(dtls_socket);
+        }
+        return;
+    }
+}
+
+// Configure the DTLS context to trust the master server's public certificate, enabling secure communication
+static void DTLSConfigureMasterServerCertificate(const char* certAddress)
+{
+    if (bDTLSMSConfigured)
+    {
+        return;
+    }
+
+    SSL_CTX* ctx = GetDTLSContext();
+    if (ctx == NULL)
+    {
+        return;
+    }
+
+    const char* cert_file = "master_public.crt";
+    const char* initalPath = I_GetConfigDir();
+    const size_t path_length = strlen(initalPath) + strlen(cert_file) + 2;
+    const size_t serverPath_length = strlen(certAddress) + strlen(cert_file) + 2;
+    char* filePath = Z_Malloc(path_length, PU_STATIC, NULL);
+    char* serverPath = Z_Malloc(serverPath_length, PU_STATIC, NULL);
+    snprintf(filePath, path_length, "%s/%s", initalPath, cert_file);
+    snprintf(serverPath, serverPath_length, "%s/%s", certAddress, cert_file);
+
+    X509* master_cert = DTLSGetMasterCertificate(filePath, serverPath);
+    Z_Free(filePath);
+    Z_Free(serverPath);
+
+    X509_STORE* store = SSL_CTX_get_cert_store(ctx);
+    if (X509_STORE_add_cert(store, master_cert) != 1)
+    {
+        CONS_Printf("[DTLS Error] Failed to register downloaded certificate into active memory store.\n");
+        return;
+    }
+
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+    X509_free(master_cert);
+
+    bDTLSMSConfigured = true;
+}
+
+// Establish a DTLS connection to the specified remote IP and port, returning a socket_t structure
+static socket_t DTLSConnectSocket(socketaddrms_t* server_addr)
+{
+    socket_t dtls_socket;
+    dtls_socket.sock = INVALID_SOCKET;
+    dtls_socket.ssl = NULL;
+    dtls_socket.lastActive = I_GetTime();
+    SSL_CTX* ctx = GetDTLSContext();
+    const int port = server_addr->i_family == AF_INET6 ? ntohs(server_addr->ipv6.sin6_port) : ntohs(server_addr->ipv4.sin_port);
+    const int server_addrlen = server_addr->i_family == AF_INET6 ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in);
+    char ip_str[INET6_ADDRSTRLEN];
+
+    // UDP socket
+    dtls_socket.sock = socket(server_addr->i_family, SOCK_DGRAM, 0);
+    if (dtls_socket.sock == INVALID_SOCKET)
+    {
+        CONS_Printf("Socket creation failed\n");
+        return dtls_socket;
+    }
+
+    // Bind socket to remote endpoint so OpenSSL's BIO knows exactly where to direct datagrams
+    if (connect(dtls_socket.sock, (struct sockaddr*)server_addr, server_addrlen) < 0)
+    {
+        CONS_Printf("UDP socket connect failed\n");
+        CleanupSocket(&dtls_socket);
+        return dtls_socket;
+    }
+
+    // Bind OpenSSL to the socket via a Datagram BIO (Basic Input/Output)
+    BIO* bio = BIO_new_dgram((int)dtls_socket.sock, BIO_NOCLOSE);
+    BIO_ctrl(bio, BIO_CTRL_DGRAM_SET_CONNECTED, 0, server_addr);
+
+    dtls_socket.ssl = SSL_new(ctx);
+    SSL_set_bio(dtls_socket.ssl, bio, bio);
+
+
+    if (server_addr->i_family == AF_INET)
+    {
+        inet_ntop(AF_INET, &server_addr->ipv4.sin_addr, ip_str, INET6_ADDRSTRLEN);
+    }
+    else
+    {
+        inet_ntop(AF_INET6, &server_addr->ipv6.sin6_addr, ip_str, INET6_ADDRSTRLEN);
+    }
+
+    // Perform the DTLS Handshake
+    // Set the MTU to 1200 bytes to avoid fragmentation issues
+    BIO_ctrl(bio, BIO_CTRL_DGRAM_SET_MTU, 1200, NULL);
+    SET_NONBLOCKING(dtls_socket.sock);
+    CONS_Printf("Initiating DTLS handshake to %s:%hu...\n", ip_str, port);
+
+    const int timeoutTics = TICRATE * 5; // 5 seconds timeout
+    uint64_t start_time = I_GetTime();
+
+    int handshake_result = SSL_connect(dtls_socket.ssl);
+    if (handshake_result <= 0)
+    {
+        int ssl_error = SSL_get_error(dtls_socket.ssl, handshake_result);
+        while (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)
+        {
+            if (I_GetTime() - start_time >= timeoutTics)
+            {
+                break; // Timeout reached, exit the loop
+            }
+            handshake_result = SSL_connect(dtls_socket.ssl);
+            if (handshake_result > 0)
+            {
+                break; // Handshake successful, exit the loop
+            }
+            ssl_error = SSL_get_error(dtls_socket.ssl, handshake_result);
+            DTLSv1_handle_timeout(dtls_socket.ssl);
+        }
+    }
+    if (handshake_result <= 0)
+    {
+        int ssl_error = SSL_get_error(dtls_socket.ssl, handshake_result);
+        if(ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)
+        {
+            CONS_Printf("[DTLS Error] Handshake timed out after 5 seconds.\n");
+        }
+        else
+        {
+            CONS_Printf("\n[DTLS Error Detected] Handshake Result: %d, SSL_get_error code: %d\n", handshake_result, ssl_error);
+
+            // Read the descriptive text directly from the OpenSSL thread queue
+            unsigned long err_code;
+            char error_string[256];
+
+            while ((err_code = ERR_get_error()) != 0)
+            {
+                ERR_error_string_n(err_code, error_string, sizeof(error_string));
+                CONS_Printf("OpenSSL Queue Error: %s\n", error_string);
+            }
+
+            // Check specific structural code contexts
+            if (ssl_error == SSL_ERROR_SYSCALL)
+            {
+#ifdef _WIN32
+                CONS_Printf("System Socket Error: %d\n", WSAGetLastError());
+#else
+                CONS_Printf("System Socket Error: %d\n", errno);
+#endif
+            }
+        }
+
+        CleanupSocket(&dtls_socket);
+        return dtls_socket;
+    }
+
+    CONS_Printf("Connected securely to %s:%hu!\n", ip_str, port);
+    return dtls_socket;
+}
+
+// Check if the master server is connected, and if not, attempt to reconnect. Returns 1 if connected, 0 otherwise.
+static int CheckMasterConnected()
+{
+    // If the socket has been inactive for more than the timeout, destroy it and reconnect
+    const int timeoutTics = ((TICRATE * 60) * 2) - ((TICRATE * 60) / 4); // 1 minute and 45 seconds
+    if (msSocket[0].lastActive + timeoutTics < I_GetTime())
+    {
+        CleanupSocket(&msSocket[0]);
+    }
+
+    // Attempt to connect to the master server if not already connected
+    if (msSocket[0].sock == INVALID_SOCKET || msSocket[0].ssl == NULL)
+    {
+        MS_Connect(cv_masterserver.string, 0);
+    }
+
+    return (msSocket[0].sock != INVALID_SOCKET && msSocket[0].ssl != NULL);
+}
+
+// An old get server list function that seems to have been mothballed. Will need to restore later.
 static int GetServersList(void)
 {
 #if 1
@@ -296,66 +591,47 @@ static int GetServersList(void)
     return MS_READ_ERROR;
 }
 
-static char* int2str(int n)
-{
-    int         i;
-    static char res[16];
-
-    res[15] = '\0';
-    res[14] = (n % 10) + '0';
-    for (i = 13; (n /= 10); i--)
-        res[i] = (n % 10) + '0';
-
-    return &res[i + 1];
-}
-
 #define NUM_LIST_SERVER 32
 msg_server_t *GetShortServersList(void)
 {
     static msg_server_t server_list[NUM_LIST_SERVER+1]; // +1 for easy test
-    msg_t               msg;
     int                 i;
 
-    //arf, we must be connected to the master server before writing to it
-    if (MS_Connect(GetMasterServerIP(), GetMasterServerPort(), 0))
+    if (CheckMasterConnected() == 0)
     {
         CONS_Printf("cannot connect to the master server\n");
         return NULL;
     }
 
-#if 1
-    const byte send_data[1] = { 2 };
-    sendto(socket_fd, send_data, sizeof(send_data), 0, (struct sockaddr*)&addr, sizeof(struct sockaddr));
+    const byte send_data[1] = { MS_LISTSERVERS };
+    DTLSSendPacket(&msSocket[0], send_data, sizeof(send_data));
 
+    const int timeoutTics = TICRATE * 5; // 5 seconds timeout
+    uint64_t start_time = I_GetTime();
     byte recv_data[1500];
-    int  recv_len;
+    int  recv_len = 0;
     int  count = 0;
-    fd_set fds;
-    int n;
-    struct timeval tv;
 
-    // Set up the file descriptor set.
-    FD_ZERO(&fds);
-    FD_SET(socket_fd, &fds);
+    while(I_GetTime() - start_time < timeoutTics)
+    {
+        recv_len = DTLSReadPacket(&msSocket[0], (char*)recv_data, sizeof(recv_data));
+        if (recv_len != DTLS_PACKET_WAITING)
+        {
+            break;
+        }
+    }
 
-    // Set up the struct timeval for the timeout.
-    tv.tv_sec = 5;
-    tv.tv_usec = 0;
-
-    // Wait until timeout or data received.
-    n = select(socket_fd, &fds, NULL, NULL, &tv);
-    if (n == 0)
+    if (recv_len == DTLS_PACKET_WAITING)
     {
         CONS_Printf("Server timed out\n");
         return server_list;
     }
-    else if (n == -1)
+    else if (recv_len <= -1)
     {
         CONS_Printf("Some kind of server error\n");
         return server_list;
     }
 
-    recv_len = recvfrom(socket_fd, recv_data, sizeof(recv_data), 0, NULL, NULL);
     if (recv_len <= 0 || (recv_len % 6) != 0)
     {
         CONS_Printf("No server currently running.\n");
@@ -369,7 +645,7 @@ msg_server_t *GetShortServersList(void)
                  recv_data[count], recv_data[count + 1],
                  recv_data[count + 2], recv_data[count + 3]);
         server_list[i].port[0] = '\0';
-        strcat(server_list[i].port, int2str((recv_data[count + 4] << 8) | recv_data[count + 5]));
+        snprintf(server_list[i].port, sizeof(server_list[i].port), "%d", (recv_data[count + 4] << 8) | recv_data[count + 5]);
         server_list[i].name[0] = '\0';
         server_list[i].version[0] = '\0';
         server_list[i].header[0] = 1;
@@ -377,32 +653,6 @@ msg_server_t *GetShortServersList(void)
     }
 	server_list[i].header[0] = 0;
 	return server_list;
-#else
-    msg.type = GET_SHORT_SERVER_MSG;
-    msg.length = 0;
-    if (MS_Write(&msg) < 0)
-        return NULL;
-
-    for (i=0; (i<NUM_LIST_SERVER) && (MS_Read(&msg)>=0); i++)
-    {
-        if (msg.length == 0)
-        {
-            server_list[i].header[0] = 0;
-            CloseConnection();
-            return server_list;
-        }
-        memcpy(&server_list[i], msg.buffer, sizeof(msg_server_t));
-        server_list[i].header[0] = 1;
-    }
-    CloseConnection();
-    if (i==NUM_LIST_SERVER)
-    {
-        server_list[i].header[0] = 0;
-        return server_list;
-    }
-    else
-        return NULL;
-#endif
 }
 
 static void Command_Listserv_f(void)
@@ -415,7 +665,7 @@ static void Command_Listserv_f(void)
 
     CONS_Printf("Retrieving server list...\n");
 
-    if (MS_Connect(GetMasterServerIP(), GetMasterServerPort(), 0))
+    if (MS_Connect(cv_masterserver.string, 0))
     {
         CONS_Printf("cannot connect to the master server\n");
         return;
@@ -424,337 +674,221 @@ static void Command_Listserv_f(void)
     if (GetServersList())
         CONS_Printf("cannot get server list\n");
 
-    CloseConnection();
+    CleanupSocket(&msSocket[0]);
 }
 
 int ConnectionFailed(void)
 {
     con_state = MSCS_FAILED;
     CONS_Printf("Connection to master server failed\n");
-    CloseConnection();
+    CleanupSocket(&msSocket[0]);
     return MS_CONNECT_ERROR;
-}
-
-static int AddToMasterServer(void)
-{
-    static int      retry = 0;
-    int             i, j, res;
-    msg_t           msg;
-    msg_server_t    *info = (msg_server_t *) msg.buffer;
-    fd_set          tset;
-
-    memcpy(&tset, &wset, sizeof(tset));
-    res = select(socket_fd+1, NULL, &tset, NULL, &select_timeout);
-    if (res == 0)
-    {
-        if (retry++ > 30) // an about 30 second timeout
-        {
-            retry = 0;
-	    CONS_Printf("Timeout on masterserver\n");
-            return ConnectionFailed();
-        }
-        return MS_CONNECT_ERROR;
-    }
-    retry = 0;
-    if (res < 0)
-    {
-	CONS_Printf("Error on select : %s\n", strerror(errno));
-        return ConnectionFailed();
-    }
-    
-    // so, the socket is writable, but what does that mean, that the connection is
-    // ok, or bad... let see that!
-    j = 4;
-    getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, (char *)&i, (size_t *)&j);
-    if (i != 0) // it was bad
-    {
-        CONS_Printf("getsockopt: %s\n", strerror(errno));
-	return ConnectionFailed();
-    }
-    
-    strcpy(info->header, "");
-    strcpy(info->ip,     "");
-    strcpy(info->port,   int2str(current_port));
-    strcpy(info->name,   cv_servername.string);
-    sprintf(info->version, "%d.%d.%d", VERSION/100, VERSION%100, SUBVERSION);
-    strcpy(registered_server.name, cv_servername.string);
-
-    msg.type = ADD_SERVER_MSG;
-    msg.length = sizeof(msg_server_t);
-    if (MS_Write(&msg) < 0)
-        return ConnectionFailed();
-
-    CONS_Printf("The server has been registered on the master server...\n");
-    con_state = MSCS_REGISTERED;
-    CloseConnection();
-
-    return MS_NO_ERROR;
 }
 
 static int RemoveFromMasterSever(void)
 {
-#if 0
-    msg_t           msg;
-    msg_server_t    *info = (msg_server_t *) msg.buffer;
-
-    strcpy(info->header, "");
-    strcpy(info->ip,     "");
-    strcpy(info->port,   int2str(current_port));
-    strcpy(info->name,   registered_server.name);
-    sprintf(info->version, "%d.%d.%d", VERSION/100, VERSION%100, SUBVERSION);
-
-    msg.type = REMOVE_SERVER_MSG;
-    msg.length = sizeof(msg_server_t);
-    if (MS_Write(&msg) < 0)
-        return MS_WRITE_ERROR;
-#else
-    const byte send_data[3] = { 1, (current_port >> 8) & 0xFF, current_port & 0xFF };
-    sendto(socket_fd, send_data, sizeof(send_data), 0, (struct sockaddr*)&addr, sizeof(struct sockaddr));
-#endif
+    const byte send_data[3] = { MS_DELETE, (sock_port >> 8) & 0xFF, sock_port & 0xFF };
+    DTLSSendPacket(&msSocket[0], send_data, sizeof(send_data));
     return MS_NO_ERROR;
 }
 
-char *GetMasterServerPort(void)
+static void CheckServerPingResponses(socket_t* dtls_socket)
 {
-    char *t = cv_masterserver.string;
-
-    while ((*t != ':') && (*t != '\0'))
-        t++;
-
-    if (*t)
-        return ++t;
-    else
-        return DEF_PORT;
-}
-
-char *GetMasterServerIP(void)
-{
-    static char str_ip[64];
-    char        *t = str_ip;
-
-    if (strstr(cv_masterserver.string, "doomlegacy.dhs.org"))
+    if (dtls_socket->sock == INVALID_SOCKET)
     {
-        // replace it with the current default one
-        CV_Set(&cv_masterserver, cv_masterserver.defaultvalue);
-    }
-    strcpy(t, cv_masterserver.string);
-
-    while ((*t != ':') && (*t != '\0'))
-        t++;
-    *t = '\0';
-    
-    return str_ip;
-}
-
-
-
-static void openUdpSocket()
-{
-#ifdef NEWCODE
-    if( I_NetMakeNode )
-    {
-        char hostname[24];
-
-        sprintf(hostname, "%s:%d", inet_ntoa(addr.sin_addr), atoi(GetMasterServerPort())+1);
-        msnode = I_NetMakeNode(hostname);
-    }
-    else
-        msnode = -1;
-#else
-    memset(&udp_addr, 0, sizeof(udp_addr));
-    udp_addr.sin_family = AF_INET;
-    udp_addr.sin_port = htons(atoi(GetMasterServerPort())+1);
-    udp_addr.sin_addr.s_addr = addr.sin_addr.s_addr; // same IP as for TCP
-#endif
-}
-
-void RegisterServer(int s, int port)
-{
-    CONS_Printf("Registering this server to the master server...\n");
-
-    strcpy(registered_server.ip, GetMasterServerIP());
-    strcpy(registered_server.port, GetMasterServerPort());
-    //current_port = port;
-    //mysocket = s;
-
-    if (MS_Connect(registered_server.ip, registered_server.port, 1))
-    {
-        CONS_Printf("cannot connect to the master server\n");
         return;
     }
-    //openUdpSocket();
 
-    // keep the TCP connection open until AddToMasterServer() is completed;
+    byte recv_data[1500];
+    int  recv_len = 0;
+    recv_len = DTLSReadPacket(dtls_socket, (char*)recv_data, sizeof(recv_data));
+    if(recv_len <= 0)
+    {
+        return;
+    }
+    if (recv_data[0] == MS_RES_BADTOKEN)
+    {
+        bHaveToken = false;
+    }
+    else if(recv_data[0] == MS_RES_PONG)
+    {
+        // No action needed, just a response to our ping
+    }
+    else if(recv_data[0] == MS_RES_TOKEN && recv_len == 17)
+    {
+        bHaveToken = true;
+        memcpy(msToken, &recv_data[1], 16);
+    }
+    else
+    {
+        CONS_Printf("Received unknown response from master server: %d\n", recv_data[0]);
+    }
 }
 
 void SendPingToMasterServer(void)
 {
     static tic_t   next_time = 0;
+    static int     lastSendFrom = 0;
     tic_t          cur_time;
 
+    CheckServerPingResponses(&msSocket[0]);
+    CheckServerPingResponses(&msSocket[1]);
+
     cur_time = I_GetTime();
-    if (cur_time > next_time && socket_fd >= 0) // ping every 30 seconds if possible
+    if (cur_time > next_time && sock_port >= 0 && CheckMasterConnected()) // ping every 30 seconds if possible
     {
-        next_time = cur_time+30*TICRATE;
-#if 1
-        const byte send_data[3] = { 0, (current_port >> 8) & 0xFF, current_port & 0xFF };
-        sendto(socket_fd, send_data, sizeof(send_data), 0, (struct sockaddr*)&addr, sizeof(struct sockaddr));
-#else
-        if (con_state == MSCS_WAITING)
-            AddToMasterServer();
+        if (!bHaveToken)
+        {
+            next_time = cur_time + 10 * TICRATE;
 
-        if (con_state != MSCS_REGISTERED)
-            return;
+            // Generate and send a new token to the master server for registration
+            // This token is not kept around, the server uses it to identify that both connections are from the same server
+            const byte send_data[19] = { MS_TOKEN, (sock_port >> 8) & 0xFF, sock_port & 0xFF };
+            const byte* token_ptr = GenerateUUID();
+            memcpy((void*)&send_data[3], token_ptr, 16);
 
-        // cur_time is just a dummy data to send
-#ifdef NEWCODE
-        *((tic_t *)netbuffer) = cur_time;
-        doomcom->datalength = sizeof(cur_time);
-        doomcom->remotenode = msnode;
-        I_NetSend();
-#else
-        sendto(mysocket, (char*)&cur_time, sizeof(cur_time), 0, (struct sockaddr *)&udp_addr, sizeof(struct sockaddr));
-#endif
-#endif
+            DTLSSendPacket(&msSocket[0], send_data, sizeof(send_data));
+            if (msSocket[1].sock != INVALID_SOCKET)
+            {
+                DTLSSendPacket(&msSocket[1], send_data, sizeof(send_data));
+            }
+        }
+        else
+        {
+            next_time = cur_time + 30 * TICRATE;
+
+            const byte send_data[17] = { MS_PING };
+            memcpy((void*)&send_data[1], msToken, 16);
+            lastSendFrom = (lastSendFrom+1) & 1; // Alternate between the two sockets for sending pings
+            if (msSocket[lastSendFrom].sock == INVALID_SOCKET)
+            {
+                lastSendFrom = 0;
+            }
+            DTLSSendPacket(&msSocket[lastSendFrom], send_data, sizeof(send_data));
+        }
     }
 }
 
 void UnregisterServer()
 {
-    if (con_state != MSCS_REGISTERED)
-    {
-        con_state = MSCS_NONE;
-        CloseConnection();
-        return;
-    }
-    con_state = MSCS_NONE;
-
-    CONS_Printf("Unregistering this server to the master server...\n");
-
-    if (MS_Connect(registered_server.ip, registered_server.port, 0))
-    {
-        CONS_Printf("cannot connect to the master server\n");
-        return;
-    }
-
-    if (RemoveFromMasterSever() < 0)
-        CONS_Printf("cannot remove this server from the master server\n");
-
-    CloseConnection();
-#ifdef NEWCODE
-    I_NetFreeNodenum( msnode );
-#endif
+    // We can cheat and just close the socket, SSL will alert the master server that we are gone already.
+    bHaveToken = false;
+    CleanupSocket(&msSocket[0]);
 }
 
-/*
-** MS_GetIP()
-*/
-static int MS_GetIP(char *hostname)
+static int ResolveAddress(const char* input_str, const char* default_port, socketaddrms_t* out_addr4, socketaddrms_t* out_addr6)
 {
-    struct hostent *host_ent;
+    char* input_copy = strdup(input_str);
+    if (!input_copy) return -1;
 
-    if (!inet_aton(hostname, &addr.sin_addr)) {
-        //TODO: only when we are connected to Internet, or use a non bloking call
-        host_ent = gethostbyname(hostname);
-        if (host_ent==NULL)
-            return MS_GETHOSTBYNAME_ERROR;
-        memcpy(&addr.sin_addr, host_ent->h_addr_list[0], sizeof(struct in_addr));
-    }
-    return 0;
-}
+    char* host = input_copy;
+    char* port = NULL;
 
-
-/*
-** MS_Connect()
-*/
-static int MS_Connect(char *ip_addr, char *str_port, int async)
-{
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    I_InitTcpDriver(); // this is done only if not already done
-
-    if ((socket_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-        return MS_SOCKET_ERROR;
-
-    if (MS_GetIP(ip_addr)==MS_GETHOSTBYNAME_ERROR)
-        return MS_GETHOSTBYNAME_ERROR;
-    addr.sin_port = htons(atoi(str_port));
-
-#if 0
-    if (async) // do asynchronous connection
+    // Handle IPv6 literal addresses like [::1]:8080
+    if (host[0] == '[') 
     {
-        int res = 1;
-
-        ioctl(socket_fd, FIONBIO, &res);
-        res = connect(socket_fd, (struct sockaddr *) &addr, sizeof(addr));
-        if (res < 0)
+        host++;
+        char* end_bracket = strchr(host, ']');
+        if (end_bracket) 
         {
-#ifdef WIN32  // humm, on win32 it doesn't work with EINPROGRESS (stupid windows)
-            if (WSAGetLastError() != WSAEWOULDBLOCK)
-#else
-            if (errno != EINPROGRESS)
-#endif
+            *end_bracket = '\0';
+            if (*(end_bracket + 1) == ':') 
             {
-                con_state = MSCS_FAILED;
-                CloseConnection();
-                return MS_CONNECT_ERROR;
+                port = end_bracket + 2;
             }
         }
-        con_state = MSCS_WAITING;
-        FD_ZERO(&wset);
-        FD_SET(socket_fd, &wset);  
-        select_timeout.tv_sec = 0, select_timeout.tv_usec = 0;
     }
-    else
+    else 
     {
-        if (connect(socket_fd, (struct sockaddr *) &addr, sizeof(addr)) < 0)
-            return MS_CONNECT_ERROR;
+        // Handle IPv4 or regular domain names like example.com:8080
+        char* last_colon = strrchr(host, ':');
+        // Ensure it's a port colon and not part of an unbracketed IPv6 address
+        if (last_colon && !strchr(host, ':') != (last_colon == strchr(host, ':'))) 
+        {
+            *last_colon = '\0';
+            port = last_colon + 1;
+        }
     }
-#endif
 
-    return 0;
+    // If no port was found in the string, use the fallback default port
+    if (!port || strlen(port) == 0) 
+    {
+        port = (char*)default_port;
+    }
+
+    // Configure hints for getaddrinfo
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;     // Allow both IPv4 and IPv6
+    hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
+
+    struct addrinfo* result = NULL;
+    int s = getaddrinfo(host, port, &hints, &result);
+    if (s != 0) 
+    {
+        fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(s));
+        free(input_copy);
+        return -1;
+    }
+
+    // Find both the first IPv4 and IPv6 addresses
+    struct addrinfo* rp;
+    boolean found_ipv4 = false;
+    boolean found_ipv6 = false;
+    for (rp = result; rp != NULL; rp = rp->ai_next)
+    {
+        if (rp->ai_family == AF_INET && out_addr4 != NULL && !found_ipv4)
+        {
+            memcpy(&out_addr4->ipv4, rp->ai_addr, rp->ai_addrlen);
+            out_addr4->i_family = AF_INET;
+            found_ipv4 = true;
+        }
+        else if (rp->ai_family == AF_INET6 && out_addr6 != NULL && !found_ipv6)
+        {
+            memcpy(&out_addr6->ipv6, rp->ai_addr, rp->ai_addrlen);
+            out_addr6->i_family = AF_INET6;
+            found_ipv6 = true;
+        }
+    }
+
+    freeaddrinfo(result);
+    free(input_copy);
+    return found_ipv4 || found_ipv6 ? 1 : -1;
 }
 
-
-/*
- * MS_Write():
- */
-static int MS_Write(msg_t *msg)
+// Attempt connection to the master server.
+static int MS_Connect(char *ip_addr, int all)
 {
-    int len;
+    InitNetworking();
+    DTLSConfigureMasterServerCertificate(cv_masterservercert.string);
 
-    if (msg->length < 0)
-        msg->length = strlen(msg->buffer);
-    len = msg->length+HEADER_SIZE;
+    bHaveToken = false;
 
-    //msg->id = htonl(msg->id);
-    msg->type = htonl(msg->type);
-    msg->length = htonl(msg->length);
+    CleanupSocket(&msSocket[0]);
+    CleanupSocket(&msSocket[1]);
 
-    if (send(socket_fd, (char*)msg, len, 0) != len)
-        return MS_WRITE_ERROR;
+    socketaddrms_t addr4;
+    socketaddrms_t addr6;
 
-    return 0;
-}
+    memset(&addr4, 0, sizeof(addr4));
+    memset(&addr6, 0, sizeof(addr6));
 
+    if (ResolveAddress(ip_addr, DEF_PORT, &addr4, &addr6) <= 0)
+        return MS_GETHOSTBYNAME_ERROR;
 
-/*
- * MS_Read():
- */
-static int MS_Read(msg_t *msg)
-{
-    if (recv(socket_fd, (char*)msg, HEADER_SIZE, 0) != HEADER_SIZE)
-        return MS_READ_ERROR;
-
-    //msg->id = ntohl(msg->id);
-    msg->type = ntohl(msg->type);
-    msg->length = ntohl(msg->length);
-
-    if (!msg->length) //Hurdler: fix a bug in Windows 2000
-        return 0;
-
-    if (recv(socket_fd, (char*)msg->buffer, msg->length, 0) != msg->length)
-        return MS_READ_ERROR;
-
+    int in = 0;
+    if (addr4.i_family == AF_INET) 
+    {
+        msSocket[in] = DTLSConnectSocket(&addr4);
+        if (msSocket[in].sock != INVALID_SOCKET)
+        {
+            in++;
+        }
+    }
+    if (addr6.i_family == AF_INET6)
+    {
+        msSocket[in] = DTLSConnectSocket(&addr6);
+    }
+    
     return 0;
 }

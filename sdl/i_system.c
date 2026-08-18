@@ -461,8 +461,8 @@ ticcmd_t*       I_BaseTiccmd(void)
 //
 ULONG  I_GetTime (void)
 {
-    Uint32        ticks;
-    static Uint32 basetime=0;
+    uint64_t        ticks;
+    static uint64_t basetime=0;
 
     // milliseconds since SDL initialization
     ticks = SDL_GetTicks();

@@ -71,10 +71,7 @@ extern consvar_t cv_masterserver;
 extern consvar_t cv_servername;
 extern consvar_t cv_internetserver;
 
-char *GetMasterServerPort(void);
-char *GetMasterServerIP(void);
-
-void RegisterServer(int, int);
+//void RegisterServer(int, int);
 void UnregisterServer(void);
 
 void SendPingToMasterServer(void);
