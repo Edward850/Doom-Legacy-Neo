@@ -87,7 +87,7 @@ jobs:
         path: ${{ matrix.archive_name }}
         if-no-files-found: error
         
-release:
+  release:
     name: Publish Release
     needs: build
     runs-on: ubuntu-latest
