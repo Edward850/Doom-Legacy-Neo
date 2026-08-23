@@ -64,13 +64,13 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef __W_WAD__
-#define __W_WAD__
+#pragma once
+#include "r_defs.h"
 
 #ifdef HWRENDER
 #include "hardware/hw_data.h"
 #else
-typedef void GlidePatch_t;
+typedef struct GlidePatch_s GlidePatch_t;
 #endif
 
 #ifdef __GNUG__
@@ -178,14 +178,14 @@ void    W_ReadLump (int lump, void *dest);
 void*   W_CacheLumpNum (int lump, int tag);
 void*   W_CacheLumpName (char* name, int tag);
 
-void*   W_CachePatchName (char* name, int tag);
+patch_t* W_CachePatchName (char* name, int tag);
 
 #ifdef HWRENDER // not win32 only 19990829 by Kin
 void*   W_CachePatchNum (int lump, int tag);                        // return a patch_t
 #else
-#define W_CachePatchNum(lump,tag)    W_CacheLumpNum(lump,tag)
+#define W_CachePatchNum(lump,tag)    (patch_t *)W_CacheLumpNum(lump,tag)
 #endif
-void   *W_CacheRawAsPic( int lump, int width, int height, int tag); // return a pic_t
+pic_t   *W_CacheRawAsPic( int lump, int width, int height, int tag); // return a pic_t
 
 //SoM: 4/13/2000: Store lists of lumps for F_START/F_END ect.
 typedef struct {
@@ -195,4 +195,3 @@ typedef struct {
 } lumplist_t;
                     
 void    W_LoadDehackedLumps( int wadnum );                    
-#endif // __W_WAD__

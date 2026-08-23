@@ -66,8 +66,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef __HWR_DRV_H__
-#define __HWR_DRV_H__
+#pragma once
 
 // this must be here 19991024 by Kin
 #include "../screen.h"
@@ -114,7 +113,7 @@
 
 typedef void (*I_Error_t) (char *error, ...);
 
-EXPORT boolean HWRAPI( Init ) (I_Error_t ErrorFunction) ;
+EXPORT bool HWRAPI( Init ) (I_Error_t ErrorFunction) ;
 EXPORT void HWRAPI( Shutdown ) (void) ;
 #ifdef __WIN32__
 EXPORT void    HWRAPI( GetModeList ) (vmode_t** pvidmodes, int* numvidmodes) ;
@@ -204,5 +203,3 @@ extern struct hwdriver_s hwdriver;
 #define HWD hwdriver
 
 #endif //not defined _CREATE_DLL_
-
-#endif //__HWR_DRV_H__

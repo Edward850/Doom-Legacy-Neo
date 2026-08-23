@@ -56,7 +56,7 @@
 extern tic_t      rendergametic;
 
 // for dedicated server
-extern boolean dedicated;
+extern bool dedicated;
 
 // the infinite loop of D_DoomLoop() called from win_main for windows version
 void D_DoomLoop (void);

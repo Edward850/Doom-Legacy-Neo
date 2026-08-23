@@ -112,7 +112,7 @@ void Flush(void);
 int  isExtAvailable(char *extension);
 int  SetRes(viddef_t *lvid, vmode_t *pcurrentmode);
 void UnSetRes(void);
-boolean SetupPixelFormat(int WantColorBits, int WantStencilBits, int WantDepthBits);
+bool SetupPixelFormat(int WantColorBits, int WantStencilBits, int WantDepthBits);
 void SetModelView(GLint w, GLint h);
 void SetStates(void);
 

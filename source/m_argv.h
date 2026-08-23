@@ -53,7 +53,7 @@ void M_PushSpecialParameters( void );
 
 // return true if there is available parameters
 // use it befor M_GetNext 
-boolean M_IsNextParm(void);
+bool M_IsNextParm(void);
 
 // return the next parameter after a M_CheckParm
 // NULL if not found use M_IsNext to find if there is a parameter

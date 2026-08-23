@@ -30,8 +30,8 @@
 #ifndef __BOTLOOK_H__
 #define __BOTLOOK_H__
 
-boolean B_ReachablePoint (player_t *p, sector_t* destSector, fixed_t x, fixed_t y);
-boolean B_LookForSpecialLine (player_t* p, fixed_t* x, fixed_t* y);
+bool B_ReachablePoint (player_t *p, sector_t* destSector, fixed_t x, fixed_t y);
+bool B_LookForSpecialLine (player_t* p, fixed_t* x, fixed_t* y);
 void B_LookForThings (player_t* p);
 
 #endif

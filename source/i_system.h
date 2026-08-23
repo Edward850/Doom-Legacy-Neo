@@ -70,7 +70,7 @@ extern int i_love_bill;
 extern volatile tic_t ticcount;
 
 #ifdef __WIN32__
-extern boolean winnt;
+extern bool winnt;
 extern BOOL   bDX0300;
 #endif
 

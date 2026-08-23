@@ -73,8 +73,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef __D_STATE__
-#define __D_STATE__
+#pragma once
 
 
 // We need globally shared data structures,
@@ -132,11 +131,11 @@ typedef enum
 //
 extern gamemode_t      gamemode;
 extern gamemission_t   gamemission;
-extern boolean         inventory;   // true with heretic and hexen
-extern boolean         raven;       // true with heretic and hexen
+extern bool         inventory;   // true with heretic and hexen
+extern bool         raven;       // true with heretic and hexen
 
 // Set if homebrew PWAD stuff has been added.
-extern  boolean modifiedgame;
+extern  bool modifiedgame;
 
 
 // =========
@@ -157,12 +156,12 @@ extern  byte            gameepisode;
 extern  byte            gamemap;
 
 // Nightmare mode flag, single player.
-// extern  boolean         respawnmonsters;
+// extern  bool         respawnmonsters;
 
 // Netgame? only true in a netgame
-extern  boolean         netgame;
+extern  bool         netgame;
 // Only true if >1 player. netgame => multiplayer but not (multiplayer=>netgame)
-extern  boolean         multiplayer;
+extern  bool         multiplayer;
 
 // Flag: true only if started as net deathmatch.
 // An enum might handle altdeath/cooperative better.
@@ -173,9 +172,9 @@ extern  consvar_t       cv_deathmatch;
 // Internal parameters for sound rendering.
 // ========================================
 
-extern boolean         nomusic; //defined in d_main.c
-extern boolean         nosound;
-extern boolean         digmusic; // SSNTails 12-13-2002
+extern bool         nomusic; //defined in d_main.c
+extern bool         nosound;
+extern bool         digmusic; // SSNTails 12-13-2002
 
 // =========================
 // Status flags for refresh.
@@ -185,13 +184,13 @@ extern boolean         digmusic; // SSNTails 12-13-2002
 // Depending on view size - no status bar?
 // Note that there is no way to disable the
 //  status bar explicitely.
-extern  boolean statusbaractive;
+extern  bool statusbaractive;
 
-extern  boolean menuactive;     // Menu overlayed?
-extern  boolean paused;         // Game Pause?
+extern  bool menuactive;     // Menu overlayed?
+extern  bool paused;         // Game Pause?
 
-extern  boolean         nodrawers;
-extern  boolean         noblit;
+extern  bool         nodrawers;
+extern  bool         noblit;
 
 extern  int             viewwindowx;
 extern  int             viewwindowy;
@@ -277,7 +276,7 @@ extern  FILE*           debugfile;
 
 
 // if true, load all graphics at level load
-extern  boolean         precache;
+extern  bool         precache;
 
 
 // wipegamestate can be set to -1
@@ -286,7 +285,7 @@ extern  gamestate_t     wipegamestate;
 
 //?
 // debug flag to cancel adaptiveness
-extern  boolean         singletics;
+extern  bool         singletics;
 
 #define   BODYQUESIZE     32
 
@@ -302,5 +301,3 @@ extern  int             bodyqueslot;
 //extern  ticcmd_t        localcmds[BACKUPTICS];
 
 extern  ticcmd_t        netcmds[BACKUPTICS][MAXPLAYERS];
-
-#endif //__D_STATE__

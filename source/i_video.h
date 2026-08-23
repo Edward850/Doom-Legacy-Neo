@@ -43,8 +43,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef __I_VIDEO__
-#define __I_VIDEO__
+#pragma once
 
 
 #include "doomtype.h"
@@ -64,7 +63,7 @@ typedef enum {
 extern rendermode_t    rendermode;
 
 // use highcolor modes if true
-extern boolean highcolor;
+extern bool highcolor;
 
 void I_StartupGraphics (void);          //setup video mode
 void I_ShutdownGraphics(void);          //restore old video mode
@@ -94,5 +93,3 @@ void I_ReadScreen (byte* scr);
 
 void I_BeginRead (void);
 void I_EndRead (void);
-
-#endif

@@ -333,7 +333,7 @@ SPR_AMB2,
 
 } spritenum_t;
 
-typedef enum
+typedef enum : int
 {
     S_NULL,
     S_LIGHTDONE,
@@ -2866,20 +2866,20 @@ MT_SOUNDWATERFALL,
 typedef struct
 {
     int doomednum;
-    int spawnstate;
+    statenum_t spawnstate;
     int spawnhealth;
-    int seestate;
+    statenum_t seestate;
     int seesound;
     int reactiontime;
     int attacksound;
-    int painstate;
+    statenum_t painstate;
     int painchance;
     int painsound;
-    int meleestate;
-    int missilestate;
-    int crashstate;   // from heretic/hexen
-    int deathstate;
-    int xdeathstate;
+    statenum_t meleestate;
+    statenum_t missilestate;
+    statenum_t crashstate;   // from heretic/hexen
+    statenum_t deathstate;
+    statenum_t xdeathstate;
     int deathsound;
     int speed;
     int radius;
@@ -2888,10 +2888,209 @@ typedef struct
     int damage;
     int activesound;
     int flags;
-    int raisestate;
+    statenum_t raisestate;
     int flags2;       // from heretic/hexen
 } mobjinfo_t;
 
 extern mobjinfo_t mobjinfo[NUMMOBJTYPES];
+
+typedef struct mobj_s mobj_t;
+typedef struct player_s player_t;
+typedef struct pspdef_s pspdef_t;
+
+// weapon / psprite actions: actionf_p2
+void A_Light0(player_t* player, pspdef_t* psp);
+void A_WeaponReady(player_t* player, pspdef_t* psp);
+void A_Lower(player_t* player, pspdef_t* psp);
+void A_Raise(player_t* player, pspdef_t* psp);
+void A_Punch(player_t* player, pspdef_t* psp);
+void A_ReFire(player_t* player, pspdef_t* psp);
+void A_FirePistol(player_t* player, pspdef_t* psp);
+void A_Light1(player_t* player, pspdef_t* psp);
+void A_FireShotgun(player_t* player, pspdef_t* psp);
+void A_Light2(player_t* player, pspdef_t* psp);
+void A_FireShotgun2(player_t* player, pspdef_t* psp);
+void A_CheckReload(player_t* player, pspdef_t* psp);
+void A_OpenShotgun2(player_t* player, pspdef_t* psp);
+void A_LoadShotgun2(player_t* player, pspdef_t* psp);
+void A_CloseShotgun2(player_t* player, pspdef_t* psp);
+void A_FireCGun(player_t* player, pspdef_t* psp);
+void A_GunFlash(player_t* player, pspdef_t* psp);
+void A_FireMissile(player_t* player, pspdef_t* psp);
+void A_Saw(player_t* player, pspdef_t* psp);
+void A_FirePlasma(player_t* player, pspdef_t* psp);
+void A_BFGsound(player_t* player, pspdef_t* psp);
+void A_FireBFG(player_t* player, pspdef_t* psp);
+
+void A_StaffAttackPL1(player_t* player, pspdef_t* psp);
+void A_StaffAttackPL2(player_t* player, pspdef_t* psp);
+void A_BeakReady(player_t* player, pspdef_t* psp);
+void A_BeakRaise(player_t* player, pspdef_t* psp);
+void A_BeakAttackPL1(player_t* player, pspdef_t* psp);
+void A_BeakAttackPL2(player_t* player, pspdef_t* psp);
+void A_GauntletAttack(player_t* player, pspdef_t* psp);
+void A_FireBlasterPL1(player_t* player, pspdef_t* psp);
+void A_FireBlasterPL2(player_t* player, pspdef_t* psp);
+void A_FireMacePL1(player_t* player, pspdef_t* psp);
+void A_FireMacePL2(player_t* player, pspdef_t* psp);
+void A_FireSkullRodPL1(player_t* player, pspdef_t* psp);
+void A_FireSkullRodPL2(player_t* player, pspdef_t* psp);
+void A_FireGoldWandPL1(player_t* player, pspdef_t* psp);
+void A_FireGoldWandPL2(player_t* player, pspdef_t* psp);
+void A_FirePhoenixPL1(player_t* player, pspdef_t* psp);
+void A_InitPhoenixPL2(player_t* player, pspdef_t* psp);
+void A_FirePhoenixPL2(player_t* player, pspdef_t* psp);
+void A_ShutdownPhoenixPL2(player_t* player, pspdef_t* psp);
+void A_FireCrossbowPL1(player_t* player, pspdef_t* psp);
+void A_FireCrossbowPL2(player_t* player, pspdef_t* psp);
+
+// actor / projectile / world actions: actionf_p1
+void A_BFGSpray(mobj_t* mo);
+void A_Explode(mobj_t* mo);
+void A_Pain(mobj_t* mo);
+void A_PlayerScream(mobj_t* mo);
+void A_Fall(mobj_t* mo);
+void A_XScream(mobj_t* mo);
+void A_Look(mobj_t* mo);
+void A_Chase(mobj_t* mo);
+void A_FaceTarget(mobj_t* mo);
+void A_PosAttack(mobj_t* mo);
+void A_Scream(mobj_t* mo);
+void A_SPosAttack(mobj_t* mo);
+void A_VileChase(mobj_t* mo);
+void A_VileStart(mobj_t* mo);
+void A_VileTarget(mobj_t* mo);
+void A_VileAttack(mobj_t* mo);
+void A_StartFire(mobj_t* mo);
+void A_Fire(mobj_t* mo);
+void A_FireCrackle(mobj_t* mo);
+void A_Tracer(mobj_t* mo);
+void A_SkelWhoosh(mobj_t* mo);
+void A_SkelFist(mobj_t* mo);
+void A_SkelMissile(mobj_t* mo);
+void A_FatRaise(mobj_t* mo);
+void A_FatAttack1(mobj_t* mo);
+void A_FatAttack2(mobj_t* mo);
+void A_FatAttack3(mobj_t* mo);
+void A_BossDeath(mobj_t* mo);
+void A_CPosAttack(mobj_t* mo);
+void A_CPosRefire(mobj_t* mo);
+void A_TroopAttack(mobj_t* mo);
+void A_SargAttack(mobj_t* mo);
+void A_HeadAttack(mobj_t* mo);
+void A_BruisAttack(mobj_t* mo);
+void A_SkullAttack(mobj_t* mo);
+void A_Metal(mobj_t* mo);
+void A_SpidRefire(mobj_t* mo);
+void A_BabyMetal(mobj_t* mo);
+void A_BspiAttack(mobj_t* mo);
+void A_Hoof(mobj_t* mo);
+void A_CyberAttack(mobj_t* mo);
+void A_PainAttack(mobj_t* mo);
+void A_PainDie(mobj_t* mo);
+void A_KeenDie(mobj_t* mo);
+void A_BrainPain(mobj_t* mo);
+void A_BrainScream(mobj_t* mo);
+void A_BrainDie(mobj_t* mo);
+void A_BrainAwake(mobj_t* mo);
+void A_BrainSpit(mobj_t* mo);
+void A_SpawnSound(mobj_t* mo);
+void A_SpawnFly(mobj_t* mo);
+void A_BrainExplode(mobj_t* mo);
+
+void A_FreeTargMobj(mobj_t* mo);
+void A_RestoreSpecialThing1(mobj_t* mo);
+void A_RestoreSpecialThing2(mobj_t* mo);
+void A_HideThing(mobj_t* mo);
+void A_UnHideThing(mobj_t* mo);
+void A_RestoreArtifact(mobj_t* mo);
+void A_HScream(mobj_t* mo);
+void A_PodPain(mobj_t* mo);
+void A_RemovePod(mobj_t* mo);
+void A_MakePod(mobj_t* mo);
+void A_InitKeyGizmo(mobj_t* mo);
+void A_VolcanoSet(mobj_t* mo);
+void A_VolcanoBlast(mobj_t* mo);
+void A_BeastPuff(mobj_t* mo);
+void A_VolcBallImpact(mobj_t* mo);
+void A_SpawnTeleGlitter(mobj_t* mo);
+void A_SpawnTeleGlitter2(mobj_t* mo);
+void A_AccTeleGlitter(mobj_t* mo);
+void A_SpawnRippers(mobj_t* mo);
+void A_MacePL1Check(mobj_t* ball);
+void A_MaceBallImpact(mobj_t* mo);
+void A_MaceBallImpact2(mobj_t* mo);
+void A_DeathBallImpact(mobj_t* mo);
+void A_SkullRodPL2Seek(mobj_t* mo);
+void A_AddPlayerRain(mobj_t* mo);
+void A_HideInCeiling(mobj_t* mo);
+void A_SkullRodStorm(mobj_t* mo);
+void A_RainImpact(mobj_t* mo);
+void A_PhoenixPuff(mobj_t* mo);
+void A_FlameEnd(mobj_t* mo);
+void A_FloatPuff(mobj_t* mo);
+void A_BoltSpark(mobj_t* mo);
+void A_NoBlocking(mobj_t* mo);
+void A_AddPlayerCorpse(mobj_t* mo);
+void A_SkullPop(mobj_t* mo);
+void A_FlameSnd(mobj_t* mo);
+void A_CheckBurnGone(mobj_t* mo);
+void A_CheckSkullFloor(mobj_t* mo);
+void A_CheckSkullDone(mobj_t* mo);
+void A_Feathers(mobj_t* mo);
+void A_ChicLook(mobj_t* mo);
+void A_ChicChase(mobj_t* mo);
+void A_ChicPain(mobj_t* mo);
+void A_ChicAttack(mobj_t* mo);
+void A_MummyAttack(mobj_t* mo);
+void A_MummyAttack2(mobj_t* mo);
+void A_MummySoul(mobj_t* mo);
+void A_ContMobjSound(mobj_t* mo);
+void A_MummyFX1Seek(mobj_t* mo);
+void A_BeastAttack(mobj_t* mo);
+void A_SnakeAttack(mobj_t* mo);
+void A_SnakeAttack2(mobj_t* mo);
+void A_HHeadAttack(mobj_t* mo);
+void A_HBossDeath(mobj_t* mo);
+void A_HeadIceImpact(mobj_t* mo);
+void A_HeadFireGrow(mobj_t* mo);
+void A_WhirlwindSeek(mobj_t* mo);
+void A_ClinkAttack(mobj_t* mo);
+void A_WizAtk1(mobj_t* mo);
+void A_WizAtk2(mobj_t* mo);
+void A_WizAtk3(mobj_t* mo);
+void A_GhostOff(mobj_t* mo);
+void A_ImpMeAttack(mobj_t* mo);
+void A_ImpMsAttack(mobj_t* mo);
+void A_ImpMsAttack2(mobj_t* mo);
+void A_ImpDeath(mobj_t* mo);
+void A_ImpXDeath1(mobj_t* mo);
+void A_ImpXDeath2(mobj_t* mo);
+void A_ImpExplode(mobj_t* mo);
+void A_KnightAttack(mobj_t* mo);
+void A_DripBlood(mobj_t* mo);
+void A_Sor1Chase(mobj_t* mo);
+void A_Sor1Pain(mobj_t* mo);
+void A_Srcr1Attack(mobj_t* mo);
+void A_SorZap(mobj_t* mo);
+void A_SorcererRise(mobj_t* mo);
+void A_SorRise(mobj_t* mo);
+void A_SorSightSnd(mobj_t* mo);
+void A_Srcr2Decide(mobj_t* mo);
+void A_Srcr2Attack(mobj_t* mo);
+void A_Sor2DthInit(mobj_t* mo);
+void A_SorDSph(mobj_t* mo);
+void A_Sor2DthLoop(mobj_t* mo);
+void A_SorDExp(mobj_t* mo);
+void A_SorDBon(mobj_t* mo);
+void A_BlueSpark(mobj_t* mo);
+void A_GenWizard(mobj_t* mo);
+void A_MinotaurAtk1(mobj_t* mo);
+void A_MinotaurDecide(mobj_t* mo);
+void A_MinotaurAtk2(mobj_t* mo);
+void A_MinotaurAtk3(mobj_t* mo);
+void A_MinotaurCharge(mobj_t* mo);
+void A_MntrFloorFire(mobj_t* mo);
+void A_ESound(mobj_t* mo);
 
 #endif

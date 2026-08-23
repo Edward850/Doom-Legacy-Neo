@@ -192,7 +192,7 @@ void R_Init (void);
 
 
 // just sets setsizeneeded true
-extern boolean     setsizeneeded;
+extern bool     setsizeneeded;
 void   R_SetViewSize (void);
 
 // do it (sometimes explicitly called)

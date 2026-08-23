@@ -87,9 +87,7 @@
 //
 //-----------------------------------------------------------------------------
 
-
-#ifndef __HWR_MAIN_H__
-#define __HWR_MAIN_H__
+#pragma once
 
 #include "hw_data.h"
 #include "hw_defs.h"
@@ -108,7 +106,7 @@ void HWR_FadeScreenMenuBack (unsigned long color, int height);
 void HWR_RenderPlayerView (int viewnumber, player_t* player);
 void HWR_DrawViewBorder (int clearlines);
 void HWR_DrawFlatFill (int x, int y, int w, int h, int flatlumpnum);
-boolean HWR_Screenshot (char *lbmname);
+bool HWR_Screenshot (char *lbmname);
 void HWR_InitTextureMapping (void);
 void HWR_SetViewSize (int blocks);
 void HWR_DrawPatch (GlidePatch_t* gpatch, int x, int y, int option);
@@ -144,5 +142,3 @@ extern consvar_t cv_grgammagreen;
 extern consvar_t cv_grgammablue;
 extern consvar_t cv_grfiltermode;
 extern consvar_t cv_grcorrecttricks;
-
-#endif

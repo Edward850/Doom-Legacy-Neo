@@ -400,19 +400,19 @@ typedef struct sector_s
     int                        numattached;
     lightlist_t*               lightlist;
     int                        numlights;
-    boolean                    moved;
+    bool                    moved;
 
     int                        validsort; //if == validsort allready been sorted
-    boolean                    added;
+    bool                    added;
 
     // SoM: 4/3/2000: per-sector colormaps!
     extracolormap_t*           extra_colormap;
 
     // ----- for special tricks with HW renderer -----
-    boolean                    pseudoSector;
-    boolean                    virtualFloor;
+    bool                    pseudoSector;
+    bool                    virtualFloor;
     fixed_t                    virtualFloorheight;
-    boolean                    virtualCeiling;
+    bool                    virtualCeiling;
     fixed_t                    virtualCeilingheight;
     linechain_t               *sectorLines;
     struct sector_s           **stackList;
@@ -564,7 +564,7 @@ typedef struct msecnode_s
   struct msecnode_s *m_tnext;  // next msecnode_t for this thing
   struct msecnode_s *m_sprev;  // prev msecnode_t for this sector
   struct msecnode_s *m_snext;  // next msecnode_t for this sector
-  boolean visited; // killough 4/4/98, 4/7/98: used in search algorithms
+  bool visited; // killough 4/4/98, 4/7/98: used in search algorithms
 } msecnode_t;
 
 
@@ -842,7 +842,7 @@ typedef struct
     // If false use 0 for any position.
     // Note: as eight entries are available,
     //  we might as well insert the same name eight times.
-    boolean     rotate;
+    bool     rotate;
 
     // Lump to use for view angles 0-7.
     int         lumppat[8];   // lump number 16:16 wad:lump

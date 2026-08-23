@@ -124,12 +124,12 @@ extern doomcom_t *doomcom;
 // to be defined by the network driver
 extern void    (*I_NetGet) (void);                // return packet in doomcom struct
 extern void    (*I_NetSend) (void);               // send packet within doomcom struct
-extern boolean (*I_NetCanSend) (void);            // ask to driver if all is ok to send data now
+extern bool (*I_NetCanSend) (void);            // ask to driver if all is ok to send data now
 extern void    (*I_NetFreeNodenum) (int nodenum); // close a connection 
 extern int     (*I_NetMakeNode) (char *address);  // open a connection with spécified address
-extern boolean (*I_NetOpenSocket) (void);         // opend all connections
+extern bool (*I_NetOpenSocket) (void);         // opend all connections
 extern void    (*I_NetCloseSocket) (void);        // close all connections no more allow geting any packet 
 
-boolean I_InitNetwork (void);
+bool I_InitNetwork (void);
 
 #endif

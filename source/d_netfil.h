@@ -85,7 +85,7 @@ extern fileneeded_t fileneeded[MAX_WADFILES];
 void D_NetFileInit(void);
 
 char *PutFileNeeded(void);
-void D_ParseFileneeded(int fileneedednum_parm, char *fileneededstr);
+void D_ParseFileneeded(int fileneedednum_parm, byte *fileneededstr);
 void CL_PrepareDownloadSaveGame(const char *tmpsave);
 
 // check file list in wadfiles return 0 when a file is not found 
@@ -100,17 +100,17 @@ void SendRam(int node,byte *data, ULONG size,freemethode_t freemethode, char fil
 void FiletxTicker(void);
 void Got_Filetxpak(void);
 
-boolean SendRequestFile(void);
+bool SendRequestFile(void);
 void Got_RequestFilePak(int node);
 
 
 void AbortSendFiles(int node);
 void CloseNetFile(void);
 
-boolean fileexist(char *filename,time_t time);
+bool fileexist(char *filename,time_t time);
 
 // search a file in the wadpath, return FS_FOUND when found
-filestatus_t findfile(char *filename, unsigned char *wantedmd5sum, boolean completepath);
+filestatus_t findfile(char *filename, unsigned char *wantedmd5sum, bool completepath);
 filestatus_t checkfilemd5(char *filename, unsigned char *wantedmd5sum);
 
 void nameonly(char *s);

@@ -6,6 +6,6 @@
 
 #define MAXSEARCHDEPTH 20
 
-filestatus_t filesearch(char *filename, char *startpath, unsigned char *wantedmd5sum, boolean completepath, int maxsearchdepth);
+filestatus_t filesearch(char *filename, char *startpath, unsigned char *wantedmd5sum, bool completepath, int maxsearchdepth);
 
 #endif // __FILESRCH_H__

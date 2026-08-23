@@ -46,10 +46,9 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef __D_ITEMS__
-#define __D_ITEMS__
-
+#pragma once
 #include "doomdef.h"
+#include "info.h"
 
 #ifdef __GNUG__
 #pragma interface
@@ -232,17 +231,15 @@ typedef struct
 {
     ammotype_t  ammo;
     int         ammopershoot;
-    int         upstate;
-    int         downstate;
-    int         readystate;
-    int         atkstate;
-    int         holdatkstate;
-    int         flashstate;
+    statenum_t  upstate;
+    statenum_t  downstate;
+    statenum_t  readystate;
+    statenum_t  atkstate;
+    statenum_t  holdatkstate;
+    statenum_t  flashstate;
 
 } weaponinfo_t;
 
 extern weaponinfo_t doomweaponinfo[NUMWEAPONS];
 extern weaponinfo_t wpnlev1info[NUMWEAPONS];
 extern weaponinfo_t wpnlev2info[NUMWEAPONS];
-
-#endif

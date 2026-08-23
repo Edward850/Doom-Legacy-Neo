@@ -51,7 +51,7 @@ LinkedList_t* B_LLCreate();
 void B_LLDelete(LinkedList_t* list);
 void B_LLClear(LinkedList_t* list);
 void B_LLInsertFirstNode(LinkedList_t* list, SearchNode_t* tempNode);
-boolean B_LLIsEmpty(LinkedList_t* list);
+bool B_LLIsEmpty(LinkedList_t* list);
 SearchNode_t* B_LLRemoveFirstNode(LinkedList_t* list);
 SearchNode_t* B_LLRemoveLastNode(LinkedList_t* list);
 

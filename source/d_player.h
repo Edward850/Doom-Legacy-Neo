@@ -141,7 +141,7 @@ typedef struct player_s
     // Power ups. invinc and invis are tic counters.
     int                 powers[NUMPOWERS];
     byte                cards; // bit field see declration of card_t
-    boolean             backpack;
+    bool             backpack;
 
     // Frags, kills of other players.
     USHORT              addfrags;   // player have killed a player but is gone
@@ -151,19 +151,19 @@ typedef struct player_s
     // Is wp_nochange if not changing.
     weapontype_t        pendingweapon;
 
-    boolean             weaponowned[NUMWEAPONS];
+    bool             weaponowned[NUMWEAPONS];
     int                 ammo[NUMAMMO];
     int                 maxammo[NUMAMMO];
      // added by Boris : preferred weapons order stuff
      char                favoritweapon[NUMWEAPONS];
-     boolean             originalweaponswitch;
+     bool             originalweaponswitch;
      //added:28-02-98:
-     boolean             autoaim_toggle;
+     bool             autoaim_toggle;
 
     // True if button down last tic.
-    boolean             attackdown;
-    boolean             usedown;
-    boolean             jumpdown;   //added:19-03-98:dont jump like a monkey!
+    bool             attackdown;
+    bool             usedown;
+    bool             jumpdown;   //added:19-03-98:dont jump like a monkey!
 
     // Bit flags, for cheats and debug.
     // See cheat_t, above.
@@ -207,7 +207,7 @@ typedef struct player_s
     pspdef_t            psprites[NUMPSPRITES];
 
     // True if secret level has been done.
-    boolean             didsecret;
+    bool             didsecret;
 
     // heretic
         int              chickenTics;                    // player is a chicken if > 0
@@ -236,7 +236,7 @@ typedef struct player_s
 //
 typedef struct
 {
-    boolean     in;     // whether the player is in game
+    bool     in;     // whether the player is in game
 
     // Player stats, kills, collected items etc.
     int         skills;
@@ -255,7 +255,7 @@ typedef struct
     int         epsd;   // episode # (0-2)
 
     // if true, splash the secret level
-    boolean     didsecret;
+    bool     didsecret;
 
     // previous and next levels, origin 0
     int         last;

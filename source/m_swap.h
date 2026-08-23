@@ -40,40 +40,25 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef __M_SWAP__
-#define __M_SWAP__
+#pragma once
 
-
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
-// Endianess handling.
-// WAD files are stored little endian.
 #ifdef __BIG_ENDIAN__
+inline short LE_SWAP_SHORT(int x)
+{
+    return static_cast<short>(
+        (((unsigned short)(x) & 0x00ffU) << 8) |
+        (((unsigned short)(x) & 0xff00U) >> 8));
+}
 
-#define SHORT(x) ((short)( \
-(((unsigned short)(x) & (unsigned short)0x00ffU) << 8) \
-| \
-(((unsigned short)(x) & (unsigned short)0xff00U) >> 8) )) \
-
-#define LONG(x) ((int)( \
-(((unsigned int)(x) & (unsigned int)0x000000ffUL) << 24) \
-| \
-(((unsigned int)(x) & (unsigned int)0x0000ff00UL) <<  8) \
-| \
-(((unsigned int)(x) & (unsigned int)0x00ff0000UL) >>  8) \
-| \
-(((unsigned int)(x) & (unsigned int)0xff000000UL) >> 24) ))
-
+inline int LE_SWAP_LONG(int x)
+{
+    return
+        (((unsigned int)(x) & 0x000000ffUL) << 24) |
+        (((unsigned int)(x) & 0x0000ff00UL) << 8) |
+        (((unsigned int)(x) & 0x00ff0000UL) >> 8) |
+        (((unsigned int)(x) & 0xff000000UL) >> 24);
+}
 #else
-#define SHORT(x)  ((short)x)
-#define LONG(x)	  ((long) x)
-#endif
-
-
-
-
-
+inline short LE_SWAP_SHORT(int x) { return static_cast<short>(x); }
+inline long LE_SWAP_LONG(long x) { return static_cast<long>(x); }
 #endif

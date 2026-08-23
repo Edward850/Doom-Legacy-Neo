@@ -40,6 +40,14 @@ typedef struct runningscript_s runningscript_t;
 #include "p_mobj.h"
 #include "t_parse.h"
 
+enum waitType_t
+{
+    wt_none,        // not waiting
+    wt_delay,       // wait for a set amount of time
+    wt_tagwait,     // wait for sector to stop moving
+    wt_scriptwait,  // wait for script to finish
+};
+
 struct runningscript_s
 {
   script_t *script;
@@ -47,13 +55,7 @@ struct runningscript_s
   // where we are
   char *savepoint;
 
-  enum
-  {
-    wt_none,        // not waiting
-    wt_delay,       // wait for a set amount of time
-    wt_tagwait,     // wait for sector to stop moving
-    wt_scriptwait,  // wait for script to finish
-  } wait_type;
+  waitType_t wait_type;  // what we are waiting for
   int wait_data;  // data for wait: tagnum, counter, script number etc
 	
   // saved variables

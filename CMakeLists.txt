@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
+
+cmake_policy(SET CMP0141 NEW)
+set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT
+    "$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>")
 
 project(DoomLegacyNeo LANGUAGES C CXX)
 
@@ -17,6 +21,8 @@ find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
 find_package(Threads REQUIRED)
 
+option(BUILD_WSL2 "Build for WSL2 / Linux (when ON, do not use WIN32 executable flag)" OFF)
+
 # --- Windows-specific resource files ---
 set(WIN_RESOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.ico"
@@ -25,21 +31,34 @@ set(WIN_RESOURCE_FILES
 )
 
 # --- doomlegacy source files ---
-
-file(GLOB DOOM_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/*.c"
+file(GLOB BASE_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/sdl/*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/win32/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/hardware/hw_*.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/hardware/r_opengl/*.c"
 )
-
-file(GLOB CRYPTO_SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/crypto-algorithms/*.c"
+file(GLOB SDL_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sdl/*.cpp")
+file(GLOB WIN32_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/win32/*.cpp")
+file(GLOB LINUX_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/linux/*.cpp")
+file(GLOB HW_SOURCES CONFIGURE_DEPENDS 
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/hardware/hw_*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/hardware/r_opengl/*.cpp"
 )
+file(GLOB CRYPTO_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/crypto-algorithms/*.c")
 list(FILTER CRYPTO_SOURCES EXCLUDE REGEX ".*/[^/]*_test\\.c$")
-list(APPEND DOOM_SOURCES ${CRYPTO_SOURCES})
+
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/source" PREFIX "Source Files" FILES ${BASE_SOURCES} ${HW_SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/sdl" PREFIX "Source Files\\sdl" FILES ${SDL_SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/win32" PREFIX "Source Files\\win32" FILES ${WIN32_SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/linux" PREFIX "Source Files\\linux" FILES ${LINUX_SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/crypto-algorithms" PREFIX "Source Files\\crypto-algorithms" FILES ${CRYPTO_SOURCES})
+
+set(DOOM_SOURCES 
+    ${BASE_SOURCES} 
+    ${SDL_SOURCES} 
+    ${WIN32_SOURCES} 
+    ${LINUX_SOURCES} 
+    ${HW_SOURCES} 
+    ${CRYPTO_SOURCES}
+)
 
 # --- ymfmidi library ---
 file(GLOB YMFMIDI_SOURCES CONFIGURE_DEPENDS
@@ -64,6 +83,7 @@ target_compile_features(ymfmidi PUBLIC cxx_std_14)
 
 # --- doomlegacy includes and linking ---
 
+# Are we keeping the console for some reason? Add WIN32 flag if we aren't.
 add_executable(doomlegacy ${DOOM_SOURCES} ${WIN_RESOURCE_FILES})
 
 add_custom_command(TARGET doomlegacy POST_BUILD
@@ -103,11 +123,20 @@ if (ENABLE_ASAN)
     endif()
 endif()
 
+if(WIN32 AND NOT BUILD_WSL2)
 target_compile_definitions(doomlegacy PRIVATE
     __WIN32__
     WIN32_LEAN_AND_MEAN
     NOMINMAX
 )
+endif()
+
+if(UNIX AND NOT APPLE)
+    target_compile_definitions(doomlegacy PRIVATE
+        LINUX
+        VID_X11
+    )
+endif()
 
 target_link_libraries(doomlegacy PRIVATE
     SDL3::SDL3
@@ -116,14 +145,14 @@ target_link_libraries(doomlegacy PRIVATE
     OpenSSL::Crypto
 	CURL::libcurl
     Threads::Threads
-    shell32
-    shlwapi
-    ole32
 	ymfmidi
 )
 
 if (WIN32)
     target_link_libraries(doomlegacy PRIVATE
+        shell32
+        shlwapi
+        ole32
         ws2_32
         opengl32
         glu32

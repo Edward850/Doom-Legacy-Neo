@@ -63,7 +63,7 @@ extern line_t*          linedef;
 extern sector_t*        frontsector;
 extern sector_t*        backsector;
 
-extern boolean          skymap;
+extern bool          skymap;
 
 // faB: drawsegs are now allocated on the fly ... see r_segs.c
 // extern drawseg_t*       drawsegs;
@@ -91,8 +91,8 @@ void R_RenderBSPNode (int bspnum);
 
 sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec,
                      int *floorlightlevel, int *ceilinglightlevel,
-                     boolean back);
+                     bool back);
 
-int    R_GetPlaneLight(sector_t* sector, fixed_t  planeheight, boolean underside);
+int    R_GetPlaneLight(sector_t* sector, fixed_t  planeheight, bool underside);
 void   R_Prep3DFloors(sector_t* sector);
 #endif

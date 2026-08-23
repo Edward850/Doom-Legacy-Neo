@@ -153,13 +153,12 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef __DOOMDEF__
-#define __DOOMDEF__
+#pragma once
 
 #ifdef __WIN32__
-#define HWRENDER
+//#define HWRENDER
 #define ASMCALL __cdecl
-#pragma warning (disable :  4244 4146 4761 4152 4115 4100 4201 4200) // 4244 4146 4761 4018
+//#pragma warning (disable :  4244 4146 4761 4152 4115 4100 4201 4200) // 4244 4146 4761 4018
 // warning C4146: unary minus operator applied to unsigned type, result still unsigned
 // warning C4761: integral size mismatch in argument; conversion supplied
 // warning C4244: 'initializing' : conversion from 'const double ' to 'int ', possible loss of data
@@ -174,9 +173,10 @@
 // warning C4200: nonstandard extension used : zero-sized array in struct/union
 #else
 #define ASMCALL
+#endif
+
 #define min(x,y) ( ((x)<(y)) ? (x) : (y) )
 #define max(x,y) ( ((x)>(y)) ? (x) : (y) )
-#endif
 
 #include "doomtype.h"
 
@@ -276,7 +276,7 @@ char *va(char *format, ...);
 char *Z_StrDup (const char *in);
 
 // g_game.h
-extern  boolean devparm;                // development mode (-devparm)
+extern  bool devparm;                // development mode (-devparm)
 
 // =======================
 // Misc stuff for later...
@@ -290,5 +290,3 @@ void IO_Color( unsigned char color, unsigned char r, unsigned char g, unsigned c
 
 // i_system.c, replace getchar() once the keyboard has been appropriated
 int I_GetKey (void);
-
-#endif          // __DOOMDEF__

@@ -36,15 +36,15 @@
 void spec_brace();
 
 int  spec_if();  //SoM: returns weather or not the if statement was true.
-int  spec_elseif(boolean lastif);
-void spec_else(boolean lastif);
+int  spec_elseif(bool lastif);
+void spec_else(bool lastif);
 void spec_while();
 void spec_for();
 void spec_goto();
 
 // variable types
 
-boolean spec_variable();
+bool spec_variable();
 
 void spec_script();     // in t_script.c btw
 

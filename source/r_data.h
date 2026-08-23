@@ -83,7 +83,7 @@ typedef struct
 typedef struct
 {
     char        name[8];
-    boolean     masked;
+    int         masked; // A boolean (0=false, 1=true) defining ? (used to be defined as a boolean, which is quite wrong in C++)
     short       width;
     short       height;
     int         columndirectory;  // on-disk 4-byte obsolete field (NOT a pointer)

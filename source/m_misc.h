@@ -53,7 +53,7 @@
 //
 //===========================================================================
 
-boolean FIL_WriteFile ( char const*   name,
+bool FIL_WriteFile ( char const*   name,
                         void*         source,
                         int           length );
 
@@ -65,7 +65,7 @@ void FIL_DefaultExtension (char *path, char *extension);
 //added:11-01-98:now declared here for use by G_DoPlayDemo(), see there...
 void FIL_ExtractFileBase (char* path, char* dest);
 
-boolean FIL_CheckExtension (char *in);
+bool FIL_CheckExtension (char *in);
 
 //===========================================================================
 
@@ -87,7 +87,7 @@ void M_SaveConfig (char *filename);
 
 int M_DrawText ( int           x,
                  int           y,
-                 boolean       direct,
+                 bool       direct,
                  char*         string );
 
 // s1=s2+s3+s1 (1024 lenghtmax)

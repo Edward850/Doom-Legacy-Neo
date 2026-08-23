@@ -51,7 +51,7 @@ void B_SpawnBot(bot_t* p);
 
 ////////// CTF ///////////
 
-extern boolean ctf;
+extern bool ctf;
 //////////////////////////
 
 #endif

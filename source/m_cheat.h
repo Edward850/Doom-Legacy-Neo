@@ -62,7 +62,7 @@ int cht_CheckCheat ( cheatseq_t*           cht,
 void cht_GetParam ( cheatseq_t*           cht,
                     char*                 buffer );
 
-boolean cht_Responder (event_t* ev);
+bool cht_Responder (event_t* ev);
 void cht_Init();
 
 void Command_CheatNoClip_f (void);

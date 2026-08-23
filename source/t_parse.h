@@ -112,7 +112,7 @@ struct script_s
   mobj_t *trigger;        // object which triggered this script
 
   //SoM: Used for if/elseif/else statements
-  boolean  lastiftrue;
+  bool  lastiftrue;
 };
 
 struct operator_s
@@ -142,12 +142,12 @@ int find_operator_backwards(int start, int stop, char *value);
 
 typedef enum
 {
-  name,   // a name, eg 'count1' or 'frag'
-  number,
-  operator,
-  string,
-  unset,
-  function          // function name
+  tname,   // a name, eg 'count1' or 'frag'
+  tnumber,
+  toperator,
+  tstring,
+  tunset,
+  tfunction          // function name
 } tokentype_t;
 
 enum    // brace types: where current_section is a { or }

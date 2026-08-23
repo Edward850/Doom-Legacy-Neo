@@ -54,7 +54,7 @@
 extern int ST_Y;
 extern int fgbuffer;
 extern int st_x;
-extern boolean st_statusbaron;
+extern bool st_statusbaron;
 extern int st_scalex;
 extern int st_scaley;
 
@@ -67,13 +67,13 @@ void ST_CalcPos(void);
 //
 
 // Called by main loop.
-boolean ST_Responder (event_t* ev);
+bool ST_Responder (event_t* ev);
 
 // Called by main loop.
 void ST_Ticker (void);
 
 // Called by main loop.
-void ST_Drawer (boolean refresh);
+void ST_Drawer (bool refresh);
 
 // Called when the console player is spawned on each level.
 void ST_Start (void);
@@ -93,7 +93,7 @@ void ST_Invalidate(void);
 
 
 // need this for SCR_Recalc() coz widgets coords change with resolutions
-extern boolean   st_recalc;
+extern bool   st_recalc;
 
 // States for status bar code.
 typedef enum
@@ -114,14 +114,14 @@ typedef enum
 } st_chatstateenum_t;
 
 
-boolean ST_Responder(event_t* ev);
+bool ST_Responder(event_t* ev);
 
 // face load/unload graphics, called when skin changes
 void ST_loadFaceGraphics (char *facestr);
 void ST_unloadFaceGraphics (void);
 
 // return if player a is in the same team of the player b
-boolean ST_SameTeam(player_t *a,player_t *b);
+bool ST_SameTeam(player_t *a,player_t *b);
 
 // get the frags of the player
 // only one function for calculation : more simple code
@@ -130,12 +130,12 @@ int  ST_PlayerFrags (int playernum);
 //--------------------
 // status bar overlay
 //--------------------
-extern boolean    st_overlay;   // sb overlay on or off when fullscreen
+extern bool    st_overlay;   // sb overlay on or off when fullscreen
 
 // heretic status bar
 void SB_Ticker(void);
-void SB_Drawer( boolean refresh );
-boolean SB_Responder(event_t *event);
+void SB_Drawer( bool refresh );
+bool SB_Responder(event_t *event);
 void SB_Init(void);
 
 

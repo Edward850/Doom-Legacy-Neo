@@ -99,8 +99,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef __D_CLISRV__
-#define __D_CLISRV__
+#pragma once
 
 #include "d_ticcmd.h"
 #include "d_netcmd.h"
@@ -196,7 +195,7 @@ typedef struct {
    byte        gamestate;
    
    ULONG       playerdetected; // playeringame vector in bit field
-   byte        netcvarstates[0];
+   byte        netcvarstates[];
 } serverconfig_pak;
 
 typedef struct {
@@ -285,11 +284,11 @@ extern consvar_t cv_playdemospeed;
 #define FILETXHEADER       ((int)   ((filetx_pak *)0)->data)
 #define BASESERVERTICSSIZE ((int)&( ((doomdata_t *)0)->u.serverpak.cmds[0]))
 
-extern boolean   server;
+extern bool   server;
 extern USHORT    software_MAXPACKETLENGTH;
-extern boolean   acceptnewnode;
+extern bool   acceptnewnode;
 extern char      servernode;
-extern boolean   drone;
+extern bool   drone;
 
 extern consvar_t cv_allownewplayer;
 extern consvar_t cv_maxplayers;
@@ -307,9 +306,9 @@ void    SendNetXCmd2(byte id,void *param,int nparam); // splitsreen player
 void    NetUpdate (void);
 void    D_PredictPlayerPosition(void);
 
-boolean SV_AddWaitingPlayers(void);
+bool SV_AddWaitingPlayers(void);
 void    SV_StartSinglePlayerServer(void);
-boolean SV_SpawnServer( void );
+bool SV_SpawnServer( void );
 void    SV_SpawnPlayer(int playernum, int x, int y, angle_t angle);
 void    SV_StopServer( void );
 void    SV_ResetServer( void );
@@ -317,9 +316,9 @@ void    SV_ResetServer( void );
 void    CL_AddSplitscreenPlayer( void );
 void    CL_RemoveSplitscreenPlayer( void );
 void    CL_Reset (void);
-void    CL_UpdateServerList( boolean internetsearch );
+void    CL_UpdateServerList( bool internetsearch );
 // is there a game running
-boolean Playing( void );
+bool Playing( void );
 
 
 // Broadcasts special packets to other players
@@ -330,11 +329,9 @@ void    D_QuitNetGame (void);
 void    TryRunTics (tic_t realtic);
 
 // extra data for lmps
-boolean AddLmpExtradata(byte **demo_p,int playernum);
+bool AddLmpExtradata(byte **demo_p,int playernum);
 void    ReadLmpExtraData(byte **demo_pointer,int playernum);
 
 // translate a playername in a player number return -1 if not found and
 // print a error message in the console
 int     nametonum(char *name);
-
-#endif

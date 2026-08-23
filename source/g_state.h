@@ -51,6 +51,7 @@ typedef enum
 // the current state of the game
 typedef enum
 {
+    GS_FORCED = -1,                   // something has prompted a reset of the game
     GS_NULL = 0,                // at begin
     GS_LEVEL,                   // we are playing
     GS_INTERMISSION,            // gazing at the intermission screen
@@ -83,6 +84,6 @@ extern  gamestate_t     gamestate;
 extern  gameaction_t    gameaction;
 extern  skill_t         gameskill;
 
-extern  boolean         demoplayback;
+extern  bool         demoplayback;
 
 #endif //__G_STATE__

@@ -96,7 +96,7 @@ void    P_SpawnSpecials (void);
 void    P_UpdateSpecials (void);
 
 // when needed
-boolean
+bool
 P_UseSpecialLine
 ( mobj_t*       thing,
   line_t*       line,
@@ -190,7 +190,7 @@ fixed_t P_FindNextLowestCeiling(sector_t *sec, int currentheight);
 fixed_t P_FindShortestUpperAround(int secnum);
 fixed_t P_FindShortestTextureAround(int secnum);
 sector_t *P_FindModelCeilingSector(fixed_t ceildestheight,int secnum);
-boolean P_CanUnlockGenDoor( line_t* line, player_t* player);
+bool P_CanUnlockGenDoor( line_t* line, player_t* player);
 int P_CheckTag(line_t *line);
 
 //
@@ -418,7 +418,7 @@ typedef struct
     int         count;
     plat_e      status;
     plat_e      oldstatus;
-    boolean     crush;
+    bool     crush;
     int         tag;
     plattype_e  type;
 
@@ -663,7 +663,7 @@ typedef struct
     fixed_t     topheight;
     fixed_t     speed;
     fixed_t     oldspeed; //SoM: 3/6/2000
-    boolean     crush;
+    bool     crush;
 
     //SoM: 3/6/2000: Support ceiling changers
     int newspecial;
@@ -792,7 +792,7 @@ typedef struct
 {
     thinker_t   thinker;
     floor_e     type;
-    boolean     crush;
+    bool     crush;
     sector_t*   sector;
     int         direction;
     int         newspecial;
@@ -832,7 +832,7 @@ T_MovePlane
 ( sector_t*     sector,
   fixed_t       speed,
   fixed_t       dest,
-  boolean       crush,
+  bool       crush,
   int           floorOrCeiling,
   int           direction );
 
@@ -870,7 +870,7 @@ EV_Teleport
 
 //SoM: 3/15/2000: Boom silent teleport functions
 int EV_SilentTeleport(line_t *line, int side, mobj_t *thing);
-int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing, boolean reverse);
+int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing, bool reverse);
 int EV_PortalTeleport(line_t*  line, mobj_t* thing, int side);
 
 
@@ -1145,6 +1145,14 @@ typedef enum
 
 /* SoM: End generalized linedef code */
 
+enum scrolltype_e
+{
+    sc_side,
+    sc_floor,
+    sc_ceiling,
+    sc_carry,
+    sc_carry_ceiling,
+};
 
 //SoM: 3/8/2000: Add generalized scroller code
 typedef struct {
@@ -1155,14 +1163,7 @@ typedef struct {
   fixed_t last_height; // Last known height of control sector
   fixed_t vdx, vdy;    // Accumulated velocity if accelerative
   int accel;           // Whether it's accelerative
-  enum
-  {
-    sc_side,
-    sc_floor,
-    sc_ceiling,
-    sc_carry,
-    sc_carry_ceiling,
-  } type;
+  scrolltype_e type;   // Type of scroller (side, floor, ceiling, etc.)
 } scroll_t;
 
 void T_Scroll(scroll_t *s);
@@ -1187,19 +1188,21 @@ void T_Friction(friction_t *f);
 
 //SoM: 3/8/2000: Model for Pushers for push/pull effects
 
-typedef struct {
-  thinker_t thinker;   // Thinker structure for Pusher
-  enum
-  {
+enum pushertype_e
+{
     p_push,
     p_pull,
     p_wind,
     p_current,
     p_upcurrent, // SSNTails 06-10-2002
     p_downcurrent, // SSNTails 06-10-2002
-	p_upwind, // SSNTails 06-10-2003 WOAH! EXACTLY ONE YEAR LATER! FREAKY!
-	p_downwind, // SSNTails 06-10-2003
-  } type;
+    p_upwind, // SSNTails 06-10-2003 WOAH! EXACTLY ONE YEAR LATER! FREAKY!
+    p_downwind, // SSNTails 06-10-2003
+};
+
+typedef struct {
+  thinker_t thinker;   // Thinker structure for Pusher
+  pushertype_e type;   // Type of pusher (push, pull, wind, current, etc.)
   mobj_t* source;      // Point source if point pusher
   int x_mag;           // X Strength
   int y_mag;           // Y Strength
@@ -1211,7 +1214,7 @@ typedef struct {
 } pusher_t;
 
 //SoM: 3/9/2000: Prototype functions for pushers
-boolean  PIT_PushThing(mobj_t* thing);
+bool  PIT_PushThing(mobj_t* thing);
 void     T_Pusher(pusher_t *p);
 mobj_t*  P_GetPushThing(int s);
 

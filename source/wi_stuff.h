@@ -59,11 +59,11 @@ void WI_Drawer (void);
 // Setup for an intermission screen.
 void WI_Start(wbstartstruct_t*   wbstartstruct);
 
-boolean teamingame(int teamnum);
+bool teamingame(int teamnum);
 
 // draw ranckings
 void WI_drawRancking(char *title,int x,int y,fragsort_t *fragtable
-                    , int scorelines, boolean large, int white);
+                    , int scorelines, bool large, int white);
 
 
 #endif

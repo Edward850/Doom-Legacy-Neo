@@ -87,12 +87,24 @@ jobs:
         path: ${{ matrix.archive_name }}
         if-no-files-found: error
         
-  release:
+release:
     name: Publish Release
     needs: build
     runs-on: ubuntu-latest
-    
+
     steps:
+    - name: Checkout Code
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0 # Fetch all history so GitHub can generate complete release notes
+
+    - name: Force Update 'preview' Git Tag
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git tag -f preview ${{ github.sha }}
+        git push origin preview --force
+
     - name: Download All Build Artifacts
       uses: actions/download-artifact@v4
       with:
@@ -106,10 +118,7 @@ jobs:
         tag_name: preview
         target_commitish: ${{ github.sha }}
         name: 'Continuous Preview Build'
-        generate_release_notes: true
-        body: |
-          Automated continuous integration build generated from the latest push.
-          Commit SHA: ${{ github.sha }}
+        generate_release_notes: true # Generates full changelog from previous tag/release
         prerelease: true
         files: dist/*
       env:

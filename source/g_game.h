@@ -70,26 +70,26 @@
 
 //added:11-02-98: yeah now you can change it!
 // changed to 2d array 19990220 by Kin
-extern char          player_names[MAXPLAYERS][MAXPLAYERNAME];
+extern char          player_names[MAXPLAYERS][MAXPLAYERNAME+1];
 extern char*                    team_names[];
 
-extern  boolean nomonsters;             // checkparm of -nomonsters
+extern  bool nomonsters;             // checkparm of -nomonsters
 extern  char      gamemapname[128];
 
 extern  player_t        players[MAXPLAYERS];
-extern  boolean   playeringame[MAXPLAYERS];
+extern  bool   playeringame[MAXPLAYERS];
 
 // ======================================
 // DEMO playback/recording related stuff.
 // ======================================
 
 // demoplaying back and demo recording
-extern  boolean demoplayback;
-extern  boolean demorecording;
-extern  boolean   timingdemo;       
+extern  bool demoplayback;
+extern  bool demorecording;
+extern  bool   timingdemo;       
 
 // Quit after playing a demo from cmdline.
-extern  boolean         singledemo;
+extern  bool         singledemo;
 
 // gametic at level start
 extern  tic_t     levelstarttic;  
@@ -125,17 +125,17 @@ extern int     localaiming,localaiming2; // should be a angle_t but signed
 // GAME
 //
 void    G_DoReborn (int playernum);
-boolean G_DeathMatchSpawnPlayer (int playernum);
+bool G_DeathMatchSpawnPlayer (int playernum);
 void G_CoopSpawnPlayer (int playernum);
 void    G_PlayerReborn (int player);
 
-void G_InitNew (skill_t skill, char* mapname, boolean resetplayer);
+void G_InitNew (skill_t skill, char* mapname, bool resetplayer);
 
 // Can be called by the startup code or M_Responder.
 // A normal game starts at map 1,
 // but a warp test can start elsewhere
-void G_DeferedInitNew (skill_t skill, char* mapname, boolean StartSplitScreenGame);
-void G_DoLoadLevel (boolean resetplayer);
+void G_DeferedInitNew (skill_t skill, char* mapname, bool StartSplitScreenGame);
+void G_DoLoadLevel (bool resetplayer);
 
 void G_DeferedPlayDemo (char* demo);
 
@@ -158,7 +158,7 @@ void G_DoPlayDemo (char *defdemoname);
 void G_TimeDemo (char* name);
 void G_DoneLevelLoad(void);
 void G_StopDemo(void);
-boolean G_CheckDemoStatus (void);
+bool G_CheckDemoStatus (void);
 
 void G_ExitLevel (void);
 void G_SecretExitLevel (void);
@@ -166,9 +166,9 @@ void G_SecretExitLevel (void);
 void G_NextLevel (void);
 
 void G_Ticker (void);
-boolean G_Responder (event_t*   ev);
+bool G_Responder (event_t*   ev);
 
-boolean G_Downgrade(int version);
+bool G_Downgrade(int version);
 
 void G_AddPlayer( int playernum );
 

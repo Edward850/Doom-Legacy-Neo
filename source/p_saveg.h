@@ -50,7 +50,7 @@
 // These are the load / save game routines.
 
 void    P_SaveGame (void);
-boolean P_LoadGame (void);
+bool P_LoadGame (void);
 
 extern byte*            save_p; 
 

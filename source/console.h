@@ -38,12 +38,12 @@
 
 void CON_Init (void);
 
-boolean CON_Responder (event_t *ev);
+bool CON_Responder (event_t *ev);
 
 // set true when screen size has changed, to adapt console
-extern boolean con_recalc;
+extern bool con_recalc;
 
-extern boolean con_startup;
+extern bool con_startup;
 
 // top clip value for view render: do not draw part of view hidden by console
 extern int     con_clipviewtop;
@@ -52,7 +52,7 @@ extern int     con_clipviewtop;
 extern int     con_destlines;
 
 extern int     con_clearlines;  // lines of top of screen to refresh
-extern boolean con_hudupdate;   // hud messages have changed, need refresh
+extern bool con_hudupdate;   // hud messages have changed, need refresh
 
 extern int     con_keymap;      //0 english, 1 french
 

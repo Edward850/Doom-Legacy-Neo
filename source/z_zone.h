@@ -95,7 +95,7 @@ void    Z_ChangeTag2 (void *ptr, int tag);
 // returns number of bytes allocated for one tag type
 int     Z_TagUsage (int tagnum);
 
-void    Z_FreeMemory (int *realfree,int *cachemem,int *usedmem,int *largefreeblock);
+void    Z_FreeMemory (size_t *realfree, size_t*cachemem, size_t*usedmem, size_t*largefreeblock);
 
 #ifdef ZDEBUG
 #define Z_Free(p) Z_Free2(p,__FILE__,__LINE__)
@@ -134,7 +134,7 @@ typedef struct memblock_s
 #define Z_ChangeTag(p,t) \
 { \
       if (( (memblock_t *)( (byte *)(p) - sizeof(memblock_t)))->id!=0x1d4a11) \
-          I_Error("Z_CT at "__FILE__":%i",__LINE__); \
+          I_Error("Z_CT at " __FILE__ ":%i",__LINE__); \
       Z_ChangeTag2(p,t); \
 };
 #else

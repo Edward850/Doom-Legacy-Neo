@@ -64,17 +64,17 @@
 extern  int    getbps,sendbps;
 extern  float  lostpercent,duppercent,gamelostpercent;
 extern  int    packetheaderlength;
-boolean Net_GetNetStat(void);
+bool Net_GetNetStat(void);
 extern  int    getbytes;
 extern  INT64  sendbytes;        // realtime updated 
 
 void    Net_AckTicker(void);
-boolean Net_AllAckReceived(void);
+bool Net_AllAckReceived(void);
 
 // if reliable return true if packet sent, 0 else
-boolean HSendPacket(int   node, boolean reliable, byte acknum, int packetlength);
-boolean HGetPacket (void);
-boolean D_CheckNetGame (void);
+bool HSendPacket(int   node, bool reliable, byte acknum, int packetlength);
+bool HGetPacket (void);
+bool D_CheckNetGame (void);
 void    D_CloseConnection( void );
 void    Net_UnAcknowledgPacket(int node);
 void    Net_CloseConnection(int node);

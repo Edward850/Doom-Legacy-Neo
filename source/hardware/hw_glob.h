@@ -69,8 +69,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef _HWR_GLOB_H_
-#define _HWR_GLOB_H_
+#pragma once
 
 #include "hw_defs.h"
 #include "hw_main.h"
@@ -124,7 +123,7 @@ typedef struct gr_vissprite_s
     float               tz;
     float               ty;
     int                 patchlumpnum;
-    boolean             flip;
+    bool                flip;
     unsigned char       translucency;       //alpha level 0-255
     unsigned char       sectorlight;        // ...
     mobj_t              *mobj; 
@@ -172,12 +171,9 @@ extern  consvar_t cv_grrounddown;   //on/off
 extern int patchformat;
 extern int textureformat;
 extern byte *gr_colormap; 
-extern boolean firetranslucent;
+extern bool firetranslucent;
 extern float gr_viewz;
 
 // ------------
 // misc externs
 // ------------
-
-
-#endif //_HW_GLOB_

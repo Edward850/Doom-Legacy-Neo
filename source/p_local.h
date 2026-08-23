@@ -185,7 +185,7 @@ void P_DropWeapon (player_t* player);
 //
 typedef struct camera_s
 {
-    boolean     chase;
+    bool     chase;
     angle_t     aiming;
     int         fixedcolormap;
 
@@ -237,7 +237,7 @@ P_SpawnMobj
   mobjtype_t    type );
 
 void    P_RemoveMobj (mobj_t* th);
-boolean P_SetMobjState (mobj_t* mobj, statenum_t state);
+bool P_SetMobjState (mobj_t* mobj, statenum_t state);
 void    P_MobjThinker (mobj_t* mobj);
 
 //spawn splash at surface of water in sector where the mobj resides
@@ -277,7 +277,7 @@ void P_InitBrainTarget();
 
 // If "floatok" true, move would be ok
 // if within "tmfloorz - tmceilingz".
-extern boolean          floatok;
+extern bool          floatok;
 extern fixed_t          tmfloorz;
 extern fixed_t          tmceilingz;
 extern fixed_t          tmsectorceilingz;      //added:28-02-98: p_spawnmobj
@@ -287,16 +287,16 @@ extern  line_t*         ceilingline;
 extern  line_t*         blockingline;
 extern  msecnode_t*     sector_list;
 
-boolean P_CheckPosition (mobj_t *thing, fixed_t x, fixed_t y);
-boolean P_TryMove (mobj_t* thing, fixed_t x, fixed_t y, boolean allowdropoff);
-boolean P_TeleportMove (mobj_t* thing, fixed_t x, fixed_t y);
+bool P_CheckPosition (mobj_t *thing, fixed_t x, fixed_t y);
+bool P_TryMove (mobj_t* thing, fixed_t x, fixed_t y, bool allowdropoff);
+bool P_TeleportMove (mobj_t* thing, fixed_t x, fixed_t y);
 void    P_SlideMove (mobj_t* mo);
-boolean P_CheckSight (mobj_t* t1, mobj_t* t2);
-boolean P_CheckSight2 (mobj_t* t1, mobj_t* t2, fixed_t x, fixed_t y, fixed_t z);	//added by AC for predicting
+bool P_CheckSight (mobj_t* t1, mobj_t* t2);
+bool P_CheckSight2 (mobj_t* t1, mobj_t* t2, fixed_t x, fixed_t y, fixed_t z);	//added by AC for predicting
 void    P_UseLines (player_t* player);
 
-boolean P_CheckSector(sector_t *sector, boolean crunch);
-boolean P_ChangeSector (sector_t* sector, boolean crunch);
+bool P_CheckSector(sector_t *sector, bool crunch);
+bool P_ChangeSector (sector_t* sector, bool crunch);
 
 void    P_DelSeclist(msecnode_t *);
 void    P_CreateSecNodeList(mobj_t*,fixed_t,fixed_t);
@@ -353,7 +353,7 @@ P_TouchSpecialThing
 ( mobj_t*       special,
   mobj_t*       toucher );
 
-boolean
+bool
 P_DamageMobj
 ( mobj_t*       target,
   mobj_t*       inflictor,
@@ -405,31 +405,31 @@ void P_ActivateBeak(player_t *player);
 void P_PlayerUseArtifact(player_t *player, artitype_t arti);
 void P_DSparilTeleport(mobj_t *actor);
 void P_InitMonsters(void);
-boolean P_LookForMonsters(mobj_t *actor);
+bool P_LookForMonsters(mobj_t *actor);
 int P_GetThingFloorType(mobj_t *thing);
 mobj_t *P_CheckOnmobj(mobj_t *thing);
 void P_AddMaceSpot(mapthing_t *mthing);
-boolean P_SightPathTraverse (fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2);
+bool P_SightPathTraverse (fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2);
 void P_HerePlayerInSpecialSector(player_t *player);
 void P_UpdateBeak(player_t *player, pspdef_t *psp);
-boolean P_TestMobjLocation(mobj_t *mobj);
+bool P_TestMobjLocation(mobj_t *mobj);
 void P_PostChickenWeapon(player_t *player, weapontype_t weapon);
 void P_SetPsprite ( player_t*     player,
                     int           position,
                     statenum_t    stnum );
-boolean P_UseArtifact(player_t *player, artitype_t arti);
-boolean P_Teleport(mobj_t *thing, fixed_t x, fixed_t y, angle_t angle);
-boolean P_SeekerMissile(mobj_t *actor, angle_t thresh, angle_t turnMax);
+bool P_UseArtifact(player_t *player, artitype_t arti);
+bool P_Teleport(mobj_t *thing, fixed_t x, fixed_t y, angle_t angle);
+bool P_SeekerMissile(mobj_t *actor, angle_t thresh, angle_t turnMax);
 mobj_t *P_SpawnMissileAngle(mobj_t *source, mobjtype_t type,
         angle_t angle, fixed_t momz);
-boolean P_SetMobjStateNF(mobj_t *mobj, statenum_t state);
-boolean P_CheckMissileSpawn (mobj_t* th);
+bool P_SetMobjStateNF(mobj_t *mobj, statenum_t state);
+bool P_CheckMissileSpawn (mobj_t* th);
 void P_ThrustMobj(mobj_t *mo, angle_t angle, fixed_t move);
 void P_Thrust(player_t *player, angle_t angle, fixed_t move);
 void P_ExplodeMissile (mobj_t* mo);
-void P_SetMessage(player_t *player, char *message, boolean ultmsg);
-boolean P_GiveArtifact(player_t *player, artitype_t arti, mobj_t *mo);
-boolean P_ChickenMorphPlayer(player_t *player);
+void P_SetMessage(player_t *player, char *message, bool ultmsg);
+bool P_GiveArtifact(player_t *player, artitype_t arti, mobj_t *mo);
+bool P_ChickenMorphPlayer(player_t *player);
 void P_Massacre(void);
 void P_AddBossSpot(fixed_t x, fixed_t y, angle_t angle);
 

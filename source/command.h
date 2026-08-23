@@ -89,8 +89,8 @@ void    COM_Init (void);
 
 typedef struct vsbuf_s
 {
-    boolean allowoverflow;  // if false, do a I_Error
-    boolean overflowed;     // set to true if the buffer size failed
+    bool allowoverflow;  // if false, do a I_Error
+    bool overflowed;     // set to true if the buffer size failed
     byte    *data;
     int     maxsize;
     int     cursize;

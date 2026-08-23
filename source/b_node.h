@@ -24,8 +24,7 @@
 // First commit of acbot
 //
 
-#ifndef __BOTNODE_H__
-#define __BOTNODE_H__
+#pragma once
 
 //#define SHOWBOTPATH	//show the path the bot is taking in game?
 
@@ -50,7 +49,7 @@ typedef enum
 
 typedef struct SearchNode_s
 {
-	boolean		visited;
+	bool		visited;
 	
 	fixed_t		costDir[NUMBOTDIRS];	//the cost of going from this node in a particular dest
 	
@@ -74,13 +73,10 @@ extern int					numbotnodes,
 							yOffset,
 							ySize;
 
-//boolean B_PTRPathTraverse (intercept_t *in);
+//bool B_PTRPathTraverse (intercept_t *in);
 SearchNode_t* B_FindClosestNode(fixed_t x, fixed_t y);
 SearchNode_t* B_GetNodeAt(fixed_t x, fixed_t y);
 SearchNode_t* B_GetClosestReachableNode(fixed_t x, fixed_t y);
-boolean B_NodeReachable(mobj_t* mo, fixed_t x, fixed_t y, fixed_t destx, fixed_t desty);
+bool B_NodeReachable(mobj_t* mo, fixed_t x, fixed_t y, fixed_t destx, fixed_t desty);
 void B_BuildNodes(SearchNode_t* node);
 void B_InitNodes();
-
-#endif
-

@@ -50,16 +50,14 @@
 //    
 //-----------------------------------------------------------------------------
 
-
-#ifndef __DOOMTYPE__
-#define __DOOMTYPE__
+#pragma once
 
 #ifdef __WIN32__
 #include <windows.h>
 #endif
 #ifndef _OS2EMX_H
-typedef unsigned long ULONG;
-typedef unsigned short USHORT;
+//typedef unsigned long ULONG;
+//typedef unsigned short USHORT;
 #endif // _OS2EMX_H
 
 #ifdef __WIN32__
@@ -79,7 +77,7 @@ typedef unsigned short USHORT;
     // Microsoft VisualC++
     #define strncasecmp             strnicmp
     #define strcasecmp              stricmp
-    #define inline                  __inline
+    //#define inline                  __inline
 #else
     #ifdef __WATCOMC__
         #include <dos.h>
@@ -97,7 +95,7 @@ typedef unsigned short USHORT;
 #define lstrlen(x) strlen(x)
 #endif
 
-#ifdef __APPLE_CC__                //skip all boolean/Boolean crap
+#ifdef __APPLE_CC__                //skip all bool/bool crap
 #define true 1
 #define false 0
 #define min(x,y) ( ((x)<(y)) ? (x) : (y) )
@@ -109,7 +107,7 @@ typedef unsigned short USHORT;
 
 #define __BYTEBOOL__
 typedef unsigned char byte;
-#define boolean int
+#define bool int
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -121,19 +119,10 @@ typedef unsigned char byte;
 
     // Fixed to use builtin bool type with C++.
     //#ifdef __cplusplus
-    //    typedef bool boolean;
+    //    typedef bool bool;
     //#else
 
         typedef unsigned char byte;
-
-        //faB: clean that up !!
-        #ifdef __WIN32__
-            #define false   FALSE           // use windows types
-            #define true    TRUE
-            #define boolean BOOL
-        #else
-            typedef enum {false, true} boolean;
-        #endif
     //#endif // __cplusplus
 #endif // __BYTEBOOL__
 
@@ -192,5 +181,3 @@ typedef union FColorRGBA RGBA_t;
 #else
 #define UINT2RGBA(a) ((a&0xff)<<24)|((a&0xff00)<<8)|((a&0xff0000)>>8)|(((ULONG)a&0xff000000)>>24)
 #endif
-
-#endif  //__DOOMTYPE__

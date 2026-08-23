@@ -40,8 +40,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef __R_LOCAL__
-#define __R_LOCAL__
+#pragma once
 
 
 // Screen size related parameters.
@@ -66,4 +65,8 @@
 
 extern drawseg_t* firstseg;
 
-#endif          // __R_LOCAL__
+struct cliprange_t
+{
+    int first;
+    int last;
+};

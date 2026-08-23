@@ -32,38 +32,39 @@
 //
 //-----------------------------------------------------------------------------
 
+#pragma once
 
-#ifndef __D_THINK__
-#define __D_THINK__
+#include <cstddef>
 
+typedef struct mobj_s mobj_t;
+typedef struct player_s player_t;
+typedef struct thinker_s thinker_t;
+typedef struct pspdef_s pspdef_t;
 
-#ifdef __GNUG__
-#pragma interface
-#endif
+// Edward 8/23/2026: C++ conversions for actionf_t necesseary to make info.cpp compile.
+// The original code used a union of function pointers with different signatures, which is not type-safe in C++.
+typedef void (*actionf_v)();
+typedef void (*actionf_p1)(mobj_t*);
+typedef void (*actionf_t1)(thinker_t*);
+typedef void (*actionf_p2)(player_t*, pspdef_t*);
 
-
-
-//
-// Experimental stuff.
-// To compile this as "ANSI C with classes"
-//  we will need to handle the various
-//  action functions cleanly.
-//
-typedef  void (*actionf_v)();
-typedef  void (*actionf_p1)( void* );
-typedef  void (*actionf_p2)( void*, void* );
-
-typedef union
+struct actionf_t
 {
-  actionf_v     acv;
-  actionf_p1    acp1;
-  actionf_p2    acp2;
+    union
+    {
+        actionf_v  acv;
+        actionf_p1 acp1;
+        actionf_t1 act1;
+        actionf_p2 acp2;
+    };
 
-} actionf_t;
-
-
-
-
+    constexpr actionf_t() : acv(nullptr) {}
+    constexpr actionf_t(std::nullptr_t) : acv(nullptr) {}
+    constexpr actionf_t(actionf_v f) : acv(f) {}
+    constexpr actionf_t(actionf_p1 f) : acp1(f) {}
+    constexpr actionf_t(actionf_t1 f) : act1(f) {}
+    constexpr actionf_t(actionf_p2 f) : acp2(f) {}
+};
 
 // Historically, "think_t" is yet another
 //  function pointer to a routine to handle
@@ -74,12 +75,9 @@ typedef actionf_t  think_t;
 // Doubly linked list of actors.
 typedef struct thinker_s
 {
-    struct thinker_s*   prev;
-    struct thinker_s*   next;
-    think_t             function;
-    
+    struct thinker_s* prev;
+    struct thinker_s* next;
+    think_t           function;
+
 } thinker_t;
 
-
-
-#endif

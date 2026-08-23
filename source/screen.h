@@ -174,7 +174,7 @@ extern void     (*transtransfunc) (void); // SSNTails 11-11-2002
 extern viddef_t vid;
 extern int      setmodeneeded;     // mode number to set if needed, or 0
 
-extern boolean  fuzzymode;
+extern bool  fuzzymode;
 
 
 extern int      scr_bpp;

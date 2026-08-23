@@ -42,4 +42,4 @@
 void DEH_LoadDehackedFile(char *filename);
 void DEH_LoadDehackedLump(int lump);
 
-extern boolean  deh_loaded;
+extern bool  deh_loaded;

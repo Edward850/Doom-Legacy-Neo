@@ -52,6 +52,8 @@
 #ifndef __M_FIXED__
 #define __M_FIXED__
 
+#include <stdlib.h>
+
 #include "doomtype.h"
 
 //

@@ -28,12 +28,11 @@
 #include "p_mobj.h"
 #include "b_search.h"
 
-#ifndef __BOT_H__
-#define __BOT_H__
+#pragma once
 
 typedef struct
 {
-	boolean			straferight;
+	bool			straferight;
 	byte			lastNumWeapons;		//used to check if got a new weapon
 
 	int				blockedcount,
@@ -57,5 +56,3 @@ typedef struct
 	SearchNode_t	*destNode;			//the closest node to where wants to go
 
 } bot_t;
-
-#endif
