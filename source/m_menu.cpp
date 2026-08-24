@@ -2837,7 +2837,7 @@ void M_StartMessage ( const char*       string,
                       menumessagetype_t itemtype )
 {
     int   max,start,i,lines;
-#define message MessageDef.menuitems[0].text
+    char*& message = MessageDef.menuitems[0].text;
     if( message )
         Z_Free( message );
     message = Z_StrDup(string);
@@ -3291,7 +3291,18 @@ bool M_Responder (event_t* ev)
 
     if(currentMenu->menuitems[itemOn].status==IT_MSGHANDLER)
     {
-        if(currentMenu->menuitems[itemOn].alphaKey==true)
+        if(currentMenu->menuitems[itemOn].alphaKey == MM_NOTHING)
+        {
+            if (ev->type == ev_keydown)
+            {
+                if (routine)
+                    routine(0);
+                M_StopMessage(0);
+                return true;
+            }
+            return true;
+        }
+        else if(currentMenu->menuitems[itemOn].alphaKey == MM_YESNO)
         {
             if(ch == ' ' || ch == 'n' || ch == 'y' || ch == KEY_ESCAPE)
             {
