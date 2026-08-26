@@ -85,15 +85,14 @@
 
 #include "d_main.h"
 
-#include "../ymfmidi/src/ymfmidiCPlayer.h"
+#include "i_musicmodules.h"
 
 #define W_CacheLumpNum(num) (W_CacheLumpNum)((num),1)
 #define W_CacheLumpName(name) W_CacheLumpNum (W_GetNumForName(name))
 
 // Needed for calling the actual sound output.
-#define NUM_CHANNELS            8
-#define SAMPLERATE              44100   // Hz
-#define NUM_MUSIC_BUFFERS     3
+#define NUM_CHANNELS          8
+#define NUM_MUSIC_BUFFERS     2
 
 // Flags for the -nosound and -nomusic options
 extern bool nosound;
@@ -118,9 +117,11 @@ static channel_s channels[NUM_CHANNELS];
 static ALuint sndBuffers[NUMSFX];
 static ALuint musicSid;
 static ALuint musicBid[NUM_MUSIC_BUFFERS];  // openal buffer ids.
+static double g_setVolume = 15.0;
 static int songHandle = -1;
 static int musicPlaying = 0;
 static void* lastListener = NULL;
+static musicModule* g_musicModule = nullptr;
 
 //
 // This function loads the sound data from the WAD lump,
@@ -401,13 +402,16 @@ static void I_QueueBuffer(ALuint bid, char* buf, const size_t buflen)
         return;
     }
 
-    YMFMIDI_Generate16((short*)buf, buflen / sizeof(short) / 2);
-    alBufferData(bid, AL_FORMAT_STEREO16, buf, buflen, YMFMIDI_SampleRate());
+    if (!g_musicModule)
+        return;
+
+    g_musicModule->GenerateAudioData(buf, buflen, 2);
+    alBufferData(bid, AL_FORMAT_STEREO16, buf, buflen, g_musicModule->GetSampleRate());
     alSourceQueueBuffers(musicSid, 1, &bid);
 }
 
-const size_t buflen = 1024 * 5;
-static char soundData[NUM_MUSIC_BUFFERS][1024 * 5];
+const size_t buflen = 1024 * 8;
+static char soundData[NUM_MUSIC_BUFFERS][buflen];
 static int GetMusicBuffer(ALuint bid)
 {
     for(int i = 0; i < NUM_MUSIC_BUFFERS; i++)
@@ -423,15 +427,18 @@ static void I_UpdateMusic()
     if(!musicPlaying)
 		return;
 
+    if (!g_musicModule)
+        return;
+
     ALint processed = 0;
-	int ready = YMFMIDI_SamplesReady();
+	//int ready = YMFMIDI_SamplesReady();
     alGetSourcei(musicSid, AL_BUFFERS_PROCESSED, &processed);
     for (ALint i = 0; i < processed; i++)
     {
-        YMFMIDI_SamplesCountAdd();
-        if (ready)
+        //YMFMIDI_SamplesCountAdd();
+        // if (ready)
         {
-            ready--;
+            //ready--;
             ALuint bid = 0;
             alSourceUnqueueBuffers(musicSid, 1, &bid);
             I_QueueBuffer(bid, soundData[GetMusicBuffer(bid)], buflen);
@@ -598,11 +605,14 @@ void I_ShutdownMusic(void)
     if (!musicStarted)
         return;
 
-	YMFMIDI_Shutdown();
+    if (g_musicModule)
+    {
+        delete g_musicModule;
+        g_musicModule = nullptr;
+    }
 
     CONS_Printf("I_ShutdownMusic: shut down\n");
     musicStarted = false;
-
 }
 
 void I_InitMusic(void)
@@ -623,13 +633,6 @@ void I_InitMusic(void)
     alSource3f(musicSid, AL_POSITION, 0.0f, 0.0f, 0.0f);
     alSourcef(musicSid, AL_GAIN, 1.0f);
 
-	int numChips = 8;
-#if _DEBUG
-	numChips = 1;
-#endif
-	YMFMIDI_Init(numChips, 3); // 8 chips, OPL3
-	YMFMIDI_SetStereo(1);
-	YMFMIDI_SetGain(15.0f);
     CONS_Printf("I_InitMusic: music initialized\n");
     musicStarted = true;
 }
@@ -641,13 +644,22 @@ void I_PlaySong(int handle, int looping)
 
     if (handle == songHandle)
     {
+        if (!g_musicModule)
+        {
+            musicPlaying = false;
+            return;
+        }
+
         for (int i = 0; i < NUM_MUSIC_BUFFERS; i++)
         {
             I_QueueBuffer(musicBid[i], soundData[i], buflen);
         }
         alSourcePlay(musicSid);
         musicPlaying = true;
-		YMFMIDI_SetLoop(looping != 0);
+
+        g_musicModule->SetLooping(looping != 0);
+        g_musicModule->SetGain(g_setVolume);
+        g_musicModule->StartSong();
     }
 }
 
@@ -664,7 +676,18 @@ void I_ResumeSong(int handle)
     if (nomusic)
         return;
 
-    I_PlaySong(handle, true);
+    if (!g_musicModule)
+    {
+        musicPlaying = false;
+        return;
+    }
+
+    for (int i = 0; i < NUM_MUSIC_BUFFERS; i++)
+    {
+        I_QueueBuffer(musicBid[i], soundData[i], buflen);
+    }
+    alSourcePlay(musicSid);
+    musicPlaying = true;
 }
 
 void I_StopSong(int handle)
@@ -674,7 +697,6 @@ void I_StopSong(int handle)
     
     alSourceStop(musicSid);
     alSourcei(musicSid, AL_BUFFER, 0);  // clear the buffer queue.
-    YMFMIDI_Reset();
     musicPlaying = false;
 }
 
@@ -686,25 +708,30 @@ void I_UnRegisterSong(int handle)
 
 int I_RegisterSong(void *data, int len)
 {
-    int err;
-    ULONG midlength;
-    FILE *midfile;
-
-    if (nomusic)
+    if (nomusic || len <= 0)
+    {
         return 0;
+    }
 
-	static int patchesLoaded = 0;
+	static bool patchesLoaded = false;
     if (!patchesLoaded)
     {
         int lumpnum = W_CheckNumForName("GENMIDI");
         int genlen = W_LumpLength(lumpnum);
         byte* gendata = (byte*)W_CacheLumpNum(lumpnum);
-        YMFMIDI_LoadPatches(gendata, genlen);
-        patchesLoaded = 1;
+        musicModuleRegister::SendLumpData("GENMIDI", gendata, genlen);
+        patchesLoaded = true;
     }
 
-	int handle = YMFMIDI_LoadSequence((const unsigned char*)data, (unsigned int)len);
-    if (handle == 1)
+    if (g_musicModule)
+    {
+        delete g_musicModule;
+        g_musicModule = nullptr;
+    }
+
+    g_musicModule = musicModuleRegister::GetCompatibleModule(data, len);
+
+    if (g_musicModule)
         return ++songHandle;
     else
 		return -1;
@@ -712,13 +739,20 @@ int I_RegisterSong(void *data, int len)
 
 void I_SetMusicVolume(int volume)
 {
+    g_setVolume = (double)volume;
+
     if (nomusic)
         return;
 
-	YMFMIDI_SetGain((double)volume);
+    if (g_musicModule)
+        g_musicModule->SetGain(g_setVolume);
 }
 
 void I_ShutdownSound(void)
 {
-
+    if(g_musicModule)
+    {
+        delete g_musicModule;
+        g_musicModule = nullptr;
+    }
 }

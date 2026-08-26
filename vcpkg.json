@@ -5,6 +5,10 @@
     "sdl3",
     "openal-soft",
 	"openssl",
-	"curl"
+	"curl",
+	"libopenmpt",
+	"libogg",
+    "libvorbis",
+    "opusfile"
   ]
 }

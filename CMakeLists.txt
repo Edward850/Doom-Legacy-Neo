@@ -20,6 +20,10 @@ find_package(OpenAL REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
 find_package(Threads REQUIRED)
+find_package(libopenmpt REQUIRED)
+find_package(Ogg REQUIRED)
+find_package(Vorbis REQUIRED)
+find_package(OpusFile REQUIRED)
 
 option(BUILD_WSL2 "Build for WSL2 / Linux (when ON, do not use WIN32 executable flag)" OFF)
 
@@ -145,6 +149,11 @@ target_link_libraries(doomlegacy PRIVATE
     OpenSSL::Crypto
 	CURL::libcurl
     Threads::Threads
+    libopenmpt::libopenmpt
+    Ogg::ogg
+    Vorbis::vorbis
+    Vorbis::vorbisfile
+    OpusFile::opusfile
 	ymfmidi
 )
 
