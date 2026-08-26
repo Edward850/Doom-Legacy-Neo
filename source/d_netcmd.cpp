@@ -746,11 +746,7 @@ void Command_Map_f(void)
     if ((i = COM_CheckParm("-monsters")) != 0)
         buf[1] = (atoi(COM_Argv(i + 1)) == 0);
     else
-        buf[1] = (nomonsters != 0);
-
-    // use only one bit
-    if (buf[1])
-        buf[1] = 1;
+        buf[1] = nomonsters ? 1 : 0;
 
     if (COM_CheckParm("-noresetplayers"))
         buf[1] |= 2;
@@ -767,15 +763,17 @@ void Got_Mapcmd(char **cp, int playernum)
 {
     char mapname[MAX_WADPATH];
     int skill, resetplayer = 1;
+    byte mapcmd[2];
+    mapcmd[0] = READBYTE(*cp);
+    mapcmd[1] = READBYTE(*cp);
 
-    skill = READBYTE(*cp);
+    skill = mapcmd[0];
     if (demoversion >= 128)
-        nomonsters = READBYTE(*cp);
+        nomonsters = mapcmd[1] & 1;
 
     if (demoversion >= 129)
     {
-        resetplayer = ((nomonsters & 2) == 0);
-        nomonsters &= 1;
+        resetplayer = ((mapcmd[1] & 2) == 0);
     }
     strcpy(mapname, *cp);
     *cp += strlen(mapname) + 1;
