@@ -690,7 +690,12 @@ void SL_InsertServer( serverinfo_pak *info, int node)
         i=serverlistcount++;
     }
 
-    serverlist[i].info = *info;
+    // It seems that at some point this data was not being copied correctly, we need to actually check the buffer size of the packet and only copy what we need.
+    memset(&serverlist[i].info, 0, sizeof(serverlist[i].info));
+    const int payloadSize = doomcom->datalength - BASEPACKETSIZE;
+    const int copyLen = payloadSize < 0 ? 0 : (payloadSize < sizeof(serverlist[i].info) ? payloadSize : sizeof(serverlist[i].info));
+    memcpy(&serverlist[i].info, info, copyLen);
+
     serverlist[i].node = node;
 
     // list is sorted by time (ping)

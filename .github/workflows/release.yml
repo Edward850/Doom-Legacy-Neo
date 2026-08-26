@@ -36,7 +36,7 @@ jobs:
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
-      VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg_cache,readwrite'
+      VCPKG_BINARY_SOURCES: 'clear;files,vcpkg_cache,readwrite'
 
     steps:
     - name: Checkout Code
@@ -53,16 +53,21 @@ jobs:
     - name: Set up GitHub Actions Cache for vcpkg
       uses: actions/cache@v5
       with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: ${{ matrix.os }}-vcpkg-binaries-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+        path: vcpkg_cache
+        key: ${{ matrix.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}-${{ github.run_id }}
         restore-keys: |
-          ${{ matrix.os }}-vcpkg-binaries-
+          ${{ matrix.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}-
+          ${{ matrix.os }}-vcpkg-
+          
+    - name: Ensure Cache Directory Exists
+      run: mkdir -p vcpkg_cache
+      shell: bash
 
     - name: Configure CMake
       run: |
         cmake -B build -S . \
           -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+          -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
       shell: bash
 
     - name: Build Project

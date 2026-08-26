@@ -31,7 +31,7 @@ jobs:
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
-      VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg_cache,readwrite'
+      VCPKG_BINARY_SOURCES: 'clear;files,vcpkg_cache,readwrite'
 
     steps:
     - name: Checkout Code
@@ -48,16 +48,21 @@ jobs:
     - name: Set up GitHub Actions Cache for vcpkg
       uses: actions/cache@v5
       with:
-        path: ${{ github.workspace }}/vcpkg_cache
-        key: ${{ matrix.os }}-vcpkg-binaries-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+        path: vcpkg_cache
+        key: ${{ matrix.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}-${{ github.run_id }}
         restore-keys: |
-          ${{ matrix.os }}-vcpkg-binaries-
+          ${{ matrix.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}-
+          ${{ matrix.os }}-vcpkg-
+          
+    - name: Ensure Cache Directory Exists
+      run: mkdir -p vcpkg_cache
+      shell: bash
 
     - name: Configure CMake
       run: |
         cmake -B build -S . \
           -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+          -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
       shell: bash
 
     - name: Build Project
@@ -96,7 +101,7 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v5
       with:
-        fetch-depth: 0 # Fetch all history so GitHub can generate complete release notes
+        fetch-depth: 0
 
     - name: Force Update 'preview' Git Tag
       run: |
@@ -104,6 +109,11 @@ jobs:
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git tag -f preview ${{ github.sha }}
         git push origin preview --force
+
+    - name: Delete Old Preview Release
+      run: gh release delete preview --yes || true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Download All Build Artifacts
       uses: actions/download-artifact@v4
@@ -118,7 +128,7 @@ jobs:
         tag_name: preview
         target_commitish: ${{ github.sha }}
         name: 'Continuous Preview Build'
-        generate_release_notes: true # Generates full changelog from previous tag/release
+        generate_release_notes: true
         prerelease: true
         files: dist/*
       env:

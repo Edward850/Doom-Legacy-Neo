@@ -209,6 +209,15 @@ void COM_BufExecute (void)
                 break;
         }
 
+        if (i >= sizeof(line) - 1)
+        {
+            // Trigger the debugger if the command line is too long
+            CONS_Printf("COM_BufExecute: command line too long\n");
+#if _WIN32
+            __debugbreak();
+#endif
+            i = sizeof(line) - 1;
+        }
 
         memcpy (line, text, i);
         line[i] = 0;
@@ -225,7 +234,7 @@ void COM_BufExecute (void)
         {
             i++;
             com_text.cursize -= i;
-            memcpy (text, text+i, com_text.cursize);
+            memmove(text, text + i, com_text.cursize);
         }
 
         // execute the command line
