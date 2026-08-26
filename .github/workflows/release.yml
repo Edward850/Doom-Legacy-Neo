@@ -36,7 +36,7 @@ jobs:
 
     env:
       VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
-      VCPKG_BINARY_SOURCES: 'clear;files,vcpkg_cache,readwrite'
+      VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg_cache,readwrite'
 
     steps:
     - name: Checkout Code
