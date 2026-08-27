@@ -1,12 +1,5 @@
-#ifndef WIN32CPP_H
-#define WIN32CPP_H
+#pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	const char* I_CPPGetConfigDir(void);
-	const char* I_CPPGetSaveGameDir(void);
-#ifdef __cplusplus
-}
-#endif
-#endif
+extern const char* I_CPPGetConfigDir(void);
+extern const char* I_CPPGetSaveGameDir(void);
+extern void I_PlatformInit(void);

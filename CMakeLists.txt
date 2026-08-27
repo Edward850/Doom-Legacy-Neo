@@ -170,4 +170,8 @@ endif()
 
 if(MSVC)
     target_compile_options(doomlegacy PRIVATE /W3)
+	
+	# Enable PDB debug symbols and MAP file output for Release builds
+    target_compile_options(doomlegacy PRIVATE $<$<CONFIG:Release>:/Zi>)
+    target_link_options(doomlegacy PRIVATE $<$<CONFIG:Release>:/DEBUG /MAP /OPT:REF /OPT:ICF>)
 endif()

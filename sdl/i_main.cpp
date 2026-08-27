@@ -43,6 +43,10 @@
 #include "m_argv.h"
 #include "d_main.h"
 
+#if _WIN32
+#include "i_win32.h"
+#endif
+
 #ifdef LOGMESSAGES
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -53,7 +57,9 @@ int logstream;
 int main(int argc, char **argv)
 { 
     myargc = argc; 
-    myargv = argv; 
+    myargv = argv;
+
+    I_PlatformInit();
  
 #ifdef LOGMESSAGES
     //Hurdler: only write log if we have the permission in the current directory

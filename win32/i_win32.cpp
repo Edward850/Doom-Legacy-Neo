@@ -4,6 +4,9 @@
 #include <KnownFolders.h>
 #include <string>
 #include <filesystem>
+#include <dbghelp.h>
+
+#pragma comment(lib, "dbghelp.lib")
 
 constexpr wchar_t GAMEDIR[] = L"\\Doom Legacy Neo";
 
@@ -77,4 +80,55 @@ const char* I_CPPGetSaveGameDir(void)
     wcstombs(pszPath, testPath.c_str(), pathSize); // Convert the wide string to a narrow string
     return pszPath;
 }
+
+static LONG WINAPI CrashHandler(EXCEPTION_POINTERS* pExceptionInfo) 
+{
+    HANDLE hFile = CreateFileA(
+        "crash_dump.dmp",
+        GENERIC_WRITE,
+        0,
+        NULL,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+
+    if (hFile != INVALID_HANDLE_VALUE) 
+    {
+        MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
+        dumpInfo.ThreadId = GetCurrentThreadId();
+        dumpInfo.ExceptionPointers = pExceptionInfo;
+        dumpInfo.ClientPointers = FALSE;
+
+        BOOL success = MiniDumpWriteDump(
+            GetCurrentProcess(),
+            GetCurrentProcessId(),
+            hFile,
+            MiniDumpNormal, // Use MiniDumpWithFullMemory for full dumps
+            &dumpInfo,
+            NULL,
+            NULL
+        );
+
+        CloseHandle(hFile);
+
+        // Show a message box to inform the user about the crash
+        MessageBoxA(NULL, "The application has crashed. A crash dump has been created as 'crash_dump.dmp'. Please send this file to the developers for further analysis.", "Application Crash", MB_OK | MB_ICONERROR);
+    }
+    else
+    {
+        // Show a message box to inform the user that the dump could not be created
+        MessageBoxA(NULL, "The application has crashed. However, the crash dump could not be created.", "Application Crash", MB_OK | MB_ICONERROR);
+    }
+
+    // Terminate the process cleanly
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+void I_PlatformInit(void)
+{
+    // Register the crash handler
+    SetUnhandledExceptionFilter(CrashHandler);
+}
+
 #endif
