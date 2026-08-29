@@ -1040,6 +1040,11 @@ void V_DrawFlatFill(int x, int y, int w, int h, int flatnum)
 
     dest = screens[0] + y * dupy * vid.width + x * dupx + scaledofs;
 
+    // Edward: 2026/08/29: There seems to be something weird going on with this whole function with larger screen resolutions.
+    // I don't understand the bug right now, but I can force the destination end to be the end of the screen buffer, which seems to avoid the problem.
+    // Maybe this never worked right and needs replacing.
+    const byte* destend = screens[0] + (vid.width * vid.height);
+
     w *= dupx;
     h *= dupy;
 
@@ -1050,9 +1055,11 @@ void V_DrawFlatFill(int x, int y, int w, int h, int flatnum)
     for (v = 0; v < h; v++, dest += vid.width)
     {
         xfrac = 0;
-        src = flat + (((yfrac >> FRACBITS - 1) & (flatsize - 1)) << flatshift);
+        src = flat + ((((yfrac >> FRACBITS) - 1) & (flatsize - 1)) << flatshift);
         for (u = 0; u < w; u++)
         {
+            if (dest + u >= destend)
+                break;
             dest[u] = src[(xfrac >> FRACBITS) & (flatsize - 1)];
             xfrac += dx;
         }
